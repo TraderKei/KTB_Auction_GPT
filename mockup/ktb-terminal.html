@@ -170,6 +170,26 @@ table.blot tr.sel td{background:#16233b}
 .dv-left i,.dv-right i{display:block; height:100%}
 .dv-val{font-family:var(--mono); font-variant-numeric:tabular-nums; font-size:10.5px; text-align:right}
 
+/* mix comparison (만기 구조 비중: FY25 확정 vs FY26 비중계획) — 100% 누적 막대 2열 */
+.mix-wrap{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:2px 0 10px}
+.mix-col{display:flex; flex-direction:column}
+.mix-col .mix-yr{font-size:10px; color:var(--tx-dim); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:4px; display:flex; align-items:baseline; gap:6px}
+.mix-col .mix-yr b{color:var(--tx); font-family:var(--mono); font-size:11px}
+.mix-bar{display:flex; height:150px; width:100%; border:1px solid var(--bd); border-radius:2px; overflow:hidden; flex-direction:column}
+.mix-seg{width:100%; display:flex; align-items:center; justify-content:space-between; padding:0 6px; font-size:10px; color:#fff; font-family:var(--mono); overflow:hidden; white-space:nowrap; box-sizing:border-box}
+.mix-seg .seg-g{font-family:var(--sans); opacity:0.92}
+.mix-seg .seg-p{font-variant-numeric:tabular-nums}
+.mix-seg.est{background-image:repeating-linear-gradient(45deg,rgba(255,255,255,0.10) 0 5px,transparent 5px 10px)}  /* EST 역산 구간 사선 표식 */
+/* 그룹 비중 이동 Δ%p 요약 */
+.mix-shift{display:flex; flex-direction:column; gap:4px; margin-top:2px}
+.mix-shift .ms-row{display:grid; grid-template-columns:52px 1fr 74px; align-items:center; gap:8px; font-size:10.5px}
+.mix-shift .ms-g{font-family:var(--sans); color:var(--tx-mut); display:flex; align-items:center; gap:5px}
+.mix-shift .ms-g i{width:8px; height:8px; border-radius:1px; display:inline-block}
+.mix-shift .ms-track{position:relative; height:14px; background:var(--bg-2); border:1px solid var(--bd); border-radius:2px}
+.mix-shift .ms-track .ms-mid{position:absolute; left:50%; top:0; bottom:0; width:1px; background:var(--bd-2)}
+.mix-shift .ms-track i{position:absolute; top:0; bottom:0; height:100%}
+.mix-shift .ms-val{font-family:var(--mono); font-variant-numeric:tabular-nums; text-align:right}
+
 /* cutoff distribution bars (차등가격) */
 .tier{display:flex; align-items:center; gap:6px; margin-bottom:3px}
 .tier .tbar{height:14px; background:var(--accent); border-radius:1px; opacity:0.55}
@@ -538,6 +558,70 @@ const PLAN_MONTHLY = {
   "KTBi":{ py:[0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.75], cy:[0.7,0.65,0.7,0.65,0.7,0.65,0.65,0.65,0.65,0.65,0.65,0.65] }
 };
 const PLAN_MATS = PLAN_YOY.map(p=>p.mat);
+
+/* ── PL1 만기 구조 비교 (2025 확정 금액 vs 2026 비중계획) ────────────────
+   데이터 해상도 비대칭:
+   · FY25(2025): 만기별 발행금액 확정 → PLAN_YOY[].py 로 정확 산출 (MOEF_KTB 확정)
+   · FY26(2026): 만기별 금액 미공표. 만기 그룹(단기/중기/장기) 발행 비중(%)만 공표 (MOEF_KTB)
+   → 두 연도의 유일한 공통 해상도인 '만기 그룹' 레벨에서만 비교한다.
+   출처: 2026년 국고채 발행계획(첨부) — "(연물별 배분) … 단기 35±5%, 중기 30±5%, 장기 35±5% 배분,
+         관리목표 범위 ±5%p / '25년 실적 단기 31.6%·중기 29.8%·장기 38.6%".
+   ※ 이미지의 연물별 배분은 단기(2·3년)/중기(5·10년)/장기(20·30·50년) 3그룹 체계이며 KTBi(물가)는
+     별도 그룹으로 공표되지 않는다. 따라서 그룹 비교축은 이미지 기준 3그룹을 따르고, KTBi 확정치는
+     FY25 만기별 보조표에만 정보 손실 없이 남긴다. 모두 더미데이터. */
+
+/* 만기 → 그룹 매핑 (이미지 기준). KTBi 는 그룹 비교에서 제외(FY25 상세표에만 유지) */
+const MAT_GROUP = {
+  "2Y":"단기", "3Y":"단기",
+  "5Y":"중기", "10Y":"중기",
+  "20Y":"장기", "30Y":"장기", "50Y":"장기",
+  "KTBi":null   /* 물가연동 — 그룹 비중 공표 대상 아님 */
+};
+/* 그룹 표시 순서 (단기→중기→장기) 및 그룹별 색상(공급 비중 시각화용, 기존 팔레트 재사용) */
+const PLAN_GROUPS = ["단기","중기","장기"];
+const GROUP_COLOR = { "단기":"var(--dmd-s1)", "중기":"var(--dmd-s2)", "장기":"var(--dmd-s3)" };
+const GROUP_MATS_LBL = { "단기":"2·3Y", "중기":"5·10Y", "장기":"20·30·50Y" };
+
+/* FY26 그룹별 비중계획 (MOEF_KTB 공표). tgt=관리목표 중앙값(%), tol=관리목표 범위(±%p) */
+const PLAN_FY26_MIX = [
+  {grp:"단기", tgt:35, tol:5},
+  {grp:"중기", tgt:30, tol:5},
+  {grp:"장기", tgt:35, tol:5}
+];
+/* FY26 총 발행한도 (조원, MOEF_KTB 공표). 그룹 비중 → 그룹 금액 역산(EST) 근거.
+   ※ 만기별(2Y·3Y…) 세부 금액은 미공표 → 역산 불가. 그룹 금액까지만 EST 표기로 제공. */
+const PLAN_FY26_TOTAL = 225.7;
+
+/* FY25 만기별 확정 금액 → 그룹 집계(금액·비중). KTBi 는 그룹 비중 분모에서 제외
+   (FY26 이 KTBi 를 그룹으로 공표하지 않으므로 동일 모집단으로 맞춘다). */
+function planGroupMix(){
+  const sumByGrp = {"단기":0,"중기":0,"장기":0};
+  let grpTotal = 0, ktbiAmt = 0;
+  PLAN_YOY.forEach(p=>{
+    const g = MAT_GROUP[p.mat];
+    if(g===null){ ktbiAmt += p.py; return; }   /* KTBi 는 그룹 집계 제외 */
+    sumByGrp[g] += p.py; grpTotal += p.py;
+  });
+  const rows = PLAN_GROUPS.map(g=>{
+    const fy25Amt = sumByGrp[g];
+    const fy25Pct = grpTotal ? fy25Amt/grpTotal*100 : 0;
+    const mix = PLAN_FY26_MIX.find(m=>m.grp===g);
+    const fy26Pct = mix.tgt;
+    /* FY26 그룹 금액은 공표 비중 × 총한도로 역산한 추정치(EST) */
+    const fy26AmtEst = PLAN_FY26_TOTAL * fy26Pct/100;
+    return {
+      grp:g,
+      mats: GROUP_MATS_LBL[g],
+      fy25Amt:+fy25Amt.toFixed(1),
+      fy25Pct:+fy25Pct.toFixed(1),
+      fy26Pct,
+      fy26Tol: mix.tol,
+      fy26AmtEst:+fy26AmtEst.toFixed(1),
+      dPct:+(fy26Pct-fy25Pct).toFixed(1)   /* 비중 이동 Δ%p */
+    };
+  });
+  return {rows, fy25GrpTotal:+grpTotal.toFixed(1), ktbiAmt:+ktbiAmt.toFixed(1)};
+}
 
 /* 발행계획 증감 파생 계산기 — 만기별 YoY(연간)·동월YoY·YTD누적YoY·당월MoM 산출 */
 function planDeltas(){
@@ -978,8 +1062,10 @@ function renderPLAN(){
   const annUp=topAnn[0], annDn=topAnn[topAnn.length-1];
   const momUp=topMom[0], momDn=topMom[topMom.length-1];
 
-  /* PL1 다이버징 바: 만기별 연간 YoY 증감액. 최대 절대값 기준으로 폭 정규화 */
-  const maxAbsAnn = Math.max(...D.map(x=>Math.abs(x.ann.d)), 0.1);
+  /* PL1 만기 구조 비교: FY25 확정 만기별 → 그룹 비중, FY26 = 공표 그룹 비중(%).
+     두 연도 공통 해상도(만기 그룹)에서만 비교. FY26 만기별 금액은 지어내지 않음. */
+  const GM = planGroupMix();
+  const maxAbsShift = Math.max(...GM.rows.map(g=>Math.abs(g.dPct)), 0.1);
 
   document.getElementById("scr-plan").innerHTML = `
   <div class="qbanner"><span class="qtag">KTB PLAN</span><b>이 화면이 답하는 질문:</b> 국고채 발행 공급이 <b>작년 대비</b>, 그리고 <b>직전 달 대비</b> 만기별로 얼마나 늘고 줄었는가? <span class="dim" style="margin-left:8px">▲증가=공급확대(수급부담) · ▼감소=공급축소(수급완화)</span></div>
@@ -1001,33 +1087,64 @@ function renderPLAN(){
       <div class="k-d ${dCls(ytdDT)}">${arrow(ytdDT)} ${fmtD(ytdDP)}% · 1~${curLbl} 누적 vs 전년동기</div></div>
   </div>
   <div class="grid3" style="grid-template-columns:46% 54%; height:660px">
-    <div class="panel"><div class="p-head"><span class="p-code">PL1</span><h3>만기별 연간 발행계획 YoY</h3><span class="p-sub">FY26 vs FY25 · 증감액(조)</span></div>
+    <div class="panel"><div class="p-head"><span class="p-code">PL1</span><h3>만기 구조 변화: 2025 확정 vs 2026 비중계획</h3><span class="p-sub">그룹 비중 mix · FY25 확정금액 → FY26 공표비중(%)</span></div>
       <div class="p-body">
-        <div class="legend" style="margin-bottom:8px"><span><i style="background:var(--up)"></i>공급 확대 (수급부담)</span><span><i style="background:var(--down)"></i>공급 축소 (수급완화)</span></div>
-        ${D.map(x=>{
-          const w = Math.abs(x.ann.d)/maxAbsAnn*50;   /* 좌/우 각 최대 50% */
-          const isUp = x.ann.d>0;
-          return `<div class="dv-row" data-field="plan.annual_yoy" data-source="DERIVED" data-freq="연간 전년말">
-            <div class="dv-lbl">${x.mat}</div>
-            <div class="dv-track">
-              <div class="dv-left">${!isUp?`<i style="width:${w}%;background:var(--down)"></i>`:""}</div>
-              <div class="dv-mid"></div>
-              <div class="dv-right">${isUp?`<i style="width:${w}%;background:var(--up)"></i>`:""}</div>
+        <div class="legend" style="margin-bottom:8px">${PLAN_GROUPS.map(g=>`<span><i style="background:${GROUP_COLOR[g]}"></i>${g} <span class="dim" style="text-transform:none">(${GROUP_MATS_LBL[g]})</span></span>`).join("")}</div>
+        <div class="section-title">그룹별 발행 비중 — 100% 누적 비교</div>
+        <div class="mix-wrap">
+          <div class="mix-col">
+            <div class="mix-yr">FY25 <b>확정</b> <span class="dim" style="text-transform:none;font-size:9px">만기별 실적 집계</span></div>
+            <div class="mix-bar" data-field="plan.group_mix" data-source="MOEF_KTB" data-freq="연간 전년말">
+              ${GM.rows.map(g=>`<div class="mix-seg" style="height:${g.fy25Pct}%;background:${GROUP_COLOR[g.grp]}" title="${g.grp} ${g.fy25Pct}% · ${g.fy25Amt}조">
+                <span class="seg-g">${g.grp}</span><span class="seg-p">${g.fy25Pct.toFixed(1)}%</span></div>`).join("")}
             </div>
-            <div class="dv-val ${dCls(x.ann.d)}">${fmtD(x.ann.d)}조 <span class="dim" style="font-size:9px">(${fmtD(x.ann.p)}%)</span></div>
-          </div>`}).join("")}
-        <div class="section-title" style="margin-top:12px">만기별 상세 (조원)</div>
-        <table class="blot" style="font-size:10.5px"><thead><tr><th class="l">만기</th><th>FY25</th><th>FY26</th><th>Δ조</th><th>Δ%</th></tr></thead><tbody>
-        ${D.map(x=>`<tr>
-          <td class="l">${x.mat}</td>
-          <td data-field="plan.annual_total" data-source="MOEF_KTB" data-freq="연간 전년말">${x.ann.py.toFixed(1)}</td>
-          <td data-field="plan.annual_total" data-source="MOEF_KTB" data-freq="연간 전년말">${x.ann.cy.toFixed(1)}</td>
-          <td class="${dCls(x.ann.d)}">${fmtD(x.ann.d)}</td>
-          <td class="${dCls(x.ann.d)}">${fmtD(x.ann.p)}</td></tr>`).join("")}
-        <tr style="border-top:1px solid var(--bd-2)"><td class="l" style="color:var(--tx)">합계</td>
-          <td style="color:var(--tx)">${annPyT.toFixed(1)}</td><td style="color:var(--tx)">${annCyT.toFixed(1)}</td>
-          <td class="${dCls(annDT)}">${fmtD(annDT)}</td><td class="${dCls(annDT)}">${fmtD(annDP)}</td></tr>
+          </div>
+          <div class="mix-col">
+            <div class="mix-yr">FY26 <b>비중계획</b> <span class="dim" style="text-transform:none;font-size:9px">공표 %만 (금액 미공표)</span></div>
+            <div class="mix-bar" data-field="plan.group_mix" data-source="MOEF_KTB" data-freq="연간 전년말">
+              ${GM.rows.map(g=>`<div class="mix-seg est" style="height:${g.fy26Pct}%;background:${GROUP_COLOR[g.grp]}" title="${g.grp} 목표 ${g.fy26Pct}% (±${g.fy26Tol}%p)">
+                <span class="seg-g">${g.grp}</span><span class="seg-p">${g.fy26Pct}%<span class="dim" style="font-size:8px"> ±${g.fy26Tol}</span></span></div>`).join("")}
+            </div>
+          </div>
+        </div>
+        <div class="section-title">그룹 비중 이동 <span class="dim" style="text-transform:none">— Δ%p (FY25→FY26). ▲확대=공급확대(수급부담) · ▼축소=완화</span></div>
+        <div class="mix-shift">
+          ${GM.rows.map(g=>{
+            const w = Math.abs(g.dPct)/maxAbsShift*50;   /* 좌/우 각 최대 50% */
+            const isUp = g.dPct>0;
+            return `<div class="ms-row" data-field="plan.group_mix_shift" data-source="DERIVED" data-freq="연간 전년말">
+              <div class="ms-g"><i style="background:${GROUP_COLOR[g.grp]}"></i>${g.grp}</div>
+              <div class="ms-track"><div class="ms-mid"></div>
+                ${isUp?`<i style="left:50%;width:${w}%;background:var(--up)"></i>`
+                      :g.dPct<0?`<i style="right:50%;width:${w}%;background:var(--down)"></i>`:""}
+              </div>
+              <div class="ms-val ${dCls(g.dPct)}">${arrow(g.dPct)} ${fmtD(g.dPct)}%p</div>
+            </div>`}).join("")}
+        </div>
+        <div class="section-title" style="margin-top:12px">FY26 그룹 금액 <span class="badge est">추정</span> <span class="dim" style="text-transform:none">— 공표비중 × 총한도 ${PLAN_FY26_TOTAL}조 역산</span></div>
+        <table class="blot" style="font-size:10.5px"><thead><tr><th class="l">그룹</th><th class="l">만기</th><th>FY25 %</th><th>FY26 %</th><th>Δ%p</th><th>FY26 금액</th></tr></thead><tbody>
+        ${GM.rows.map(g=>`<tr>
+          <td class="l">${g.grp}</td>
+          <td class="l" style="color:var(--tx-dim);font-size:9.5px">${g.mats}</td>
+          <td data-field="plan.group_mix" data-source="MOEF_KTB" data-freq="연간 전년말">${g.fy25Pct.toFixed(1)}</td>
+          <td data-field="plan.group_mix" data-source="MOEF_KTB" data-freq="연간 전년말">${g.fy26Pct}<span class="dim" style="font-size:8px"> ±${g.fy26Tol}</span></td>
+          <td class="${dCls(g.dPct)}">${fmtD(g.dPct)}</td>
+          <td data-field="plan.group_amt_est" data-source="EST" data-freq="연간 전년말 (추정)">${g.fy26AmtEst.toFixed(1)}<small style="color:var(--tx-dim)">조</small></td></tr>`).join("")}
+        <tr style="border-top:1px solid var(--bd-2)"><td class="l" style="color:var(--tx)">합계</td><td class="l"></td>
+          <td style="color:var(--tx)">100.0</td><td style="color:var(--tx)">100</td><td class="mut">—</td>
+          <td style="color:var(--tx)">${PLAN_FY26_TOTAL.toFixed(1)}<small style="color:var(--tx-dim)">조</small></td></tr>
         </tbody></table>
+        <div class="section-title" style="margin-top:12px">FY25 만기별 확정 (조원) <span class="dim" style="text-transform:none">— 정보 손실 없이 유지. FY26 만기별 금액은 미공표</span></div>
+        <table class="blot" style="font-size:10.5px"><thead><tr><th class="l">만기</th><th>그룹</th><th>FY25 확정</th><th>FY26 만기별</th></tr></thead><tbody>
+        ${D.map(x=>{const g=MAT_GROUP[x.mat]; return `<tr>
+          <td class="l">${x.mat}</td>
+          <td style="color:var(--tx-dim);text-align:center">${g||"물가"}</td>
+          <td data-field="plan.annual_total" data-source="MOEF_KTB" data-freq="연간 전년말">${x.ann.py.toFixed(1)}</td>
+          <td class="dim" style="font-size:9px" title="2026년은 만기 그룹 비중만 공표되어 만기별 금액이 존재하지 않음">비중만 공표</td></tr>`}).join("")}
+        <tr style="border-top:1px solid var(--bd-2)"><td class="l" style="color:var(--tx)">합계</td><td></td>
+          <td style="color:var(--tx)">${annPyT.toFixed(1)}</td><td class="dim" style="font-size:9px">—</td></tr>
+        </tbody></table>
+        <div class="dim" style="font-size:9.5px;margin-top:10px;line-height:1.5">원천: MOEF_KTB (2026년 국고채 발행계획 «연물별 배분») · <b style="color:var(--tx-mut)">FY25=만기별 확정 발행실적/계획, FY26=만기 그룹 비중 공표(만기별 금액 미공표)</b> · 두 연도 공통 해상도인 만기 그룹 레벨에서만 비교 · KTBi(물가)는 그룹 비중 공표 대상이 아니어서 그룹 비교에서 제외(FY25 확정치는 상세표 유지) · FY26 그룹 금액은 공표비중×총한도 역산 <span class="badge est">추정</span> · 모두 더미데이터</div>
       </div></div>
     <div class="panel"><div class="p-head"><span class="p-code">PL2</span><h3>월간 증감 (동월 YoY · 당월 MoM) & YTD 누적</h3><span class="p-sub">기준 2026-${String(PLAN_CUR_MONTH+1).padStart(2,"0")}</span></div>
       <div class="p-body">
