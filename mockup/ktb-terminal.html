@@ -318,7 +318,7 @@ table.dict code{font-family:var(--mono); background:#000; padding:0 3px; border-
   <div class="tab" data-scr="dmd"><span class="tcode">KTB DMD</span> 수요강도 트래커</div>
   <div class="tab" data-scr="plan"><span class="tcode">KTB PLAN</span> 발행계획 증감분석</div>
   <div class="tab" data-scr="sd"><span class="tcode">KTB S/D</span> 수급(순공급) 분석</div>
-  <div class="tab" data-scr="pd"><span class="tcode">KTB PD</span> PD·비경쟁 옵션</div>
+  <div class="tab" data-scr="pd"><span class="tcode">KTB NCB</span> 비경쟁 인수 분석</div>
 </div>
 
 <section class="screen on" id="scr-auc">
@@ -696,15 +696,32 @@ const WF = [
   {k:"교환 순증감", v:-0.0, sign:0, src:"MOEF_KTB"}
 ];
 
-/* PD 인수·비경쟁 옵션 실적 (KTB PD 화면) */
-const PD_ROWS = [
-  {rank:1, nm:"A증권", comp:18.4, nc2:2.6, opt_lim:3.7, ex:1.7},
-  {rank:2, nm:"B은행", comp:16.1, nc2:2.2, opt_lim:3.2, ex:1.5},
-  {rank:3, nm:"C증권", comp:14.8, nc2:1.9, opt_lim:3.0, ex:1.2},
-  {rank:4, nm:"D증권", comp:12.3, nc2:1.6, opt_lim:2.5, ex:1.0},
-  {rank:5, nm:"E은행", comp:10.9, nc2:1.4, opt_lim:2.2, ex:0.8},
-  {rank:6, nm:"F증권", comp:9.2,  nc2:1.1, opt_lim:1.8, ex:0.7}
+/* 비경쟁 인수 분석 (KTB NCB 화면) — 종목·차수별 비경쟁 인수 현황 (억원, 공개데이터만)
+   won=경쟁낙찰액, ncomp=비경쟁인수액 (auction_result), pdc=참여 PD수 (딜러명 없는 집계)
+   ※ 개별 PD(딜러명)·옵션한도(EST)·옵션행사율은 미공개 → 사용하지 않음. 아래는 목업 더미데이터. */
+const NCB_ROWS = [
+  {nm:"국고02750-3509(24-6)",  mat:"10Y", tr:"24-6",  won:15200, ncomp:2200, pdc:18},
+  {nm:"국고02625-3506(24-5)",  mat:"3Y",  tr:"24-5",  won:18000, ncomp:1500, pdc:19},
+  {nm:"국고03000-5509(24-4)",  mat:"30Y", tr:"24-4",  won:9800,  ncomp:2600, pdc:16},
+  {nm:"국고02875-2909(24-8)",  mat:"5Y",  tr:"24-8",  won:14500, ncomp:1300, pdc:17},
+  {nm:"국고03125-4409(24-3)",  mat:"20Y", tr:"24-3",  won:8200,  ncomp:1900, pdc:15},
+  {nm:"국고02500-2709(24-9)",  mat:"2Y",  tr:"24-9",  won:12600, ncomp:900,  pdc:14}
 ];
+
+/* 비경쟁 유형(nc1~nc4)별 인수액 (억원, 최근월 집계) — auction_schedule.auction_type + 결과공시 */
+const NCB_TYPES = [
+  {code:"nc1", ko:"비경쟁 I",   desc:"일반인 우선배정",              amt:1800},
+  {code:"nc2", ko:"비경쟁 II",  desc:"PD 옵션 (낙찰액 대비 비율)",   amt:6400},
+  {code:"nc3", ko:"비경쟁 III", desc:"스트립 조건부",                amt:900},
+  {code:"nc4", ko:"비경쟁 IV",  desc:"모집 방식",                    amt:1300}
+];
+
+/* 월별 경쟁/비경쟁 인수 시계열 12개월 (조원) — 월 집계 (MOEF_KTB) */
+const NCB_SERIES = {
+  labels:["25-10","25-11","25-12","26-01","26-02","26-03","26-04","26-05","26-06","26-07","26-08","26-09"],
+  won:    [12.9,11.6,8.4,14.2,12.3,13.8,12.1,12.7,13.2,11.7,13.0,13.2],
+  noncomp:[1.9, 1.6, 1.2,2.2, 1.8, 2.0, 1.8, 1.9, 2.0, 1.7, 1.9, 2.0]
+};
 
 /* 월별 발행/순공급 시계열 12개월 (조원) — S/D 화면 */
 const SD_SERIES = {
@@ -1250,35 +1267,44 @@ function renderSD(){
   </div>`;
 }
 function renderPD(){
-  const maxComp=Math.max(...PD_ROWS.map(p=>p.comp));
+  const totWon = NCB_ROWS.reduce((s,r)=>s+r.won,0);
+  const totNcomp = NCB_ROWS.reduce((s,r)=>s+r.ncomp,0);
+  const totRatio = totNcomp/(totWon+totNcomp)*100;
+  const typeTot = NCB_TYPES.reduce((s,t)=>s+t.amt,0);
   document.getElementById("scr-pd").innerHTML = `
-  <div class="qbanner"><span class="qtag">KTB PD</span><b>이 화면이 답하는 질문:</b> 국고채전문딜러(PD)별 인수 실적과 비경쟁 II 옵션 행사율은 어떠한가?</div>
-  <div class="grid3" style="grid-template-columns:55% 45%; height:720px">
-    <div class="panel"><div class="p-head"><span class="p-code">PD1</span><h3>PD별 인수 실적</h3><span class="p-sub">경쟁낙찰 + 비경쟁II + 교환 (조원)</span></div>
-      <div class="p-body" style="padding:0"><table class="blot"><thead><tr><th>순위</th><th class="l">PD</th><th>경쟁낙찰</th><th>비경쟁II</th><th>옵션한도</th><th>행사율</th><th>교환</th><th class="l">인수구조</th></tr></thead><tbody>
-        ${PD_ROWS.map(p=>{const ex=(p.nc2/p.opt_lim*100);return `<tr>
-          <td data-field="pd.rank" data-source="MOEF_KTB" data-freq="월간">${p.rank}</td>
-          <td class="l" data-field="pd.name" data-source="MOEF_KTB" data-freq="월간">${p.nm}</td>
-          <td data-field="pd.comp_won" data-source="MOEF_KTB" data-freq="입찰일 T+0">${p.comp.toFixed(1)}</td>
-          <td data-field="pd.nc2_amt" data-source="MOEF_KTB" data-freq="옵션행사일 T+0">${p.nc2.toFixed(1)}</td>
-          <td data-field="pd.option_limit" data-source="EST" data-freq="입찰일 T+0 (추정)">${p.opt_lim.toFixed(1)} <span class="badge est">추정</span></td>
-          <td data-field="pd.option_exercise_rate" data-source="DERIVED" data-freq="옵션행사일 T+0" class="${ex>=70?'down':''}">${ex.toFixed(0)}%</td>
-          <td data-field="pd.exchange_amt" data-source="MOEF_KTB" data-freq="입찰일 T+0">${p.ex.toFixed(1)}</td>
-          <td class="l"><div class="stack" style="width:120px"><i style="width:${p.comp/(p.comp+p.nc2+p.ex)*100}%;background:var(--accent)"></i><i style="width:${p.nc2/(p.comp+p.nc2+p.ex)*100}%;background:#bef264"></i><i style="width:${p.ex/(p.comp+p.nc2+p.ex)*100}%;background:#67e8f9"></i></div></td>
+  <div class="qbanner"><span class="qtag">KTB NCB</span><b>이 화면이 답하는 질문:</b> 국고채 비경쟁 인수는 종목·만기·유형별로 얼마이며, 경쟁낙찰 대비 비중과 추세는 어떠한가?</div>
+  <div class="grid3" style="grid-template-columns:58% 42%; height:720px">
+    <div class="panel"><div class="p-head"><span class="p-code">NCB1</span><h3>종목별 비경쟁 인수 현황</h3><span class="p-sub">경쟁낙찰 대비 비경쟁 비중 (억원)</span></div>
+      <div class="p-body" style="padding:0"><table class="blot"><thead><tr><th class="l">종목(만기)</th><th>차수</th><th>낙찰액<span class="en">억</span></th><th>비경쟁<span class="en">억</span></th><th>PD수</th><th>비경쟁비중</th><th class="l">인수구조</th></tr></thead><tbody>
+        ${NCB_ROWS.map(r=>{const ratio=r.ncomp/(r.won+r.ncomp)*100; const cw=r.won/(r.won+r.ncomp)*100; return `<tr>
+          <td class="l" data-field="ncb.bond_name" data-source="MOEF_KTB" data-freq="입찰일 T+0">${r.nm} <span class="badge">${r.mat}</span></td>
+          <td data-field="ncb.tranche" data-source="MOEF_KTB" data-freq="입찰일 T+0">${r.tr}</td>
+          <td data-field="ncb.won_amt" data-source="MOEF_KTB" data-freq="입찰일 T+0">${fmt(r.won)}</td>
+          <td data-field="ncb.noncomp_amt" data-source="MOEF_KTB" data-freq="입찰일 T+1">${fmt(r.ncomp)}</td>
+          <td data-field="ncb.pd_count" data-source="MOEF_KTB" data-freq="입찰일 T+0 16:00">${r.pdc}</td>
+          <td data-field="ncb.noncomp_ratio" data-source="DERIVED" data-freq="입찰일 T+1" class="${ratio>=15?'down':''}">${ratio.toFixed(1)}%</td>
+          <td class="l"><div class="stack" style="width:120px"><i style="width:${cw}%;background:var(--accent)" title="경쟁 ${cw.toFixed(0)}%"></i><i style="width:${ratio}%;background:#bef264" title="비경쟁 ${ratio.toFixed(0)}%"></i></div></td>
         </tr>`}).join("")}
-      </tbody></table></div></div>
-    <div class="panel"><div class="p-head"><span class="p-code">PD2</span><h3>비경쟁 옵션 행사율 & 인수 구성</h3></div>
-      <div class="p-body"><canvas id="pdBar" width="560" height="280"></canvas>
-        <div class="section-title" style="margin-top:14px">비경쟁인수 유형 정의</div>
+      </tbody><tfoot><tr class="sel"><td class="l"><b>합계</b></td><td>—</td>
+        <td data-field="ncb.won_amt" data-source="DERIVED" data-freq="입찰일 T+0"><b>${fmt(totWon)}</b></td>
+        <td data-field="ncb.noncomp_amt" data-source="DERIVED" data-freq="입찰일 T+1"><b>${fmt(totNcomp)}</b></td>
+        <td>—</td>
+        <td data-field="ncb.noncomp_ratio" data-source="DERIVED" data-freq="입찰일 T+1"><b>${totRatio.toFixed(1)}%</b></td><td class="l"></td></tr></tfoot></table>
+        <div class="section-title" style="margin:14px 12px 5px">비경쟁 비중 산식</div>
+        <div class="erd" style="font-size:10px;margin:0 12px 12px">비경쟁 비중 = 비경쟁인수액 ÷ (경쟁낙찰액 + 비경쟁인수액)</div>
+      </div></div>
+    <div class="panel"><div class="p-head"><span class="p-code">NCB2</span><h3>비경쟁 인수 월별 추세</h3><span class="p-sub">경쟁·비경쟁 인수액 & 비중 (조원)</span></div>
+      <div class="p-body"><canvas id="ncbTrend" width="560" height="240"></canvas>
+        <div class="section-title" style="margin-top:14px">비경쟁 유형별 인수 구성</div>
         <div class="speccard">
-          <div class="row"><span class="k">비경쟁 I</span><span class="v" style="font-family:var(--sans)">일반인 우선배정</span></div>
-          <div class="row"><span class="k">비경쟁 II</span><span class="v" style="font-family:var(--sans)">PD 옵션 (낙찰액 대비 비율, 사후행사)</span></div>
-          <div class="row"><span class="k">비경쟁 III</span><span class="v" style="font-family:var(--sans)">스트립조건부</span></div>
-          <div class="row"><span class="k">비경쟁 IV</span><span class="v" style="font-family:var(--sans)">모집 방식</span></div>
+          ${NCB_TYPES.map(t=>{const tr=t.amt/typeTot*100; return `<div class="row"><span class="k">${t.ko} <span class="dim" style="font-size:9px">${t.desc}</span></span><span class="v" data-field="ncb.type_amt" data-source="MOEF_KTB" data-freq="입찰일 T+0">${fmt(t.amt)}억 <span class="dim">(${tr.toFixed(0)}%)</span></span></div>`}).join("")}
+          <div class="row"><span class="k accent">비경쟁 합계</span><span class="v" data-field="ncb.type_amt" data-source="DERIVED" data-freq="입찰일 T+0">${fmt(typeTot)}억</span></div>
         </div>
-        <div class="section-title" style="margin-top:12px">옵션 행사율 산식</div>
-        <div class="erd" style="font-size:10px">비경쟁 옵션 행사율 = 비경쟁인수액 ÷ 옵션 한도</div>
-        <div class="dim" style="font-size:9px;margin-top:8px"><span class="badge est">추정</span> 옵션한도(PD별)는 미공시 → 낙찰액×옵션비율로 추정</div>
+        <div class="section-title" style="margin-top:12px">비경쟁인수 유형 정의</div>
+        <div class="dim" style="font-size:9px;line-height:1.7">
+          <b>I</b> 일반인 우선배정 · <b>II</b> PD 옵션(낙찰액 대비 비율, 사후행사) · <b>III</b> 스트립 조건부 · <b>IV</b> 모집 방식
+        </div>
+        <div class="dim" style="font-size:9px;margin-top:8px">개별 PD(딜러명)별 실적·옵션 한도·행사율은 미공시 → 공개되는 <b>비경쟁 총액·유형·참여 PD수</b> 기준으로 구성</div>
       </div></div>
   </div>`;
 }
@@ -1319,12 +1345,12 @@ function initCharts(scr){
     renderWFInto("sdWF");
   }
   if(scr==="pd"){
-    new Chart(document.getElementById("pdBar"),{type:"bar",data:{labels:PD_ROWS.map(p=>p.nm),datasets:[
-      {label:"경쟁낙찰",data:PD_ROWS.map(p=>p.comp),backgroundColor:"#3b82f6",stack:"s"},
-      {label:"비경쟁II",data:PD_ROWS.map(p=>p.nc2),backgroundColor:"#bef264",stack:"s"},
-      {label:"교환",data:PD_ROWS.map(p=>p.ex),backgroundColor:"#67e8f9",stack:"s"},
-      {label:"옵션행사율%",type:"line",data:PD_ROWS.map(p=>+(p.nc2/p.opt_lim*100).toFixed(0)),borderColor:"#eab308",pointRadius:3,yAxisID:"y1"}
-    ]},options:{responsive:false,maintainAspectRatio:false,plugins:{legend:{labels:{color:"#8a94a6",font:{size:9},boxWidth:8}}},scales:{x:{stacked:true,ticks:{color:"#5c6675",font:{size:9}},grid:{color:"#1a2029"}},y:{stacked:true,ticks:{color:"#5c6675",font:{size:9}},grid:{color:"#1a2029"}},y1:{position:"right",min:0,max:100,ticks:{color:"#eab308",font:{size:9}},grid:{display:false}}}}});
+    const ratioSeries = NCB_SERIES.labels.map((_,i)=>+(NCB_SERIES.noncomp[i]/(NCB_SERIES.won[i]+NCB_SERIES.noncomp[i])*100).toFixed(1));
+    new Chart(document.getElementById("ncbTrend"),{type:"bar",data:{labels:NCB_SERIES.labels,datasets:[
+      {label:"경쟁낙찰",data:NCB_SERIES.won,backgroundColor:"#3b82f6",stack:"s"},
+      {label:"비경쟁인수",data:NCB_SERIES.noncomp,backgroundColor:"#bef264",stack:"s"},
+      {label:"비경쟁 비중%",type:"line",data:ratioSeries,borderColor:"#eab308",backgroundColor:"#eab308",pointRadius:2,borderWidth:1.6,yAxisID:"y1"}
+    ]},options:{responsive:false,maintainAspectRatio:false,plugins:{legend:{labels:{color:"#8a94a6",font:{size:9},boxWidth:8}}},scales:{x:{stacked:true,ticks:{color:"#5c6675",font:{size:8}},grid:{color:"#1a2029"}},y:{stacked:true,ticks:{color:"#5c6675",font:{size:9}},grid:{color:"#1a2029"}},y1:{position:"right",min:0,max:30,ticks:{color:"#eab308",font:{size:9},callback:v=>v+"%"},grid:{display:false}}}}});
   }
 }
 function renderDMDHeat(){
@@ -1347,12 +1373,12 @@ function switchScreen(scr){
   document.querySelectorAll(".tab").forEach(t=>t.classList.remove("on"));
   document.getElementById("scr-"+scr).classList.add("on");
   document.querySelector(`.tab[data-scr="${scr}"]`).classList.add("on");
-  document.getElementById("codeInput").value = "KTB "+(scr==="sd"?"S/D":scr.toUpperCase());
+  document.getElementById("codeInput").value = "KTB "+(scr==="sd"?"S/D":scr==="pd"?"NCB":scr.toUpperCase());
   if(scr==="res"&&!document.getElementById("resHist")) renderRES();
   if(scr==="dmd"&&!document.getElementById("dmdTrend")) renderDMD();
   if(scr==="plan"&&!document.getElementById("planYoyMom")) renderPLAN();
   if(scr==="sd"&&!document.getElementById("sdStack")) renderSD();
-  if(scr==="pd"&&!document.getElementById("pdBar")) renderPD();
+  if(scr==="pd"&&!document.getElementById("ncbTrend")) renderPD();
   setTimeout(()=>initCharts(scr),20);
 }
 
@@ -1393,10 +1419,11 @@ function renderDict(){
     ["sd.buyback","매입(바이백)액","number","조원","1.3","기재부","매입결과공시","입찰일 T+0","N","—","buyback_exchange(type=BB)"],
     ["sd.exchange","교환 순증감","number","조원","0.0","기재부","교환결과공시","입찰일 T+0","N","—","buyback_exchange(type=EX)"],
     ["sd.net_supply","순공급","number","조원","+6.8","파생","—","입찰일 T+0","Y","발행−상환−바이백±교환","월별 집계 파생"],
-    ["pd.comp_won","PD 경쟁낙찰액","number","조원","18.4","기재부","PD 실적공시","월간","N","—","pd_allotment(pd_id,comp_won)"],
-    ["pd.nc2_amt","비경쟁II 인수액","number","조원","2.6","기재부","PD 실적공시","옵션행사일 T+0","N","—","pd_allotment(pd_id,nc2_amt)"],
-    ["pd.option_limit","옵션 한도","number","조원","3.7","추정","미공시(EST)","입찰일 T+0 (추정)","Y","낙찰액×옵션비율 추정","pd_allotment 파생(추정)"],
-    ["pd.option_exercise_rate","옵션 행사율","number","%","70","파생","—","옵션행사일 T+0","Y","비경쟁인수액÷옵션한도","pd_allotment 파생"]
+    ["ncb.won_amt","경쟁낙찰액","number","억원","15,200","기재부","입찰결과공시","입찰일 T+0","N","—","auction_result(won_amt)"],
+    ["ncb.noncomp_amt","비경쟁인수액","number","억원","2,200","기재부","입찰결과공시","입찰일 T+1","N","—","auction_result(noncomp_amt)"],
+    ["ncb.pd_count","참여 PD수","number","개","18","기재부","입찰결과공시","입찰일 T+0 16:00","N","—","auction_result(pd_count)"],
+    ["ncb.noncomp_ratio","비경쟁 비중","number","%","12.6","파생","—","입찰일 T+1","Y","비경쟁인수액÷(경쟁낙찰액+비경쟁인수액)","auction_result 파생"],
+    ["ncb.type_amt","비경쟁 유형별 인수액","number","억원","6,400","기재부","입찰결과공시","입찰일 T+0","N","유형(nc1~nc4)별 집계","auction_schedule(auction_type)+auction_result"]
   ];
   const rows = DICT.map(d=>`<tr>
     <td class="f">${d[0]}</td><td>${d[1]}</td><td>${d[2]}</td><td>${d[3]}</td><td class="f">${d[4]}</td>
@@ -1406,7 +1433,7 @@ function renderDict(){
     ["auc.bid_amt / high_rate / wavg_rate","공개","한은 BOK-Wire+ 집행결과 및 기재부 결과공시로 확보 가능","낮음"],
     ["auc.cutoff_tier (구간별 낙찰)","비공개(역산 불가)","차등가격 구간별 낙찰액은 미공시 → 응찰 히스토그램 역산 불가. 공시되는 최저·가중평균·최고 낙찰금리 + 부분낙찰률(OHLC형)로 대체","높음"],
     ["auc.spread_vs_mts (민평대비)","공개(유료)","금투협 민평금리는 유료구독/회원 접근 → 라이선스 확인 필요","중간"],
-    ["pd.option_limit (PD별 옵션한도)","비공개(추정필요)","PD별 옵션 한도·행사 세부는 미공시 → 총량기준 추정","높음"],
+    ["pd.option_limit / PD별 실적 (개별 딜러)","비공개","PD별 옵션한도·행사율 및 딜러명 단위 실적은 미공시 → 화면에서 제외. 공개되는 비경쟁 총액·유형·참여 PD수로 대체 구성","—"],
     ["plan.month_total (월간계획)","공개","전월말 목요일 공표 정형 데이터 → 파싱 안정","낮음"],
     ["sd.redeem (만기상환)","공개","종목별 만기일 기반 산출 가능 (bond_master로 자체계산)","낮음"],
     ["dmd.score (수요강도)","공개(파생)","원천지표 확보 시 자체계산 → 원천 신뢰도에 종속","중간"]
