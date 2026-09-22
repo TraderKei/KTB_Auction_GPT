@@ -119,6 +119,9 @@ table.blot th{
   font-weight:500; text-align:right; padding:4px 6px; border-bottom:1px solid var(--bd-2);
   white-space:nowrap; font-size:10px; letter-spacing:0.02em; cursor:pointer; z-index:2;
 }
+table.blot.sortable th{user-select:none}
+table.blot.sortable th.sort-asc::after{content:" ▲"; color:var(--accent); font-size:8px}
+table.blot.sortable th.sort-desc::after{content:" ▼"; color:var(--accent); font-size:8px}
 table.blot th.l, table.blot td.l{text-align:left}
 table.blot th .en{color:var(--tx-dim); font-weight:400; font-size:9px}
 table.blot td{
@@ -391,7 +394,7 @@ table.dict code{font-family:var(--mono); background:#000; padding:0 3px; border-
         <div class="section-title">낙찰금리 구조 <span class="dim">(최저 · 가중평균 · 최고, OHLC형)</span></div>
         <canvas id="ohlcChart" width="380" height="150"></canvas>
         <div id="ohlcStat" class="ohlc-stat"></div>
-        <div class="section-title" style="margin-top:10px">부분낙찰률 <span class="dim">(낙찰액 ÷ 발행예정액)</span></div>
+        <div class="section-title" style="margin-top:10px">부분낙찰률 <span class="dim">(커트오프 금리 안분배정 · 배정액÷응찰액)</span></div>
         <div id="partialWrap"></div>
         <div class="section-title" style="margin-top:10px">직전 4회차 응찰률·테일 추이</div>
         <div style="display:flex; gap:8px; align-items:flex-end">
@@ -480,14 +483,14 @@ const AT = {
 
 /* auction_result — 2026-09 진행분 + 예정. 금액 단위: 억원. 금리: %. bp: 정수 */
 const RESULTS = [
-  {d:"09-02", code:"KR103502GD7A", nm:"국고03500-3609(24-6)", mat:"3Y",  seq:"24-6", t:"comp", plan:24000, bid:81600, won:24000, hi:2.612, wavg:2.598, spr:-1.2, nc:2400, pd:19, pay:"09-03", tiers:[[2.590,7200],[2.600,9600],[2.612,7200]]},
-  {d:"09-02", code:"KR103501GD68", nm:"국고02750-3509(24-6)", mat:"10Y", seq:"24-6", t:"comp", plan:22000, bid:70400, won:22000, hi:2.941, wavg:2.922, spr:-0.8, nc:2200, pd:18, pay:"09-03", tiers:[[2.905,6600],[2.925,9900],[2.941,5500]]},
-  {d:"09-04", code:"KR103503GD5C", nm:"국고03000-4609(23-9)", mat:"20Y", seq:"23-9", t:"comp", plan:9000,  bid:22500, won:9000,  hi:3.061, wavg:3.050, spr:+0.4, nc:900,  pd:14, pay:"09-05", tiers:[[3.040,2700],[3.052,4050],[3.061,2250]]},
-  {d:"09-08", code:"KR103504GD3E", nm:"국고03125-5609(22-8)", mat:"30Y", seq:"22-8", t:"comp", plan:14000, bid:33600, won:14000, hi:3.088, wavg:3.071, spr:+1.1, nc:1400, pd:13, pay:"09-09", tiers:[[3.055,4200],[3.075,6300],[3.088,3500]]},
-  {d:"09-09", code:"KR103505GD1G", nm:"국고02875-3109(25-3)", mat:"5Y",  seq:"25-3", t:"comp", plan:20000, bid:66000, won:20000, hi:2.744, wavg:2.732, spr:-1.5, nc:2000, pd:17, pay:"09-10", tiers:[[2.722,6000],[2.732,9000],[2.744,5000]]},
-  {d:"09-09", code:"KR103501GD68", nm:"국고02750-3509(24-6)", mat:"10Y", seq:"24-7", t:"comp", plan:22000, bid:63800, won:22000, hi:2.968, wavg:2.951, spr:+0.6, nc:2200, pd:16, pay:"09-10", tiers:[[2.935,6600],[2.955,9900],[2.968,5500]]},
-  {d:"09-10", code:"KR103506GD09", nm:"국고물가0125-3506(KTBi)", mat:"KTBi", seq:"25-2", t:"nc4", plan:2000, bid:2800, won:1600, hi:0.782, wavg:0.772, spr:null, nc:0, pd:9, pay:"09-11", est:true, tiers:[[0.765,600],[0.775,700],[0.782,300]]},
-  {d:"09-11", code:"KR103507GC9B", nm:"국고02500-2809(26-1)", mat:"2Y", seq:"26-1", t:"comp", plan:16000, bid:56000, won:16000, hi:2.531, wavg:2.520, spr:-0.9, nc:1600, pd:18, pay:"09-14", tiers:[[2.510,4800],[2.520,7200],[2.531,4000]]},
+  {d:"09-02", code:"KR103502GD7A", nm:"국고03500-3609(24-6)", mat:"3Y",  seq:"24-6", t:"comp", plan:24000, bid:81600, won:24000, hi:2.612, wavg:2.598, lo:2.590, par:58.3, spr:-1.2, nc:2400, pd:19, pay:"09-03", tiers:[[2.590,7200],[2.600,9600],[2.612,7200]]},
+  {d:"09-02", code:"KR103501GD68", nm:"국고02750-3509(24-6)", mat:"10Y", seq:"24-6", t:"comp", plan:22000, bid:70400, won:22000, hi:2.941, wavg:2.922, lo:2.905, par:41.7, spr:-0.8, nc:2200, pd:18, pay:"09-03", tiers:[[2.905,6600],[2.925,9900],[2.941,5500]]},
+  {d:"09-04", code:"KR103503GD5C", nm:"국고03000-4609(23-9)", mat:"20Y", seq:"23-9", t:"comp", plan:9000,  bid:22500, won:9000,  hi:3.061, wavg:3.050, lo:3.040, par:47.9, spr:+0.4, nc:900,  pd:14, pay:"09-05", tiers:[[3.040,2700],[3.052,4050],[3.061,2250]]},
+  {d:"09-08", code:"KR103504GD3E", nm:"국고03125-5609(22-8)", mat:"30Y", seq:"22-8", t:"comp", plan:14000, bid:33600, won:14000, hi:3.088, wavg:3.071, lo:3.055, par:36.4, spr:+1.1, nc:1400, pd:13, pay:"09-09", tiers:[[3.055,4200],[3.075,6300],[3.088,3500]]},
+  {d:"09-09", code:"KR103505GD1G", nm:"국고02875-3109(25-3)", mat:"5Y",  seq:"25-3", t:"comp", plan:20000, bid:66000, won:20000, hi:2.744, wavg:2.732, lo:2.722, par:52.1, spr:-1.5, nc:2000, pd:17, pay:"09-10", tiers:[[2.722,6000],[2.732,9000],[2.744,5000]]},
+  {d:"09-09", code:"KR103501GD68", nm:"국고02750-3509(24-6)", mat:"10Y", seq:"24-7", t:"comp", plan:22000, bid:63800, won:22000, hi:2.968, wavg:2.951, lo:2.935, par:33.8, spr:+0.6, nc:2200, pd:16, pay:"09-10", tiers:[[2.935,6600],[2.955,9900],[2.968,5500]]},
+  {d:"09-10", code:"KR103506GD09", nm:"국고물가0125-3506(KTBi)", mat:"KTBi", seq:"25-2", t:"nc4", plan:2000, bid:2800, won:1600, hi:0.782, wavg:0.772, lo:0.765, par:44.0, spr:null, nc:0, pd:9, pay:"09-11", est:true, tiers:[[0.765,600],[0.775,700],[0.782,300]]},
+  {d:"09-11", code:"KR103507GC9B", nm:"국고02500-2809(26-1)", mat:"2Y", seq:"26-1", t:"comp", plan:16000, bid:56000, won:16000, hi:2.531, wavg:2.520, lo:2.510, par:54.6, spr:-0.9, nc:1600, pd:18, pay:"09-14", tiers:[[2.510,4800],[2.520,7200],[2.531,4000]]},
   {d:"09-14", code:"KR103504GD3E", nm:"국고03125-5609(22-8)", mat:"30Y", seq:"22-9", t:"comp", plan:14000, bid:0, won:0, hi:null, wavg:null, spr:null, nc:0, pd:0, pay:"09-15", planned:true},
   {d:"09-16", code:"KR1035BB0916", nm:"매입(바이백) 경과물 다수", mat:"—", seq:"—", t:"bb", plan:13000, bid:31200, won:13000, hi:null, wavg:null, spr:null, nc:0, pd:12, pay:"09-17"},
   {d:"09-18", code:"KR103501GD68", nm:"국고02750-3509(24-6)", mat:"10Y", seq:"24-8", t:"comp", plan:22000, bid:0, won:0, hi:null, wavg:null, spr:null, nc:0, pd:0, pay:"09-21", planned:true},
@@ -826,22 +829,21 @@ function filterBlotter(code){ blotFilter = code; renderBlotter(code); markCalSel
 function renderP3(r){
   document.getElementById("p3Sub").textContent = `${r.code} · ${r.mat} ${r.seq}`;
   drawOHLC(r);
-  /* 부분낙찰률 (낙찰액 ÷ 발행예정액) — 차등가격 최고금리 구간에서 일부만 낙찰될 수 있음 */
+  /* 부분낙찰률 — 자체계산 금지. 결과공시값(auc.partial_alloc_rate) 그대로 표시.
+     산식(공시측)=최고(커트오프)금리 배정액 ÷ 최고금리 응찰액 ×100 → 커트오프 구간 안분배정률. */
   const pw = document.getElementById("partialWrap");
-  if(r.won==null || r.plan==null){
-    pw.innerHTML = '<div class="dim">낙찰 데이터 없음 (예정/매입/교환)</div>';
+  if(r.par==null){
+    pw.innerHTML = '<div class="dim">부분낙찰률 공시 없음 (예정/매입/교환)</div>';
   } else {
-    const pr = r.won/r.plan*100;
-    const full = pr>=99.5;
+    const par = r.par;
     pw.innerHTML = `
-      <div class="pbar" style="height:18px" data-field="auc.partial_alloc_rate" data-source="DERIVED" data-freq="입찰일 T+0 16:00">
-        <span style="width:${Math.min(100,pr)}%;background:${full?'var(--accent)':'var(--warn)'}"></span>
-        <span class="pbar-lbl">${pr.toFixed(1)}%</span>
+      <div class="pbar" style="height:18px" data-field="auc.partial_alloc_rate" data-source="MOEF_KTB" data-freq="입찰일 T+0 16:00">
+        <span style="width:${Math.min(100,par)}%;background:var(--accent)"></span>
+        <span class="pbar-lbl">${par.toFixed(1)}%</span>
       </div>
       <div class="ohlc-stat" style="margin-top:4px">
-        <span><b class="mono">${fmt(r.won)}</b><small>낙찰억</small></span>
-        <span><b class="mono">${fmt(r.plan)}</b><small>예정억</small></span>
-        <span class="${full?'':'up'}">${full?'전량 낙찰':'부분 낙찰 ('+fmt(r.plan-r.won)+'억 미달)'}</span>
+        <span><b class="mono">${par.toFixed(1)}</b><small>배정률%</small></span>
+        <span class="dim" style="flex:2;text-align:left;padding-left:8px">최고금리(${r.hi!=null?r.hi.toFixed(3):"—"}%) 응찰분 중 ${par.toFixed(1)}% 안분배정</span>
       </div>`;
   }
   drawSpark("sparkBTC",[3.1,3.0,2.9,r.bid&&r.plan?+(r.bid/r.plan).toFixed(1):2.9],"응찰률","#3b82f6");
@@ -860,9 +862,9 @@ function drawOHLC(r){
     ctx.fillText("낙찰금리 데이터 없음 (예정/매입/교환)",10,H/2);
     if(stat) stat.innerHTML=""; return;
   }
-  /* 최저 낙찰금리: 구간 데이터가 있으면 그 하단, 없으면 (가중평균−테일) 근사 */
+  /* 최저 낙찰금리: 공시값(r.lo) 우선, 없으면 구간 하단, 그것도 없으면 (가중평균−테일) 근사 */
   const tail = (r.hi-r.wavg);
-  const lo = r.tiers ? Math.min(...r.tiers.map(t=>t[0])) : +(r.wavg - tail).toFixed(3);
+  const lo = r.lo!=null ? r.lo : (r.tiers ? Math.min(...r.tiers.map(t=>t[0])) : +(r.wavg - tail).toFixed(3));
   const hi = r.hi, wavg = r.wavg;
   /* Y 스케일 — 여백 포함 */
   const vmin = lo, vmax = hi, pad=(vmax-vmin)*0.35 || 0.02;
@@ -897,7 +899,7 @@ function drawOHLC(r){
   ctx.textAlign="left"; ctx.textBaseline="alphabetic";
   /* 하단 통계 스트립 */
   if(stat){
-    const estBadge = r.tiers? "" : ' <span class="badge est">최저추정</span>';
+    const estBadge = (r.lo!=null || r.tiers) ? "" : ' <span class="badge est">최저추정</span>';
     stat.innerHTML = `
       <span class="down"><b class="mono">${lo.toFixed(3)}</b><small>최저%${estBadge? "*":""}</small></span>
       <span><b class="mono">${wavg.toFixed(3)}</b><small>가중평균%</small></span>
@@ -985,23 +987,25 @@ function kpiSpark(id,arr,color){
 /* ---------- 나머지 탭 렌더 ---------- */
 function renderRES(){
   const compRows = RESULTS.filter(x=>x.t==="comp"&&!x.planned&&x.hi!=null);
+  /* R2 OHLC 공통 스케일: comp 전체에서 가장 큰 (최고−최저) 범위를 기준으로 정규화 →
+     범위(테일)가 큰 입찰일수록 캔들이 길게 보인다. 범위 = 공시 (최고−최저) 낙찰금리. */
+  r2MaxRangeBp = Math.max(...compRows.map(x=>x.lo!=null?(x.hi-x.lo)*100:(x.hi-x.wavg)*1.5*100)) || 3;
   document.getElementById("scr-res").innerHTML = `
   <div class="qbanner"><span class="qtag">KTB RES</span><b>이 화면이 답하는 질문:</b> 특정 종목·차수 입찰이 어떤 금리 구조로 낙찰됐고, 직전 회차 대비 수요가 어떻게 바뀌었는가?</div>
   <div class="grid3" style="grid-template-columns:38% 34% 28%; height:720px">
     <div class="panel">
-      <div class="p-head"><span class="p-code">R1</span><h3>종목·차수 드릴다운</h3><span class="p-sub">행 클릭 → 우측 상세 갱신</span></div>
+      <div class="p-head"><span class="p-code">R1</span><h3>종목·차수 드릴다운</h3><span class="p-sub">행 클릭 → 상세 · 헤더 더블클릭 → 정렬</span></div>
       <div class="p-body" style="padding:0">
-        <table class="blot" id="resDrill"><thead><tr><th class="l">종목명</th><th>만기</th><th>차수</th><th>응찰률</th><th>테일bp</th><th>민평대비</th><th>스코어</th></tr></thead><tbody>
-        ${compRows.map((x,i)=>`<tr data-idx="${i}" style="cursor:pointer">
-          <td class="l" data-field="bond.name" data-source="MOEF_KTB" data-freq="발행공고 T-3일" style="max-width:160px;overflow:hidden;text-overflow:ellipsis">${x.nm}</td>
-          <td data-field="bond.maturity" data-source="MOEF_KTB" data-freq="발행공고 T-3일">${x.mat}</td>
-          <td data-field="auc.tranche" data-source="MOEF_KTB" data-freq="발행공고 T-3일">${x.seq}</td>
-          <td data-field="auc.bid_to_cover" data-source="DERIVED" data-freq="입찰일 T+0 16:00" class="${x.bid/x.plan>=3?'down':''}">${(x.bid/x.plan).toFixed(2)}</td>
-          <td data-field="auc.tail" data-source="DERIVED" data-freq="입찰일 T+0 16:00">${((x.hi-x.wavg)*100).toFixed(1)}</td>
-          <td data-field="auc.spread_vs_mts" data-source="DERIVED" data-freq="입찰일 T+0 16:00" class="${sprCls(x.spr)}">${(x.spr>0?"+":"")+x.spr.toFixed(1)}</td>
-          <td data-field="dmd.score" data-source="DERIVED" data-freq="입찰일 T+0 16:00">${Math.round(50-(x.spr*8)-( (x.hi-x.wavg)*100*4)+ (x.bid/x.plan-3)*15)}</td>
-        </tr>`).join("")}
-        </tbody></table>
+        <table class="blot sortable" id="resDrill"><thead><tr>
+          <th data-key="d">입찰일</th>
+          <th class="l" data-key="nm">종목명</th>
+          <th data-key="mat">만기</th>
+          <th data-key="seq">차수</th>
+          <th data-key="btc">응찰률</th>
+          <th data-key="tail">테일bp</th>
+          <th data-key="spr">민평대비</th>
+          <th data-key="score">스코어</th>
+        </tr></thead><tbody id="resDrillBody"></tbody></table>
       </div>
     </div>
     <div class="panel">
@@ -1019,55 +1023,98 @@ function renderRES(){
     </div>
   </div>`;
   const tb = document.getElementById("resDrill");
-  tb.querySelectorAll("tbody tr").forEach(tr=>tr.addEventListener("click",()=>{
-    tb.querySelectorAll("tbody tr").forEach(x=>x.classList.remove("sel"));
-    tr.classList.add("sel");
-    renderR2(compRows[+tr.dataset.idx]);
+  /* 열 정의: key → {정렬값 추출, 셀 HTML} · 문자열 열은 localeCompare, 숫자 열은 수치 비교 */
+  const colDefs = {
+    d:    { num:false, val:x=>x.d,             cell:x=>`<td data-field="auc.auction_date" data-source="MOEF_KTB" data-freq="발행공고 T-3일" class="mono">${x.d}</td>` },
+    nm:   { num:false, val:x=>x.nm,            cell:x=>`<td class="l" data-field="bond.name" data-source="MOEF_KTB" data-freq="발행공고 T-3일" style="max-width:150px;overflow:hidden;text-overflow:ellipsis">${x.nm}</td>` },
+    mat:  { num:false, val:x=>x.mat,           cell:x=>`<td data-field="bond.maturity" data-source="MOEF_KTB" data-freq="발행공고 T-3일">${x.mat}</td>` },
+    seq:  { num:false, val:x=>x.seq,           cell:x=>`<td data-field="auc.tranche" data-source="MOEF_KTB" data-freq="발행공고 T-3일">${x.seq}</td>` },
+    btc:  { num:true,  val:x=>x.bid/x.plan,    cell:x=>`<td data-field="auc.bid_to_cover" data-source="DERIVED" data-freq="입찰일 T+0 16:00" class="${x.bid/x.plan>=3?'down':''}">${(x.bid/x.plan).toFixed(2)}</td>` },
+    tail: { num:true,  val:x=>(x.hi-x.wavg)*100, cell:x=>`<td data-field="auc.tail" data-source="DERIVED" data-freq="입찰일 T+0 16:00">${((x.hi-x.wavg)*100).toFixed(1)}</td>` },
+    spr:  { num:true,  val:x=>x.spr,           cell:x=>`<td data-field="auc.spread_vs_mts" data-source="DERIVED" data-freq="입찰일 T+0 16:00" class="${sprCls(x.spr)}">${(x.spr>0?"+":"")+x.spr.toFixed(1)}</td>` },
+    score:{ num:true,  val:x=>50-(x.spr*8)-((x.hi-x.wavg)*100*4)+(x.bid/x.plan-3)*15, cell:x=>`<td data-field="dmd.score" data-source="DERIVED" data-freq="입찰일 T+0 16:00">${Math.round(50-(x.spr*8)-((x.hi-x.wavg)*100*4)+(x.bid/x.plan-3)*15)}</td>` }
+  };
+  let sortState = { key:null, dir:1 };          /* dir: 1=오름, -1=내림 */
+  let selIdx = 0;                               /* 현재 선택 행 (compRows 인덱스) */
+  function sortedRows(){
+    if(!sortState.key) return compRows.slice();
+    const def = colDefs[sortState.key];
+    return compRows.slice().sort((a,b)=>{
+      const va=def.val(a), vb=def.val(b);
+      const cmp = def.num ? (va-vb) : String(va).localeCompare(String(vb),"ko");
+      return cmp*sortState.dir;
+    });
+  }
+  function renderBody(){
+    const body = document.getElementById("resDrillBody");
+    const rows = sortedRows();
+    body.innerHTML = rows.map(x=>{
+      const i = compRows.indexOf(x);
+      return `<tr data-idx="${i}" style="cursor:pointer">${Object.keys(colDefs).map(k=>colDefs[k].cell(x)).join("")}</tr>`;
+    }).join("");
+    body.querySelectorAll("tr").forEach(tr=>tr.addEventListener("click",()=>{
+      body.querySelectorAll("tr").forEach(x=>x.classList.remove("sel"));
+      tr.classList.add("sel");
+      selIdx = +tr.dataset.idx;
+      renderR2(compRows[selIdx]);
+    }));
+    /* 현재 선택 종목 유지 */
+    const sel = body.querySelector(`tr[data-idx="${selIdx}"]`);
+    if(sel) sel.classList.add("sel");
+  }
+  /* 헤더 더블클릭 → 정렬 토글 (같은 열 재더블클릭 시 방향 반전) */
+  tb.querySelectorAll("thead th").forEach(th=>th.addEventListener("dblclick",()=>{
+    const key = th.dataset.key; if(!key) return;
+    if(sortState.key===key) sortState.dir*=-1; else sortState={key, dir:1};
+    tb.querySelectorAll("thead th").forEach(h=>h.classList.remove("sort-asc","sort-desc"));
+    th.classList.add(sortState.dir>0?"sort-asc":"sort-desc");
+    renderBody();
   }));
+  renderBody();
   renderR2(compRows[0]);
-  const first = tb.querySelector("tbody tr"); if(first) first.classList.add("sel");
 }
 function renderR2(r){
   document.getElementById("r2Sub").textContent = `${r.code} ${r.seq}`;
   /* 차등가격 구간별 낙찰액(r.tiers)은 미공시(역산 불가) → 공시 3금리 OHLC + 부분낙찰률로 대체.
-     최저금리는 공시 시 사용, 없으면 (가중평균−테일) 근사 후 '추정' 배지. */
-  const tail = r.hi - r.wavg;                       /* 파생: 최고−가중평균 (%p) */
-  const lowIsEst = true;                            /* 현재 원천엔 최저낙찰금리 미공시 → 근사 */
-  const lo = +(r.wavg - tail).toFixed(3);           /* 최저 근사값 */
+     최저낙찰금리(auc.low_rate)·부분낙찰률(auc.partial_alloc_rate)은 이제 결과공시 수집값을 그대로 사용. */
+  const tail = r.hi - r.wavg;                       /* 파생: 최고−가중평균 (%p) = 테일 */
+  const lo = r.lo!=null ? r.lo : null;              /* 공시: 최저낙찰금리(auc.low_rate) */
   const btc = r.bid && r.plan ? r.bid/r.plan : null;/* 파생: 응찰률 */
   const wonRate = r.bid && r.won ? r.won/r.bid*100 : null; /* 파생: 낙찰률 */
-  const pr = r.won!=null && r.plan!=null ? r.won/r.plan*100 : null; /* 파생: 부분낙찰률 */
-  const full = pr!=null && pr>=99.5;
+  /* 부분낙찰률: 자체계산 금지. 결과공시값(auc.partial_alloc_rate) 그대로 표시.
+     산식(공시측) = 최고(커트오프)낙찰금리에서 실제 배정액 ÷ 최고금리 응찰액 ×100.
+     즉 커트오프 금리 구간의 안분배정률 → 통상 100% 미만이 정상(전량낙찰 아님). */
+  const par = r.par!=null ? r.par : null;           /* 공시: 부분낙찰률 % */
   document.getElementById("r2body").innerHTML = `
     <div class="section-title">낙찰금리 구조 <span class="dim">(최저 · 가중평균 · 최고, OHLC형)</span></div>
     <canvas id="r2ohlc" width="440" height="188" data-field="auc.high_rate" data-source="BOK_ECOS" data-freq="입찰일 T+0 16:00"></canvas>
     <div id="r2ohlcStat" class="ohlc-stat"></div>
 
-    <div class="section-title" style="margin-top:12px">부분낙찰률 <span class="dim">(낙찰액 ÷ 발행예정액)</span></div>
-    ${pr==null ? '<div class="dim">낙찰 데이터 없음 (예정/매입/교환)</div>' : `
-      <div class="pbar" style="height:18px" data-field="auc.partial_alloc_rate" data-source="DERIVED" data-freq="입찰일 T+0 16:00">
-        <span style="width:${Math.min(100,pr)}%;background:${full?'var(--accent)':'var(--warn)'}"></span>
-        <span class="pbar-lbl">${pr.toFixed(1)}%</span>
+    <div class="section-title" style="margin-top:12px">부분낙찰률 <span class="dim">(커트오프 금리 안분배정 · 배정액÷응찰액)</span></div>
+    ${par==null ? '<div class="dim">부분낙찰률 공시 없음 (예정/매입/교환)</div>' : `
+      <div class="pbar" style="height:18px" data-field="auc.partial_alloc_rate" data-source="MOEF_KTB" data-freq="입찰일 T+0 16:00">
+        <span style="width:${Math.min(100,par)}%;background:var(--accent)"></span>
+        <span class="pbar-lbl">${par.toFixed(1)}%</span>
       </div>
       <div class="ohlc-stat" style="margin-top:4px">
-        <span><b class="mono">${fmt(r.won)}</b><small>낙찰억</small></span>
-        <span><b class="mono">${fmt(r.plan)}</b><small>예정억</small></span>
-        <span class="${full?'':'up'}">${full?'전량 낙찰':'부분 낙찰 ('+fmt(r.plan-r.won)+'억 미달)'}</span>
+        <span><b class="mono">${par.toFixed(1)}</b><small>배정률%</small></span>
+        <span class="dim" style="flex:2;text-align:left;padding-left:8px">최고금리(${r.hi.toFixed(3)}%) 응찰분 중 ${par.toFixed(1)}% 안분배정</span>
       </div>`}
 
     <div class="speccard">
       <div class="row"><span class="k">발행예정 / 응찰 / 낙찰</span><span class="v" data-field="auc.won_amt" data-source="MOEF_KTB" data-freq="입찰일 T+0 16:00">${fmt(r.plan)} / ${fmt(r.bid)} / ${fmt(r.won)}억</span></div>
       <div class="row"><span class="k">응찰률 BTC / 낙찰률</span><span class="v" data-field="auc.bid_to_cover" data-source="DERIVED" data-freq="입찰일 T+0 16:00">${btc!=null?btc.toFixed(2)+"배":"—"} / ${wonRate!=null?wonRate.toFixed(1)+"%":"—"}</span></div>
       <div class="row"><span class="k">최고 / 가중평균 낙찰금리</span><span class="v" data-field="auc.wavg_rate" data-source="BOK_ECOS" data-freq="입찰일 T+0 16:00">${r.hi.toFixed(3)} / ${r.wavg.toFixed(3)}%</span></div>
+      <div class="row"><span class="k">최저 낙찰금리 / 부분낙찰률</span><span class="v" data-field="auc.low_rate" data-source="MOEF_KTB" data-freq="입찰일 T+0 16:00">${lo!=null?lo.toFixed(3)+"%":"—"} / ${par!=null?par.toFixed(1)+"%":"—"}</span></div>
       <div class="row"><span class="k">테일 Tail</span><span class="v" data-field="auc.tail" data-source="DERIVED" data-freq="입찰일 T+0 16:00">${(tail*100).toFixed(1)}bp</span></div>
       <div class="row"><span class="k">민평대비 스프레드</span><span class="v ${sprCls(r.spr)}" data-field="auc.spread_vs_mts" data-source="DERIVED" data-freq="입찰일 T+0 16:00">${r.spr!=null?(r.spr>0?"+":"")+r.spr.toFixed(1)+"bp":"—"}</span></div>
       <div class="row"><span class="k">비경쟁인수액 / 참여 PD수</span><span class="v" data-field="auc.noncomp_amt" data-source="MOEF_KTB" data-freq="입찰일 T+1">${fmt(r.nc)}억 / ${r.pd}개</span></div>
     </div>
     <div class="dim" style="font-size:9px;margin-top:8px">
-      <span class="badge conf">확정</span> 응찰·낙찰액·최고/가중평균 낙찰금리는 한은/기재부 공시 ·
-      <span class="badge est">추정</span> 최저낙찰금리(=가중평균−테일 근사) · 차등가격 구간별 낙찰액은 미공시(역산 불가) → OHLC형 3금리로 대체
+      <span class="badge conf">확정</span> 응찰·낙찰액·최고/가중평균/최저 낙찰금리·부분낙찰률은 한은/기재부 결과공시 ·
+      차등가격 구간별 낙찰액은 미공시(역산 불가) → 공시 3금리(최저·가중평균·최고)의 OHLC형으로 대체
     </div>`;
-  drawR2OHLC({lo, wavg:r.wavg, hi:r.hi, tail, lowIsEst});
+  drawR2OHLC({lo, wavg:r.wavg, hi:r.hi, tail, lowIsEst:false});
   drawResSeries(r);
 }
 /* R2 낙찰금리 OHLC형 레인지 차트 — P3 drawOHLC와 동일 원칙(공시 3금리)을 R2 넓이(440px)로 확대.
@@ -1077,25 +1124,33 @@ function drawR2OHLC({lo,wavg,hi,tail,lowIsEst}){
   const ctx=c.getContext("2d");
   const W=c.width,H=c.height; ctx.clearRect(0,0,W,H);
   const stat=document.getElementById("r2ohlcStat");
-  const vmin=lo,vmax=hi,pad=(vmax-vmin)*0.35||0.02;
-  const y0=vmin-pad,y1=vmax+pad;
   const padT=16,padB=24,padL=10,padR=120;   /* padR 확대: 우측 금리 라벨 영역 */
-  const yPix=v=>padT+(y1-v)/(y1-y0)*(H-padT-padB);
+  const plotH=H-padT-padB;
+  /* 고정 스케일: 화면 세로 전체를 FULL_BP(comp 전체 최대범위×1.15 헤드룸)에 매핑 →
+     bp/px 비율이 모든 입찰에서 동일. 실제 범위(hi−lo)가 큰(테일 큰) 입찰일수록 캔들이 길다. */
+  const FULL_BP=(r2MaxRangeBp||3)*1.15;    /* 세로축 기준 표시 범위 (bp) */
+  const pxPerBp=plotH/FULL_BP;              /* 상수 스케일 */
+  const rangeBp=(hi-lo)*100;                /* 이 입찰의 실제 범위 (bp) */
+  const candleH=Math.min(plotH, rangeBp*pxPerBp);  /* 범위 비례 캔들 높이 */
+  /* 캔들을 세로 중앙 정렬 배치 */
+  const yHi=padT+(plotH-candleH)/2;         /* 최고금리 = 캔들 상단 */
+  const yLo=yHi+candleH;                    /* 최저금리 = 캔들 하단 */
+  /* wavg는 lo~hi 사이 실제 위치 (hi가 위, lo가 아래) */
+  const wFrac=(hi-wavg)/(hi-lo||1);
+  const yW=yHi+wFrac*candleH;
   const cx=(W-padR+padL)/2;
-  /* 후행 gridline */
-  [lo,wavg,hi].forEach(v=>{
+  /* 후행 gridline (최고/가중평균/최저 위치) */
+  [yHi,yW,yLo].forEach(yy=>{
     ctx.strokeStyle="#1a2029"; ctx.lineWidth=1; ctx.beginPath();
-    ctx.moveTo(padL,yPix(v)); ctx.lineTo(W-padR+70,yPix(v)); ctx.stroke();
+    ctx.moveTo(padL,yy); ctx.lineTo(W-padR+70,yy); ctx.stroke();
   });
   /* 캔들 몸통: 최저~최고 범위 */
   const bw=64;
-  const yHi=yPix(hi),yLo=yPix(lo);
   ctx.fillStyle="rgba(59,130,246,0.18)";
   ctx.strokeStyle="#3b82f6"; ctx.lineWidth=1.5;
-  ctx.fillRect(cx-bw/2,yHi,bw,yLo-yHi);
-  ctx.strokeRect(cx-bw/2,yHi,bw,yLo-yHi);
+  ctx.fillRect(cx-bw/2,yHi,bw,candleH);
+  ctx.strokeRect(cx-bw/2,yHi,bw,candleH);
   /* 가중평균 — 굵은 가로 마커 */
-  const yW=yPix(wavg);
   ctx.strokeStyle="#e6e6e6"; ctx.lineWidth=2.5; ctx.beginPath();
   ctx.moveTo(cx-bw/2-10,yW); ctx.lineTo(cx+bw/2+10,yW); ctx.stroke();
   /* 우측 금리 라벨 */
@@ -1103,7 +1158,7 @@ function drawR2OHLC({lo,wavg,hi,tail,lowIsEst}){
   ctx.fillStyle="#ef4444"; ctx.fillText(`최고 ${hi.toFixed(3)}%`, cx+bw/2+16, yHi);
   ctx.fillStyle="#e6e6e6"; ctx.fillText(`가중평균 ${wavg.toFixed(3)}%`, cx+bw/2+16, yW);
   ctx.fillStyle="#22c55e"; ctx.fillText(`최저 ${lo.toFixed(3)}%${lowIsEst?" *":""}`, cx+bw/2+16, yLo);
-  /* 테일 표기 (좌측) */
+  /* 테일(=범위 상단폭) 표기 (좌측) */
   ctx.fillStyle="#8a94a6"; ctx.textAlign="right";
   ctx.fillText(`테일 ${(tail*100).toFixed(1)}bp`, cx-bw/2-14, (yHi+yW)/2);
   ctx.textAlign="left"; ctx.textBaseline="alphabetic";
@@ -1127,7 +1182,7 @@ function drawResSeries(r){
   resTailRef=mk("resTail",resTailRef,{type:"line",data:{labels:seq,datasets:[{data:[Math.max(0,tail-1.2),Math.max(0,tail-1.0),Math.max(0,tail-0.6),Math.max(0,tail-0.4),Math.max(0,tail-0.1),tail],borderColor:"#ef4444",tension:.3,pointRadius:2}]},options:opt});
   resSprRef=mk("resSpr",resSprRef,{type:"bar",data:{labels:seq,datasets:[{data:[spr-0.6,spr-0.4,spr-0.2,spr-0.1,spr-0.05,spr].map(v=>+v.toFixed(2)),backgroundColor:[spr-0.6,spr-0.4,spr-0.2,spr-0.1,spr-0.05,spr].map(v=>v<0?"#22c55e":"#ef4444")}]},options:opt});
 }
-let resBTCRef=null,resTailRef=null,resSprRef=null;
+let resBTCRef=null,resTailRef=null,resSprRef=null,r2MaxRangeBp=3;
 function renderDMD(){
   document.getElementById("scr-dmd").innerHTML = `
   <div class="qbanner"><span class="qtag">KTB DMD</span><b>이 화면이 답하는 질문:</b> 어느 만기의 수요가 강해지고 약해지는가? (10Y 수요가 3개월째 약화되는 추세를 포착)</div>
@@ -1465,8 +1520,8 @@ function renderDict(){
     ["auc.pd_count","참여 PD수","number","개","18","기재부","입찰결과공시","입찰일 T+0 16:00","N","—","auction_result(pd_count)"],
     ["auc.pay_date","납입일","date","—","2026-09-10","기재부","입찰공고","발행공고 T-3일","N","—","auction_schedule(pay_date)"],
     ["auc.cutoff_tier","차등가격 낙찰구간","array","%/억","[2.94,5500]","추정","미공시(EST)","입찰일 T+0 (추정)","Y","구간별 낙찰액 미공시(역산 불가) → OHLC형 3금리로 대체","auction_result 파생(추정)"],
-    ["auc.low_rate","최저낙찰금리","number","%","2.905","한은/추정","입찰집행결과","입찰일 T+0 16:00","Y","구간 하단(공시) 또는 가중평균−테일 근사","auction_result(low_rate)"],
-    ["auc.partial_alloc_rate","부분낙찰률","number","%","100.0","파생","—","입찰일 T+0 16:00","Y","낙찰액 ÷ 발행예정액","auction_result 파생"],
+    ["auc.low_rate","최저낙찰금리","number","%","2.905","기재부","입찰결과공시","입찰일 T+0 16:00","N","최저 낙찰금리(결과공시값 그대로)","auction_result(low_rate)"],
+    ["auc.partial_alloc_rate","부분낙찰률","number","%","41.7","기재부","입찰결과공시","입찰일 T+0 16:00","N","최고금리 배정액÷최고금리 응찰액×100 (공시값 그대로)","auction_result(partial_alloc_rate)"],
     ["dmd.score","수요강도 스코어","number","0~100","47","파생","—","입찰일 T+0 16:00","Y","z(BTC)×.4−z(Tail)×.3−z(Spr)×.3 정규화","demand_index 파생"],
     ["plan.month_total","월 발행계획액","number","조원","15.2","기재부","월간 발행계획","월간 전월말목 09:00","N","—","issuance_plan(month,total)"],
     ["plan.annual_total","연간계획 총액","number","조원","240","기재부","연간 국채발행계획","연간 전년말","N","—","issuance_plan(year,total)"],
@@ -1491,7 +1546,7 @@ function renderDict(){
   </tr>`).join("");
   const RISK=[
     ["auc.bid_amt / high_rate / wavg_rate","공개","한은 BOK-Wire+ 집행결과 및 기재부 결과공시로 확보 가능","낮음"],
-    ["auc.cutoff_tier (구간별 낙찰)","비공개(역산 불가)","차등가격 구간별 낙찰액은 미공시 → 응찰 히스토그램 역산 불가. 공시되는 최저·가중평균·최고 낙찰금리 + 부분낙찰률(OHLC형)로 대체","높음"],
+    ["auc.cutoff_tier (구간별 낙찰)","비공개(역산 불가)","차등가격 구간별 낙찰액은 미공시 → 응찰 히스토그램 역산 불가. 공시되는 최저·가중평균·최고 낙찰금리(OHLC형)로 대체하고, 부분낙찰률은 결과공시값을 그대로 표시","높음"],
     ["auc.spread_vs_mts (민평대비)","공개(유료)","금투협 민평금리는 유료구독/회원 접근 → 라이선스 확인 필요","중간"],
     ["pd.option_limit / PD별 실적 (개별 딜러)","비공개","PD별 옵션한도·행사율 및 딜러명 단위 실적은 미공시 → 화면에서 제외. 공개되는 비경쟁 총액·유형·참여 PD수로 대체 구성","—"],
     ["plan.month_total (월간계획)","공개","전월말 목요일 공표 정형 데이터 → 파싱 안정","낮음"],

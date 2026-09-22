@@ -175,6 +175,8 @@ COLUMNS = [
     C("auction_result","won_amt","낙찰액","auc.won_amt","NUMERIC(18,0)","Y","","","","억원","22000","MOEF_KTB","raw","","입찰일 T+0 16:00","N","총 낙찰금액"),
     C("auction_result","high_rate","최고낙찰금리","auc.high_rate","NUMERIC(6,3)","Y","","","","%","2.968","BOK_ECOS","raw","","입찰일 T+0 16:00","N","최고(커트오프) 낙찰금리"),
     C("auction_result","wavg_rate","가중평균낙찰금리","auc.wavg_rate","NUMERIC(6,3)","Y","","","","%","2.951","BOK_ECOS","raw","","입찰일 T+0 16:00","N","가중평균 낙찰금리"),
+    C("auction_result","low_rate","최저낙찰금리","auc.low_rate","NUMERIC(6,3)","Y","","","","%","2.905","MOEF_KTB","raw","","입찰일 T+0 16:00","N","최저 낙찰금리(결과공시)"),
+    C("auction_result","partial_alloc_rate","부분낙찰률","auc.partial_alloc_rate","NUMERIC(6,2)","Y","","","","%","32.5","MOEF_KTB","raw","","입찰일 T+0 16:00","N","최고금리 배정액÷최고금리 응찰액×100(결과공시)"),
     C("auction_result","noncomp_amt","비경쟁인수액","auc.noncomp_amt","NUMERIC(18,0)","Y","","","","억원","2200","MOEF_KTB","raw","","입찰일 T+1","N","비경쟁 인수 총액"),
     C("auction_result","pd_count","참여 PD수","auc.pd_count","SMALLINT","Y","","","","개","18","MOEF_KTB","raw","","입찰일 T+0 16:00","N","입찰 참여 PD 수"),
     C("auction_result","bid_to_cover","응찰률(BTC)","auc.bid_to_cover / auc.avg_btc","NUMERIC(6,2)","Y","","","","배","2.90","DERIVED","derived","bid_amt ÷ plan_amt","입찰일 T+0 16:00","N","응찰률(파생)"),
@@ -424,6 +426,8 @@ CREATE TABLE auction_result (
   won_amt       NUMERIC(18,0),
   high_rate     NUMERIC(6,3),
   wavg_rate     NUMERIC(6,3),
+  low_rate      NUMERIC(6,3),   -- 최저낙찰금리 (공시)
+  partial_alloc_rate NUMERIC(6,2), -- 부분낙찰률 % (공시): 최고금리 배정액 ÷ 최고금리 응찰액 ×100
   noncomp_amt   NUMERIC(18,0),
   pd_count      SMALLINT,
   bid_to_cover  NUMERIC(6,2),   -- derived
@@ -434,7 +438,9 @@ CREATE TABLE auction_result (
   is_estimated  BOOLEAN       NOT NULL DEFAULT FALSE,
   PRIMARY KEY (isin, tranche),
   FOREIGN KEY (isin, tranche) REFERENCES auction_schedule(isin, tranche),
-  CHECK (high_rate IS NULL OR wavg_rate IS NULL OR high_rate >= wavg_rate)
+  CHECK (high_rate IS NULL OR wavg_rate IS NULL OR high_rate >= wavg_rate),
+  CHECK (wavg_rate IS NULL OR low_rate IS NULL OR wavg_rate >= low_rate),
+  CHECK (partial_alloc_rate IS NULL OR (partial_alloc_rate >= 0 AND partial_alloc_rate <= 100))
 );
 CREATE INDEX ix_res_score ON auction_result(demand_score);
 
@@ -552,7 +558,8 @@ erd_text = """┌──────────────────┐      
          ▼
 ┌──────────────────────────────────────────────────┐
 │  auction_result     PK(isin,tranche)              │
-│  · bid/won_amt, high/wavg_rate, pd_count          │
+│  · bid/won_amt, high/wavg/low_rate, pd_count      │
+│  · partial_alloc_rate (부분낙찰률, 공시)          │
 │  ⇒ derived: bid_to_cover, tail_bp, spread, score  │
 └──┬────────────┬───────────────┬───────────────────┘
    │1:N         │1:N            │1:N

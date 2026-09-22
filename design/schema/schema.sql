@@ -75,6 +75,8 @@ CREATE TABLE auction_result (
   won_amt       NUMERIC(18,0),
   high_rate     NUMERIC(6,3),
   wavg_rate     NUMERIC(6,3),
+  low_rate      NUMERIC(6,3),   -- 최저낙찰금리 (공시)
+  partial_alloc_rate NUMERIC(6,2), -- 부분낙찰률 % (공시): 최고금리 배정액 ÷ 최고금리 응찰액 ×100
   noncomp_amt   NUMERIC(18,0),
   pd_count      SMALLINT,
   bid_to_cover  NUMERIC(6,2),   -- derived
@@ -85,7 +87,9 @@ CREATE TABLE auction_result (
   is_estimated  BOOLEAN       NOT NULL DEFAULT FALSE,
   PRIMARY KEY (isin, tranche),
   FOREIGN KEY (isin, tranche) REFERENCES auction_schedule(isin, tranche),
-  CHECK (high_rate IS NULL OR wavg_rate IS NULL OR high_rate >= wavg_rate)
+  CHECK (high_rate IS NULL OR wavg_rate IS NULL OR high_rate >= wavg_rate),
+  CHECK (wavg_rate IS NULL OR low_rate IS NULL OR wavg_rate >= low_rate),
+  CHECK (partial_alloc_rate IS NULL OR (partial_alloc_rate >= 0 AND partial_alloc_rate <= 100))
 );
 CREATE INDEX ix_res_score ON auction_result(demand_score);
 

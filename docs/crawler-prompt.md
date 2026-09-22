@@ -73,8 +73,16 @@
 - `won_amt` NUMERIC(18,0) 억원  낙찰액
 - `noncomp_amt` NUMERIC(18,0) 억원  비경쟁인수액
 - `pd_count` SMALLINT  참여 PD수
+- `low_rate` NUMERIC(6,3) %  최저낙찰금리 (결과공시)
+- `partial_alloc_rate` NUMERIC(6,2) %  부분낙찰률 (결과공시): 최고낙찰금리 배정액 ÷ 최고낙찰금리 응찰액 × 100
 - (bid_amt/high_rate/wavg_rate 는 BOK_ECOS에서 수집 — 아래 참조)
 - (bid_to_cover/won_rate/tail_bp/spread_vs_mts/demand_score 는 DERIVED — 제외)
+
+> 최저낙찰금리·부분낙찰률은 기재부 입찰결과 공시(`bidResult.do` 상세)에 표기되는 **공시값**이다.
+> 이전 설계에서 최저낙찰금리는 "구간 하단 추정", 부분낙찰률은 "낙찰액÷발행예정액 파생"으로 두었으나,
+> 결과공시에 실제 표기되므로 **추정/파생이 아닌 수집 대상**으로 승격한다. discovery 단계에서 결과공시
+> 상세 DOM의 해당 셀(헤더 텍스트 "최저낙찰금리"/"부분낙찰률" 기준)을 확인해 파싱 경로를 확정하라.
+> 공시에 없을 때만 NULL로 두고, 최저금리를 임의 근사로 채우지 마라(dead-letter 격리).
 
 ### redemption_schedule (상환일정, PK=(isin,redeem_date))
 - `isin`, `redeem_date` DATE, `redeem_amt` NUMERIC(18,0) 억원
@@ -157,7 +165,7 @@ ktb-crawler/
       bond_master.py
       issuance_plan.py
       auction_schedule.py
-      auction_result.py   # 발행측 필드(won_amt/noncomp_amt/pd_count) + high/wavg 폴백
+      auction_result.py   # 발행측 필드(won_amt/noncomp_amt/pd_count/low_rate/partial_alloc_rate) + high/wavg 폴백
       redemption.py
       buyback_exchange.py
       pd_allotment.py
