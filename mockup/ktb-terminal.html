@@ -377,7 +377,7 @@ table.dict code{font-family:var(--mono); background:#000; padding:0 3px; border-
     </div>
   </div>
 
-  <div class="grid3" style="grid-template-columns:33% 39% 28%; height:398px">
+  <div class="grid3" style="grid-template-columns:33% 46% 21%; height:398px">
     <div class="panel">
       <div class="p-head"><span class="p-code">P1</span><h3>입찰 캘린더</h3>
         <span class="mnav"><button class="mnav-prev" title="이전 월">◀</button><span class="mnav-lbl">2026-09</span><button class="mnav-next" title="다음 월">▶</button></span>
@@ -418,12 +418,12 @@ table.dict code{font-family:var(--mono); background:#000; padding:0 3px; border-
       <div class="p-head"><span class="p-code">P3</span><h3>낙찰 상세</h3><span class="p-sub" id="p3Sub">KR103501GD68 · 10Y 24-6</span></div>
       <div class="p-body" id="p3body">
         <div class="section-title">낙찰금리 구조 <span class="dim">(최저 · 가중평균 · 최고, OHLC형)</span></div>
-        <canvas id="ohlcChart" width="380" height="150"></canvas>
+        <canvas id="ohlcChart" width="280" height="150"></canvas>
         <div id="ohlcStat" class="ohlc-stat"></div>
-        <div class="section-title" style="margin-top:10px">직전 4회차 응찰률·테일 추이</div>
-        <div style="display:flex; gap:8px; align-items:flex-end">
-          <canvas id="sparkBTC" width="180" height="42"></canvas>
-          <canvas id="sparkTail" width="180" height="42"></canvas>
+        <div class="section-title" style="margin-top:10px">동일 만기 과거 입찰 추이 <span class="dim" id="sparkSub"></span></div>
+        <div style="display:flex; flex-direction:column; gap:8px">
+          <canvas id="sparkBTC" width="280" height="48"></canvas>
+          <canvas id="sparkTail" width="280" height="48"></canvas>
         </div>
       </div>
     </div>
@@ -898,11 +898,10 @@ function renderBlotter(codeFilter){
   RESULTS.filter(r=> r.d.startsWith(ymPrefix) && activeTypes.has(r.t) && (!codeFilter || r.code===codeFilter)).forEach(r=>{
     const a=AT[r.t];
     const btc = r.bid&&r.plan? (r.bid/r.plan):null;
-    const status = r.planned? `<span class="badge plan">예정</span>` : r.est? `<span class="badge est">추정</span>` : "";
     const mmdd = r.d.slice(5);                           /* "MM-DD" 표시 (연도는 헤더 조회월에 표기) */
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td class="l stick stick-1" data-field="auc.bid_date" data-source="MOEF_KTB" data-freq="발행공고 T-3일">${mmdd} ${status}</td>
+      <td class="l stick stick-1" data-field="auc.bid_date" data-source="MOEF_KTB" data-freq="발행공고 T-3일">${mmdd}</td>
       <td class="l stick stick-2" data-field="bond.isin" data-source="MOEF_KTB" data-freq="발행공고 T-3일">${r.code}</td>
       <td class="l stick stick-3" data-field="bond.name" data-source="MOEF_KTB" data-freq="발행공고 T-3일">${r.nm}</td>
       <td class="stick stick-4" data-field="bond.maturity" data-source="MOEF_KTB" data-freq="발행공고 T-3일">${r.mat}</td>
@@ -929,8 +928,30 @@ function filterBlotter(code){ blotFilter = code; renderBlotter(code); markCalSel
 function renderP3(r){
   document.getElementById("p3Sub").textContent = `${r.code} · ${r.mat} ${r.seq}`;
   drawOHLC(r);
-  drawSpark("sparkBTC",[3.1,3.0,2.9,r.bid&&r.plan?+(r.bid/r.plan).toFixed(1):2.9],"응찰률","#3b82f6");
-  drawSpark("sparkTail",[0.6,0.9,1.2,r.hi&&r.wavg?+((r.hi-r.wavg)*100).toFixed(1):1.4],"테일bp","#ef4444");
+  drawMatTrend(r);
+}
+
+/* 동일 만기 과거 입찰 추이 — 선택 종목과 같은 만기(mat)의 경쟁입찰(comp) 낙찰 완료분을
+   입찰일 순으로 모아 응찰률(응찰액/발행예정액)·테일((최고−가중평균)*bp) 시계열을 그린다.
+   현재 선택한 입찰이 comp 낙찰분이면 추이의 마지막 점으로 포함된다.
+   comp 낙찰금리(hi/wavg)가 없는 매입·교환·예정 종목은 동일 만기 comp 이력만으로 추이를 그린다. */
+function matTrendSeries(r){
+  const rows = RESULTS
+    .filter(x=> x.mat===r.mat && x.t==="comp" && !x.planned && x.hi!=null && x.wavg!=null && x.plan)
+    .sort((a,b)=> a.d < b.d ? -1 : a.d > b.d ? 1 : 0);
+  return rows.map(x=>({
+    d: x.d.slice(5),                                   /* "MM-DD" */
+    btc: +(x.bid/x.plan).toFixed(2),
+    tail: +((x.hi-x.wavg)*100).toFixed(1),
+    cur: x.code===r.code && x.d===r.d && x.seq===r.seq  /* 선택 회차 강조용 */
+  }));
+}
+function drawMatTrend(r){
+  const s = matTrendSeries(r);
+  const sub = document.getElementById("sparkSub");
+  if(sub) sub.textContent = s.length ? `${r.mat} · 최근 ${s.length}회 (응찰률·테일)` : `${r.mat} · comp 이력 없음`;
+  drawSpark("sparkBTC", s.map(x=>x.btc), "응찰률", "#3b82f6", s);
+  drawSpark("sparkTail", s.map(x=>x.tail), "테일bp", "#ef4444", s);
 }
 
 /* 낙찰금리 OHLC형 레인지 차트 — 최저·가중평균·최고 낙찰금리를 세로 캔들로 표현.
@@ -1054,16 +1075,33 @@ function baseOpt(scales,extra){
   return {responsive:false,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{enabled:true}},
     scales:Object.assign({x:{ticks:{color:"#5c6675",font:{size:8}},grid:{display:false}}},scales)};
 }
-function drawSpark(id,arr,label,color){
-  const c=document.getElementById(id); const ctx=c.getContext("2d");
+function drawSpark(id,arr,label,color,meta){
+  const c=document.getElementById(id); if(!c) return;
+  const ctx=c.getContext("2d");
   ctx.clearRect(0,0,c.width,c.height);
+  const W=c.width, H=c.height, padX=6, padTop=12, padBot=6;
+  ctx.fillStyle="#8a94a6"; ctx.font="8px monospace"; ctx.textAlign="left";
+  ctx.fillText(label,4,8);
+  if(!arr.length){ ctx.fillStyle="#5c6675"; ctx.fillText("데이터 없음",W-70,8); return; }
   const min=Math.min(...arr),max=Math.max(...arr),rng=(max-min)||1;
+  const xOf=i=> arr.length===1 ? W/2 : padX+i*(W-padX*2-30)/(arr.length-1);  /* 우측 30px는 최신값 라벨 여백 */
+  const yOf=v=> H-padBot-((v-min)/rng)*(H-padTop-padBot);
+  /* 라인 */
   ctx.strokeStyle=color; ctx.lineWidth=1.5; ctx.beginPath();
-  arr.forEach((v,i)=>{const x=6+i*(c.width-12)/(arr.length-1);const y=c.height-4-((v-min)/rng)*(c.height-14);i?ctx.lineTo(x,y):ctx.moveTo(x,y);});
+  arr.forEach((v,i)=>{const x=xOf(i),y=yOf(v); i?ctx.lineTo(x,y):ctx.moveTo(x,y);});
   ctx.stroke();
-  ctx.fillStyle="#8a94a6"; ctx.font="8px monospace"; ctx.fillText(label,4,8);
-  ctx.fillStyle=color; const lv=arr[arr.length-1];
-  ctx.fillText(String(lv), c.width-24, c.height-4);
+  /* 포인트 마커 (선택 회차는 강조) */
+  arr.forEach((v,i)=>{
+    const x=xOf(i),y=yOf(v), isCur=meta&&meta[i]&&meta[i].cur;
+    ctx.beginPath(); ctx.arc(x,y,isCur?2.8:1.6,0,Math.PI*2);
+    ctx.fillStyle=isCur?"#fff":color; ctx.fill();
+    if(isCur){ ctx.strokeStyle=color; ctx.lineWidth=1.2; ctx.stroke(); }
+  });
+  /* 최신값 라벨 */
+  const lv=arr[arr.length-1];
+  ctx.fillStyle=color; ctx.textAlign="right";
+  ctx.fillText(String(lv), W-4, yOf(lv)-3<8 ? 8 : yOf(lv)-3);
+  ctx.textAlign="left";
 }
 function kpiSpark(id,arr,color){
   const c=document.getElementById(id); if(!c)return; const ctx=c.getContext("2d");
