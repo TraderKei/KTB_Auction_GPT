@@ -110,6 +110,14 @@ a{color:var(--accent); text-decoration:none}
 .p-head h3{font-size:11.5px; font-weight:600}
 .p-head .p-sub{font-size:10px; color:var(--tx-dim); margin-left:auto}
 .p-head .toggles{margin-left:auto; display:flex; gap:3px}
+/* ---- 월 네비게이터 (P1↔P2 조회월 연동) ---- */
+.p-head .mnav{margin-left:auto; display:flex; align-items:center; gap:4px}
+.p-head .mnav+.p-sub{margin-left:8px}
+.mnav button{background:var(--bg-2); border:1px solid var(--bd-2); color:var(--tx-dim);
+  font-size:9px; line-height:1; padding:2px 5px; border-radius:2px; cursor:pointer; font-family:var(--mono)}
+.mnav button:hover{color:var(--tx); border-color:var(--accent)}
+.mnav button.off{opacity:0.3; cursor:default; pointer-events:none}
+.mnav .mnav-lbl{font-family:var(--mono); font-size:10px; color:var(--tx); min-width:52px; text-align:center}
 .p-body{padding:8px 10px; overflow:auto; flex:1}
 
 /* ---- Tables ---- */
@@ -131,6 +139,20 @@ table.blot td{
 table.blot td.l{font-family:var(--sans); text-align:left}
 table.blot tr:hover td{background:#141b28}
 table.blot tr.sel td{background:#16233b}
+
+/* ---- Excel식 틀고정: '만기' 칼럼까지(4개) 좌측 sticky ---- */
+table.blot th.stick, table.blot td.stick{position:sticky; z-index:3}
+/* 헤더 sticky 칼럼은 세로(top)+가로(left) 동시 고정이라 우선순위를 높인다 */
+table.blot th.stick{z-index:4}
+table.blot td.stick{background:var(--bg)}
+table.blot th.stick{background:var(--bg-1)}
+/* hover/선택 시에도 고정칼럼 배경 유지 (뒤 칼럼이 비쳐 보이지 않도록) */
+table.blot tr:hover td.stick{background:#141b28}
+table.blot tr.sel td.stick{background:#16233b}
+table.blot .stick-1{left:0; min-width:66px; width:66px}
+table.blot .stick-2{left:66px; min-width:92px; width:92px}
+table.blot .stick-3{left:158px; min-width:120px; max-width:120px; overflow:hidden; text-overflow:ellipsis}
+table.blot .stick-4{left:278px; min-width:62px; width:62px; box-shadow:1px 0 0 var(--bd-2)}
 
 /* auction-type color coding */
 .at{display:inline-block; padding:0 5px; border-radius:2px; font-size:10px; font-family:var(--sans); border:1px solid transparent}
@@ -241,7 +263,7 @@ table.blot tr.sel td{background:#16233b}
 .cal .cd.oth{opacity:0.35}
 .cal .cd.today{border-color:var(--accent)}
 .cal .cd .dn{font-family:var(--mono); font-size:8px; color:var(--tx-dim)}
-.cal .cd .ev{display:block; font-size:8px; border-radius:1px; padding:0 2px; margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer}
+.cal .cd .ev{display:block; font-size:8px; border-radius:1px; padding:0 2px; margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer; min-width:38px; box-sizing:border-box}
 .cal .cd .ev.sel{outline:1px solid var(--accent); outline-offset:-1px; box-shadow:0 0 0 1px var(--accent) inset; font-weight:600}
 
 /* screen visibility */
@@ -355,9 +377,11 @@ table.dict code{font-family:var(--mono); background:#000; padding:0 3px; border-
     </div>
   </div>
 
-  <div class="grid3" style="grid-template-columns:25% 45% 30%; height:398px">
+  <div class="grid3" style="grid-template-columns:33% 39% 28%; height:398px">
     <div class="panel">
-      <div class="p-head"><span class="p-code">P1</span><h3>입찰 캘린더</h3><span class="p-sub">2026-09</span></div>
+      <div class="p-head"><span class="p-code">P1</span><h3>입찰 캘린더</h3>
+        <span class="mnav"><button class="mnav-prev" title="이전 월">◀</button><span class="mnav-lbl">2026-09</span><button class="mnav-next" title="다음 월">▶</button></span>
+      </div>
       <div class="p-body">
         <div class="legend" style="margin-bottom:6px">
           <span><i style="background:#93c5fd"></i>경쟁</span>
@@ -372,16 +396,18 @@ table.dict code{font-family:var(--mono); background:#000; padding:0 3px; border-
     </div>
 
     <div class="panel">
-      <div class="p-head"><span class="p-code">P2</span><h3>입찰 결과 블로터</h3><span class="p-sub" id="blotSub">전체 · 정렬: 입찰일 ▼</span></div>
+      <div class="p-head"><span class="p-code">P2</span><h3>입찰 결과 블로터</h3>
+        <span class="mnav"><button class="mnav-prev" title="이전 월">◀</button><span class="mnav-lbl">2026-09</span><button class="mnav-next" title="다음 월">▶</button></span>
+        <span class="p-sub" id="blotSub">전체 · 정렬: 입찰일 ▼</span></div>
       <div class="p-body" style="padding:0">
         <table class="blot" id="blotter">
           <thead><tr>
-            <th class="l">입찰일</th><th class="l">종목코드</th><th class="l">종목명</th><th>만기</th><th>차수</th>
+            <th class="l stick stick-1">입찰일</th><th class="l stick stick-2">종목코드</th><th class="l stick stick-3">종목명</th><th class="stick stick-4">만기</th><th>차수</th>
             <th class="l">유형</th>
             <th>발행예정<span class="en">억</span></th><th>응찰<span class="en">억</span></th><th>낙찰<span class="en">억</span></th>
             <th>응찰률<span class="en">BTC</span></th><th>최고금리<span class="en">%</span></th><th>가중평균<span class="en">%</span></th>
             <th>테일<span class="en">bp</span></th><th>민평대비<span class="en">bp</span></th><th>비경쟁<span class="en">억</span></th>
-            <th>PD수</th><th class="l">납입일</th>
+            <th class="l">납입일</th>
           </tr></thead>
           <tbody id="blotBody"></tbody>
         </table>
@@ -472,21 +498,50 @@ const AT = {
   ex:{cls:"at-ex",ko:"교환",short:"교환"}
 };
 
-/* auction_result — 2026-09 진행분 + 예정. 금액 단위: 억원. 금리: %. bp: 정수 */
+/* auction_result — 2026년 월별 진행분 + 예정. 금액 단위: 억원. 금리: %. bp: 정수.
+   · d 는 "YYYY-MM-DD" 전체일자 (월별 조회 필터의 기준). pay 도 전체일자로 통일.
+   · pd(참여 PD수): 비경쟁 II(PD옵션)에서만 공시되는 값 → 그 외 유형은 null. 화면 블로터에서는 미표기.
+   · 비경쟁은 I/II/III/IV 유형이 있으며, 특히 비경쟁 II(PD옵션)는 지표물 경쟁입찰마다 연계되어
+     여러 일자에 반복 발생한다(각 일자 모두 표기). */
 const RESULTS = [
-  {d:"09-02", code:"KR103502GD7A", nm:"국고03500-3609(24-6)", mat:"3Y",  seq:"24-6", t:"comp", plan:24000, bid:81600, won:24000, hi:2.612, wavg:2.598, lo:2.590, par:58.3, spr:-1.2, nc:2400, pd:19, pay:"09-03", tiers:[[2.590,7200],[2.600,9600],[2.612,7200]]},
-  {d:"09-02", code:"KR103501GD68", nm:"국고02750-3509(24-6)", mat:"10Y", seq:"24-6", t:"comp", plan:22000, bid:70400, won:22000, hi:2.941, wavg:2.922, lo:2.905, par:41.7, spr:-0.8, nc:2200, pd:18, pay:"09-03", tiers:[[2.905,6600],[2.925,9900],[2.941,5500]]},
-  {d:"09-04", code:"KR103503GD5C", nm:"국고03000-4609(23-9)", mat:"20Y", seq:"23-9", t:"comp", plan:9000,  bid:22500, won:9000,  hi:3.061, wavg:3.050, lo:3.040, par:47.9, spr:+0.4, nc:900,  pd:14, pay:"09-05", tiers:[[3.040,2700],[3.052,4050],[3.061,2250]]},
-  {d:"09-08", code:"KR103504GD3E", nm:"국고03125-5609(22-8)", mat:"30Y", seq:"22-8", t:"comp", plan:14000, bid:33600, won:14000, hi:3.088, wavg:3.071, lo:3.055, par:36.4, spr:+1.1, nc:1400, pd:13, pay:"09-09", tiers:[[3.055,4200],[3.075,6300],[3.088,3500]]},
-  {d:"09-09", code:"KR103505GD1G", nm:"국고02875-3109(25-3)", mat:"5Y",  seq:"25-3", t:"comp", plan:20000, bid:66000, won:20000, hi:2.744, wavg:2.732, lo:2.722, par:52.1, spr:-1.5, nc:2000, pd:17, pay:"09-10", tiers:[[2.722,6000],[2.732,9000],[2.744,5000]]},
-  {d:"09-09", code:"KR103501GD68", nm:"국고02750-3509(24-6)", mat:"10Y", seq:"24-7", t:"comp", plan:22000, bid:63800, won:22000, hi:2.968, wavg:2.951, lo:2.935, par:33.8, spr:+0.6, nc:2200, pd:16, pay:"09-10", tiers:[[2.935,6600],[2.955,9900],[2.968,5500]]},
-  {d:"09-10", code:"KR103506GD09", nm:"국고물가0125-3506(KTBi)", mat:"KTBi", seq:"25-2", t:"nc4", plan:2000, bid:2800, won:1600, hi:0.782, wavg:0.772, lo:0.765, par:44.0, spr:null, nc:0, pd:9, pay:"09-11", est:true, tiers:[[0.765,600],[0.775,700],[0.782,300]]},
-  {d:"09-11", code:"KR103507GC9B", nm:"국고02500-2809(26-1)", mat:"2Y", seq:"26-1", t:"comp", plan:16000, bid:56000, won:16000, hi:2.531, wavg:2.520, lo:2.510, par:54.6, spr:-0.9, nc:1600, pd:18, pay:"09-14", tiers:[[2.510,4800],[2.520,7200],[2.531,4000]]},
-  {d:"09-14", code:"KR103504GD3E", nm:"국고03125-5609(22-8)", mat:"30Y", seq:"22-9", t:"comp", plan:14000, bid:0, won:0, hi:null, wavg:null, spr:null, nc:0, pd:0, pay:"09-15", planned:true},
-  {d:"09-16", code:"KR1035BB0916", nm:"매입(바이백) 경과물 다수", mat:"—", seq:"—", t:"bb", plan:13000, bid:31200, won:13000, hi:null, wavg:null, spr:null, nc:0, pd:12, pay:"09-17"},
-  {d:"09-18", code:"KR103501GD68", nm:"국고02750-3509(24-6)", mat:"10Y", seq:"24-8", t:"comp", plan:22000, bid:0, won:0, hi:null, wavg:null, spr:null, nc:0, pd:0, pay:"09-21", planned:true},
-  {d:"09-23", code:"KR1035EX0923", nm:"교환 경과물↔지표물(3Y/10Y)", mat:"—", seq:"—", t:"ex", plan:8000, bid:19200, won:7600, hi:null, wavg:null, spr:null, nc:0, pd:11, pay:"09-24"},
-  {d:"09-25", code:"KR103502GD7A", nm:"국고03500-3609(24-6)", mat:"3Y", seq:"24-7", t:"comp", plan:24000, bid:0, won:0, hi:null, wavg:null, spr:null, nc:0, pd:0, pay:"09-28", planned:true}
+  /* ── 2026-07 (과거월) ─────────────────────────────────────────── */
+  {d:"2026-07-01", code:"KR103502GD7A", nm:"국고03500-3609(24-6)", mat:"3Y",  seq:"24-4", t:"comp", plan:23000, bid:73600, won:23000, hi:2.655, wavg:2.641, lo:2.632, par:55.2, spr:-1.0, nc:2300, pd:null, pay:"2026-07-02", tiers:[[2.632,6900],[2.642,9200],[2.655,6900]]},
+  {d:"2026-07-01", code:"KR103508GB7C", nm:"국고03500-3609(24-6) 비경쟁II", mat:"3Y", seq:"24-4", t:"nc2", plan:2300, bid:2760, won:2300, hi:2.641, wavg:2.641, lo:2.641, par:100.0, spr:null, nc:2300, pd:17, pay:"2026-07-02"},
+  {d:"2026-07-08", code:"KR103501GD68", nm:"국고02750-3509(24-6)", mat:"10Y", seq:"24-4", t:"comp", plan:21000, bid:63000, won:21000, hi:2.995, wavg:2.978, lo:2.962, par:38.5, spr:+0.3, nc:2100, pd:null, pay:"2026-07-09", tiers:[[2.962,6300],[2.980,9450],[2.995,5250]]},
+  {d:"2026-07-08", code:"KR103501GB69", nm:"국고02750-3509(24-6) 비경쟁II", mat:"10Y", seq:"24-4", t:"nc2", plan:2100, bid:2520, won:2100, hi:2.978, wavg:2.978, lo:2.978, par:100.0, spr:null, nc:2100, pd:15, pay:"2026-07-09"},
+  {d:"2026-07-14", code:"KR103505GD1G", nm:"국고02875-3109(25-3)", mat:"5Y",  seq:"25-1", t:"comp", plan:19000, bid:60800, won:19000, hi:2.788, wavg:2.776, lo:2.766, par:49.0, spr:-1.1, nc:1900, pd:null, pay:"2026-07-15", tiers:[[2.766,5700],[2.776,8550],[2.788,4750]]},
+  {d:"2026-07-16", code:"KR1035NC0716", nm:"국고 개인투자용 비경쟁I", mat:"10Y", seq:"25-1", t:"nc1", plan:1700, bid:1900, won:1700, hi:2.978, wavg:2.972, lo:2.965, par:89.5, spr:null, nc:1700, pd:null, pay:"2026-07-17"},
+  {d:"2026-07-22", code:"KR103504GD3E", nm:"국고03125-5609(22-8)", mat:"30Y", seq:"22-6", t:"comp", plan:13000, bid:29900, won:13000, hi:3.115, wavg:3.099, lo:3.082, par:40.1, spr:+0.9, nc:1300, pd:null, pay:"2026-07-23", tiers:[[3.082,3900],[3.100,5850],[3.115,3250]]},
+  {d:"2026-07-24", code:"KR1035ST0724", nm:"30Y 원금·이자 스트립(STRIPS)", mat:"30Y", seq:"22-6", t:"nc3", plan:600, bid:640, won:520, hi:3.099, wavg:3.099, lo:3.099, par:81.3, spr:null, nc:520, pd:null, pay:"2026-07-25"},
+  /* ── 2026-08 (과거월) ─────────────────────────────────────────── */
+  {d:"2026-08-04", code:"KR103502GD7A", nm:"국고03500-3609(24-6)", mat:"3Y",  seq:"24-5", t:"comp", plan:24000, bid:79200, won:24000, hi:2.628, wavg:2.615, lo:2.606, par:56.0, spr:-1.3, nc:2400, pd:null, pay:"2026-08-05", tiers:[[2.606,7200],[2.616,9600],[2.628,7200]]},
+  {d:"2026-08-04", code:"KR103508GB7C", nm:"국고03500-3609(24-6) 비경쟁II", mat:"3Y", seq:"24-5", t:"nc2", plan:2400, bid:2880, won:2400, hi:2.615, wavg:2.615, lo:2.615, par:100.0, spr:null, nc:2400, pd:18, pay:"2026-08-05"},
+  {d:"2026-08-11", code:"KR103501GD68", nm:"국고02750-3509(24-6)", mat:"10Y", seq:"24-5", t:"comp", plan:22000, bid:66000, won:22000, hi:2.955, wavg:2.938, lo:2.922, par:35.0, spr:0.0, nc:2200, pd:null, pay:"2026-08-12", tiers:[[2.922,6600],[2.940,9900],[2.955,5500]]},
+  {d:"2026-08-11", code:"KR103501GB69", nm:"국고02750-3509(24-6) 비경쟁II", mat:"10Y", seq:"24-5", t:"nc2", plan:2200, bid:2640, won:2200, hi:2.938, wavg:2.938, lo:2.938, par:100.0, spr:null, nc:2200, pd:16, pay:"2026-08-12"},
+  {d:"2026-08-13", code:"KR103507GC9B", nm:"국고02500-2809(26-1)", mat:"2Y",  seq:"25-6", t:"comp", plan:16000, bid:52800, won:16000, hi:2.560, wavg:2.549, lo:2.540, par:52.0, spr:-0.7, nc:1600, pd:null, pay:"2026-08-14", tiers:[[2.540,4800],[2.550,7200],[2.560,4000]]},
+  {d:"2026-08-18", code:"KR103505GD1G", nm:"국고02875-3109(25-3)", mat:"5Y",  seq:"25-2", t:"comp", plan:20000, bid:64000, won:20000, hi:2.766, wavg:2.754, lo:2.744, par:50.5, spr:-1.3, nc:2000, pd:null, pay:"2026-08-19", tiers:[[2.744,6000],[2.754,9000],[2.766,5000]]},
+  {d:"2026-08-20", code:"KR1035EX0820", nm:"교환 경과물↔지표물(3Y/10Y)", mat:"—", seq:"—", t:"ex", plan:7000, bid:16800, won:6800, hi:null, wavg:null, spr:null, nc:0, pd:null, pay:"2026-08-21"},
+  {d:"2026-08-25", code:"KR1035BB0825", nm:"매입(바이백) 경과물 다수", mat:"—", seq:"—", t:"bb", plan:12000, bid:28800, won:12000, hi:null, wavg:null, spr:null, nc:0, pd:null, pay:"2026-08-26"},
+  {d:"2026-08-27", code:"KR103503GD5C", nm:"국고03000-4609(23-9)", mat:"20Y", seq:"23-8", t:"comp", plan:9000, bid:23400, won:9000, hi:3.048, wavg:3.037, lo:3.028, par:46.0, spr:+0.2, nc:900, pd:null, pay:"2026-08-28", tiers:[[3.028,2700],[3.038,4050],[3.048,2250]]},
+  /* ── 2026-09 (현재월) 진행분 + 예정 ───────────────────────────── */
+  {d:"2026-09-02", code:"KR103502GD7A", nm:"국고03500-3609(24-6)", mat:"3Y",  seq:"24-6", t:"comp", plan:24000, bid:81600, won:24000, hi:2.612, wavg:2.598, lo:2.590, par:58.3, spr:-1.2, nc:2400, pd:null, pay:"2026-09-03", tiers:[[2.590,7200],[2.600,9600],[2.612,7200]]},
+  {d:"2026-09-02", code:"KR103508GB7C", nm:"국고03500-3609(24-6) 비경쟁II", mat:"3Y", seq:"24-6", t:"nc2", plan:2400, bid:2880, won:2400, hi:2.598, wavg:2.598, lo:2.598, par:100.0, spr:null, nc:2400, pd:19, pay:"2026-09-03"},
+  {d:"2026-09-02", code:"KR103501GD68", nm:"국고02750-3509(24-6)", mat:"10Y", seq:"24-6", t:"comp", plan:22000, bid:70400, won:22000, hi:2.941, wavg:2.922, lo:2.905, par:41.7, spr:-0.8, nc:2200, pd:null, pay:"2026-09-03", tiers:[[2.905,6600],[2.925,9900],[2.941,5500]]},
+  {d:"2026-09-04", code:"KR103503GD5C", nm:"국고03000-4609(23-9)", mat:"20Y", seq:"23-9", t:"comp", plan:9000,  bid:22500, won:9000,  hi:3.061, wavg:3.050, lo:3.040, par:47.9, spr:+0.4, nc:900,  pd:null, pay:"2026-09-05", tiers:[[3.040,2700],[3.052,4050],[3.061,2250]]},
+  {d:"2026-09-08", code:"KR103504GD3E", nm:"국고03125-5609(22-8)", mat:"30Y", seq:"22-8", t:"comp", plan:14000, bid:33600, won:14000, hi:3.088, wavg:3.071, lo:3.055, par:36.4, spr:+1.1, nc:1400, pd:null, pay:"2026-09-09", tiers:[[3.055,4200],[3.075,6300],[3.088,3500]]},
+  {d:"2026-09-09", code:"KR103505GD1G", nm:"국고02875-3109(25-3)", mat:"5Y",  seq:"25-3", t:"comp", plan:20000, bid:66000, won:20000, hi:2.744, wavg:2.732, lo:2.722, par:52.1, spr:-1.5, nc:2000, pd:null, pay:"2026-09-10", tiers:[[2.722,6000],[2.732,9000],[2.744,5000]]},
+  {d:"2026-09-09", code:"KR103501GD68", nm:"국고02750-3509(24-6)", mat:"10Y", seq:"24-7", t:"comp", plan:22000, bid:63800, won:22000, hi:2.968, wavg:2.951, lo:2.935, par:33.8, spr:+0.6, nc:2200, pd:null, pay:"2026-09-10", tiers:[[2.935,6600],[2.955,9900],[2.968,5500]]},
+  {d:"2026-09-09", code:"KR103501GB69", nm:"국고02750-3509(24-6) 비경쟁II", mat:"10Y", seq:"24-7", t:"nc2", plan:2200, bid:2640, won:2200, hi:2.951, wavg:2.951, lo:2.951, par:100.0, spr:null, nc:2200, pd:16, pay:"2026-09-10"},
+  {d:"2026-09-10", code:"KR103506GD09", nm:"국고물가0125-3506(KTBi)", mat:"KTBi", seq:"25-2", t:"nc4", plan:2000, bid:2800, won:1600, hi:0.782, wavg:0.772, lo:0.765, par:44.0, spr:null, nc:0, pd:null, pay:"2026-09-11", est:true, tiers:[[0.765,600],[0.775,700],[0.782,300]]},
+  {d:"2026-09-11", code:"KR103507GC9B", nm:"국고02500-2809(26-1)", mat:"2Y", seq:"26-1", t:"comp", plan:16000, bid:56000, won:16000, hi:2.531, wavg:2.520, lo:2.510, par:54.6, spr:-0.9, nc:1600, pd:null, pay:"2026-09-14", tiers:[[2.510,4800],[2.520,7200],[2.531,4000]]},
+  {d:"2026-09-11", code:"KR103507GB9C", nm:"국고02500-2809(26-1) 비경쟁II", mat:"2Y", seq:"26-1", t:"nc2", plan:1600, bid:1920, won:1600, hi:2.520, wavg:2.520, lo:2.520, par:100.0, spr:null, nc:1600, pd:18, pay:"2026-09-14"},
+  {d:"2026-09-12", code:"KR1035NC0912", nm:"국고 개인투자용 비경쟁I", mat:"10Y", seq:"24-7", t:"nc1", plan:1800, bid:2000, won:1800, hi:2.951, wavg:2.945, lo:2.938, par:90.0, spr:null, nc:1800, pd:null, pay:"2026-09-15"},
+  {d:"2026-09-14", code:"KR103504GD3E", nm:"국고03125-5609(22-8)", mat:"30Y", seq:"22-9", t:"comp", plan:14000, bid:0, won:0, hi:null, wavg:null, spr:null, nc:0, pd:null, pay:"2026-09-15", planned:true},
+  {d:"2026-09-16", code:"KR1035BB0916", nm:"매입(바이백) 경과물 다수", mat:"—", seq:"—", t:"bb", plan:13000, bid:31200, won:13000, hi:null, wavg:null, spr:null, nc:0, pd:null, pay:"2026-09-17"},
+  {d:"2026-09-18", code:"KR103501GD68", nm:"국고02750-3509(24-6)", mat:"10Y", seq:"24-8", t:"comp", plan:22000, bid:0, won:0, hi:null, wavg:null, spr:null, nc:0, pd:null, pay:"2026-09-21", planned:true},
+  {d:"2026-09-23", code:"KR1035EX0923", nm:"교환 경과물↔지표물(3Y/10Y)", mat:"—", seq:"—", t:"ex", plan:8000, bid:19200, won:7600, hi:null, wavg:null, spr:null, nc:0, pd:null, pay:"2026-09-24"},
+  {d:"2026-09-25", code:"KR103502GD7A", nm:"국고03500-3609(24-6)", mat:"3Y", seq:"24-7", t:"comp", plan:24000, bid:0, won:0, hi:null, wavg:null, spr:null, nc:0, pd:null, pay:"2026-09-28", planned:true},
+  {d:"2026-09-28", code:"KR1035ST0928", nm:"30Y 원금·이자 스트립(STRIPS)", mat:"30Y", seq:"22-8", t:"nc3", plan:700, bid:0, won:0, hi:null, wavg:null, spr:null, nc:0, pd:null, pay:"2026-09-29", planned:true}
 ];
 
 /* 히트맵: 만기 × 최근 8개 입찰회차 종합 수요강도 스코어(0~100). 100=강세 */
@@ -745,23 +800,68 @@ let activeTypes = new Set(Object.keys(AT));
 let heatMetric = "score";
 let blotFilter = null;   /* P1 캘린더 → P2 블로터 필터 대상 종목코드 (null=전체) */
 
+/* 조회월 상태 — P1 캘린더와 P2 블로터가 공유(연동). 기준시점 2026-09.
+   과거 월 조회 가능. viewYear/viewMonth(0-based) 변경 시 setViewMonth() 로 양쪽 동시 재렌더 */
+const TODAY = { y:2026, m:8, d:11 };            /* 오늘(2026-09-11) — 0-based month */
+const DATA_MIN = { y:2026, m:6 };               /* 보유 더미데이터 최소월(2026-07) */
+let viewYear = TODAY.y, viewMonth = TODAY.m;    /* 현재 조회중인 연/월(0-based) */
+const ymStr = (y,m)=> `${y}-${String(m+1).padStart(2,"0")}`;   /* "YYYY-MM" */
+/* 조회월 변경 진입점 — P1/P2 어디서 호출해도 양쪽이 함께 갱신된다(연동) */
+function setViewMonth(y,m){
+  /* 데이터 범위 클램프: DATA_MIN ~ TODAY 월까지만 이동 허용 */
+  const asIdx = yy => yy.y*12+yy.m;
+  const target = y*12+m, min = asIdx(DATA_MIN), max = asIdx(TODAY);
+  const clamped = Math.max(min, Math.min(max, target));
+  viewYear = Math.floor(clamped/12); viewMonth = clamped%12;
+  blotFilter = null;                            /* 월 바뀌면 종목필터 해제 */
+  renderCal();
+  renderBlotter();
+}
+function stepViewMonth(delta){ setViewMonth(viewYear, viewMonth+delta); }
+
+/* 캘린더 칩에 표시할 유형별 짧은 라벨.
+   · 비경쟁 I~IV → 로마숫자로 구분 (색상은 유형별 고정, 텍스트로 세부 구분)
+   · 매입/교환 → 색상만이 아니라 한글 라벨 명시
+   · 경쟁/개인투자용은 만기(mat)로 표기 */
+const CAL_LABEL = {
+  comp:r=>r.mat,
+  nc1:r=>"비경I",
+  nc2:r=>"비경II",
+  nc3:r=>"비경III",
+  nc4:r=>"비경IV",
+  bb:r=>"매입",
+  ex:r=>"교환"
+};
+
 /* ---------- P1 캘린더 ---------- */
 function renderCal(){
   const g = document.getElementById("calGrid");
+  const sub = document.getElementById("calSub");
+  if(sub) sub.textContent = ymStr(viewYear,viewMonth);
+  /* 조회월 네비게이터 활성/비활성 상태 갱신 (데이터 범위 경계) */
+  updateMonthNav();
+  /* 조회월에 해당하는 이벤트만 필터하여 일자별 그룹핑 */
+  const ymPrefix = ymStr(viewYear,viewMonth) + "-";     /* "YYYY-MM-" */
   const evByDay = {};
-  RESULTS.forEach(r=>{ const dd=parseInt(r.d.split("-")[1],10); (evByDay[dd]=evByDay[dd]||[]).push(r); });
+  RESULTS.filter(r=>r.d.startsWith(ymPrefix)).forEach(r=>{
+    const dd = parseInt(r.d.slice(8,10),10); (evByDay[dd]=evByDay[dd]||[]).push(r);
+  });
   let html = ["일","월","화","수","목","금","토"].map(w=>`<div class="cah">${w}</div>`).join("");
-  const firstDow = 2; /* 2026-09-01 = 화요일 */
+  /* 동적 계산: 해당 월 1일의 요일, 총 일수 */
+  const firstDow = new Date(viewYear, viewMonth, 1).getDay();       /* 0=일 … 6=토 */
+  const daysInMonth = new Date(viewYear, viewMonth+1, 0).getDate(); /* 말일 */
+  const isThisMonth = (viewYear===TODAY.y && viewMonth===TODAY.m);
   for(let i=0;i<firstDow;i++) html+=`<div class="cd oth"></div>`;
-  for(let day=1; day<=30; day++){
+  for(let day=1; day<=daysInMonth; day++){
     const evs = (evByDay[day]||[]);
-    const today = day===11? " today":"";
+    const today = (isThisMonth && day===TODAY.d)? " today":"";
     let cell = `<div class="cd${today}"><span class="dn">${day}</span>`;
     evs.forEach(r=>{
       const a=AT[r.t]; const w = Math.max(0.4, Math.min(1,(r.plan/24000)));
       const bg = {comp:"#1d3a5f",nc1:"#14321f",nc2:"#1a2e14",nc3:"#2e2414",nc4:"#2a1a2e",bb:"#3a1414",ex:"#14323a"}[r.t];
       const fg = {comp:"#93c5fd",nc1:"#86efac",nc2:"#bef264",nc3:"#fcd34d",nc4:"#f0abfc",bb:"#fca5a5",ex:"#67e8f9"}[r.t];
-      cell += `<span class="ev" style="background:${bg}; color:${fg}; width:${(w*100)|0}%" data-code="${r.code}" data-field="auc.schedule_cell" data-source="MOEF_KTB" data-freq="발행공고 T-3일" title="${a.ko} ${r.mat} ${r.seq} · ${fmt(r.plan)}억">${r.planned?"◇":"◆"}${r.mat}</span>`;
+      const label = CAL_LABEL[r.t](r);
+      cell += `<span class="ev" style="background:${bg}; color:${fg}; width:${(w*100)|0}%" data-code="${r.code}" data-field="auc.schedule_cell" data-source="MOEF_KTB" data-freq="발행공고 T-3일" title="${a.ko} ${r.mat} ${r.seq} · ${fmt(r.plan)}억">${r.planned?"◇":"◆"}${label}</span>`;
     });
     cell += `</div>`; html += cell;
   }
@@ -775,6 +875,14 @@ function renderCal(){
   }));
   markCalSelection();
 }
+/* 월 네비게이터(◀ ▶) 활성/비활성 — 데이터 범위 경계에서 disabled */
+function updateMonthNav(){
+  const idx = viewYear*12+viewMonth;
+  const min = DATA_MIN.y*12+DATA_MIN.m, max = TODAY.y*12+TODAY.m;
+  document.querySelectorAll(".mnav-prev").forEach(b=>b.classList.toggle("off", idx<=min));
+  document.querySelectorAll(".mnav-next").forEach(b=>b.classList.toggle("off", idx>=max));
+  document.querySelectorAll(".mnav-lbl").forEach(l=>l.textContent = ymStr(viewYear,viewMonth));
+}
 /* 현재 blotFilter 에 해당하는 캘린더 칩 하이라이트 (재렌더/토글 후 동기화) */
 function markCalSelection(){
   document.querySelectorAll("#calGrid .ev").forEach(el=>{
@@ -786,16 +894,18 @@ function markCalSelection(){
 function renderBlotter(codeFilter){
   const tb = document.getElementById("blotBody");
   tb.innerHTML = "";
-  RESULTS.filter(r=> activeTypes.has(r.t) && (!codeFilter || r.code===codeFilter)).forEach(r=>{
+  const ymPrefix = ymStr(viewYear,viewMonth) + "-";     /* 조회월 필터 (P1과 연동) */
+  RESULTS.filter(r=> r.d.startsWith(ymPrefix) && activeTypes.has(r.t) && (!codeFilter || r.code===codeFilter)).forEach(r=>{
     const a=AT[r.t];
     const btc = r.bid&&r.plan? (r.bid/r.plan):null;
     const status = r.planned? `<span class="badge plan">예정</span>` : r.est? `<span class="badge est">추정</span>` : "";
+    const mmdd = r.d.slice(5);                           /* "MM-DD" 표시 (연도는 헤더 조회월에 표기) */
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td class="l" data-field="auc.bid_date" data-source="MOEF_KTB" data-freq="발행공고 T-3일">${r.d} ${status}</td>
-      <td class="l" data-field="bond.isin" data-source="MOEF_KTB" data-freq="발행공고 T-3일">${r.code}</td>
-      <td class="l" data-field="bond.name" data-source="MOEF_KTB" data-freq="발행공고 T-3일" style="max-width:150px;overflow:hidden;text-overflow:ellipsis">${r.nm}</td>
-      <td data-field="bond.maturity" data-source="MOEF_KTB" data-freq="발행공고 T-3일">${r.mat}</td>
+      <td class="l stick stick-1" data-field="auc.bid_date" data-source="MOEF_KTB" data-freq="발행공고 T-3일">${mmdd} ${status}</td>
+      <td class="l stick stick-2" data-field="bond.isin" data-source="MOEF_KTB" data-freq="발행공고 T-3일">${r.code}</td>
+      <td class="l stick stick-3" data-field="bond.name" data-source="MOEF_KTB" data-freq="발행공고 T-3일">${r.nm}</td>
+      <td class="stick stick-4" data-field="bond.maturity" data-source="MOEF_KTB" data-freq="발행공고 T-3일">${r.mat}</td>
       <td data-field="auc.tranche" data-source="MOEF_KTB" data-freq="발행공고 T-3일">${r.seq}</td>
       <td class="l"><span class="at ${a.cls}" data-field="auc.type" data-source="MOEF_KTB" data-freq="발행공고 T-3일">${a.short}</span></td>
       <td data-field="auc.plan_amt" data-source="MOEF_KTB" data-freq="발행공고 T-3일">${fmt(r.plan)}</td>
@@ -807,7 +917,6 @@ function renderBlotter(codeFilter){
       <td data-field="auc.tail" data-source="DERIVED" data-freq="입찰일 T+0 16:00">${(r.hi!=null&&r.wavg!=null)?((r.hi-r.wavg)*100).toFixed(1):"—"}</td>
       <td data-field="auc.spread_vs_mts" data-source="DERIVED" data-freq="입찰일 T+0 16:00" class="${sprCls(r.spr)}">${r.spr!=null?(r.spr>0?"+":"")+r.spr.toFixed(1):"—"}</td>
       <td data-field="auc.noncomp_amt" data-source="MOEF_KTB" data-freq="입찰일 T+1">${r.nc?fmt(r.nc):"—"}</td>
-      <td data-field="auc.pd_count" data-source="MOEF_KTB" data-freq="입찰일 T+0 16:00">${r.pd||"—"}</td>
       <td class="l" data-field="auc.pay_date" data-source="MOEF_KTB" data-freq="발행공고 T-3일">${r.pay}</td>`;
     if(!r.planned) tr.style.cursor="pointer", tr.addEventListener("click",()=>{document.querySelectorAll("#blotBody tr").forEach(x=>x.classList.remove("sel"));tr.classList.add("sel");renderP3(r);});
     tb.appendChild(tr);
@@ -1618,6 +1727,8 @@ document.getElementById("typeFilter").addEventListener("click",e=>{const c=e.tar
 document.getElementById("heatToggle").addEventListener("click",e=>{const c=e.target.closest(".chip");if(!c)return;document.querySelectorAll("#heatToggle .chip").forEach(x=>x.classList.remove("on"));c.classList.add("on");heatMetric=c.dataset.m;renderHeat();});
 document.addEventListener("click",e=>{const c=e.target.closest("#dmdToggle .chip");if(!c)return;document.querySelectorAll("#dmdToggle .chip").forEach(x=>x.classList.remove("on"));c.classList.add("on");dmdMetric=c.dataset.m;renderDMDHeat();});
 document.getElementById("codeInput").addEventListener("keydown",e=>{if(e.key==="Enter"){const v=e.target.value.trim().toUpperCase().replace("KTB ","").replace("/","");const map={AUC:"auc",RES:"res",DMD:"dmd",PLAN:"plan","SD":"sd","S/D":"sd","S":"sd",PD:"pd"};if(map[v])switchScreen(map[v]);}});
+/* 월 네비게이터: P1·P2 어느 쪽 버튼을 눌러도 stepViewMonth()가 양쪽을 동시 재렌더 → 조회월 연동 */
+document.addEventListener("click",e=>{if(e.target.closest(".mnav-prev")){stepViewMonth(-1);}else if(e.target.closest(".mnav-next")){stepViewMonth(1);}});
 
 /* ---------- init ---------- */
 renderCal(); renderBlotter(); renderHeat(); renderP5(); renderWF();
