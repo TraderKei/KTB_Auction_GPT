@@ -118,6 +118,14 @@ a{color:var(--accent); text-decoration:none}
 .mnav button:hover{color:var(--tx); border-color:var(--accent)}
 .mnav button.off{opacity:0.3; cursor:default; pointer-events:none}
 .mnav .mnav-lbl{font-family:var(--mono); font-size:10px; color:var(--tx); min-width:52px; text-align:center}
+/* ---- 기간 범위 선택기 (D1·SD1 시작월/종료월) ---- */
+.p-head .rangesel{margin-left:auto; display:flex; align-items:center; gap:4px}
+.p-head .rangesel+.p-sub{margin-left:8px}
+.rangesel .rs-lbl{font-size:9px; color:var(--tx-dim); text-transform:uppercase; letter-spacing:0.05em}
+.rangesel select{background:var(--bg-2); border:1px solid var(--bd-2); color:var(--tx); font-family:var(--mono);
+  font-size:10px; padding:2px 4px; border-radius:2px; cursor:pointer; outline:none}
+.rangesel select:hover{border-color:var(--accent)}
+.rangesel .rs-tilde{color:var(--tx-dim); font-size:10px}
 .p-body{padding:8px 10px; overflow:auto; flex:1}
 
 /* ---- Tables ---- */
@@ -666,49 +674,74 @@ const PLAN_GROUP_CMP = [
   {grp:"장기", iss25:86.0, iss26:79.0, net25:83.3, net26:69.7}
 ];
 
-/* FY25 그룹 실적 비중(공표) vs FY26 그룹 비중계획(공표)을 그룹 레벨에서 비교.
-   KTBi 는 그룹 비중 공표 대상이 아니므로 그룹 비교에서 제외(만기별 상세는 별도 유지). */
-function planGroupMix(){
+/* ── PL1 연도 선택 (P1 참고) — 연도별 그룹 비중·금액 데이터 ───────────────────────
+   PL1은 (선택연도-1) vs (선택연도) 두 해를 그룹 레벨에서 비교한다. 연도 네비게이터(◀ ▶)로
+   선택연도(cy)를 이동하며, 비교 기준연도(py=cy-1)는 자동 결정된다. 모두 더미데이터.
+   각 연도: mix(그룹 발행실적/계획 비중 %), amt(그룹 총발행 조원), net(그룹 순증 조원),
+            total(총 발행한도 조원), planned(true=비중계획 공표연도 → EST 금액 역산 / false=실적 확정). */
+const PLAN_YEAR_DATA = {
+  2024: { mix:{"단기":32.4,"중기":28.9,"장기":38.7}, amt:{"단기":66.0,"중기":61.5,"장기":82.0}, net:{"단기":19.5,"중기":4.8,"장기":80.1}, total:209.5, planned:false, tol:0 },
+  2025: { mix:{"단기":31.6,"중기":29.8,"장기":38.6}, amt:{"단기":71.0,"중기":66.0,"장기":86.0}, net:{"단기":22.7,"중기":6.3, "장기":83.3}, total:223.0, planned:false, tol:0 },
+  2026: { mix:{"단기":35,  "중기":30,  "장기":35},   amt:{"단기":79.0,"중기":67.7,"장기":79.0}, net:{"단기":38.8,"중기":13.7,"장기":69.7}, total:225.7, planned:true,  tol:5 }
+};
+const PLAN_YEARS = Object.keys(PLAN_YEAR_DATA).map(Number).sort();   /* [2024,2025,2026] */
+let planCurYear = 2026;              /* PL1 선택연도(당해). py=선택연도-1 */
+let planViewMonth = PLAN_CUR_MONTH;  /* PL2 조회월(0-based). 기본 2026-09 */
+let planCharts = [];                 /* PL2 차트 인스턴스(재렌더 시 destroy) */
+
+/* 전년(py=선택연도-1) 그룹 실적 비중 vs 당해(cy=선택연도) 그룹 비중을 그룹 레벨에서 비교.
+   KTBi 는 그룹 비중 공표 대상이 아니므로 그룹 비교에서 제외(만기별 상세는 별도 유지).
+   yr 생략 시 PL1 선택연도(planCurYear) 사용 → 연도 네비게이터와 연동.
+   반환 필드명(fy25·fy26 계열)은 '전년/당해' 의미로 유지 → 렌더 템플릿 재작성 최소화. */
+function planGroupMix(yr){
+  const cy = yr==null ? planCurYear : yr;
+  const py = cy-1;
+  const cyD = PLAN_YEAR_DATA[cy], pyD = PLAN_YEAR_DATA[py];
+  const cyTotal = cyD.total;
   const rows = PLAN_GROUPS.map(g=>{
-    const fy25Pct = PLAN_FY25_MIX_ACT[g];      /* 공표 실적 비중 */
-    const mix = PLAN_FY26_MIX.find(m=>m.grp===g);
-    const fy26Pct = mix.tgt;
-    const cmp = PLAN_GROUP_CMP.find(c=>c.grp===g);
-    /* FY26 그룹 금액은 공표 비중 × 총한도로 역산한 추정치(EST) */
-    const fy26AmtEst = PLAN_FY26_TOTAL * fy26Pct/100;
+    const fy25Pct = pyD.mix[g];                 /* 전년 그룹 비중(공표 실적) */
+    const fy26Pct = cyD.mix[g];                 /* 당해 그룹 비중 */
+    /* 당해 그룹 금액: 계획공표연도(planned=true)면 비중×총한도 역산 추정(EST), 아니면 확정 실적 */
+    const fy26AmtEst = cyD.planned ? cyTotal * fy26Pct/100 : cyD.amt[g];
     return {
       grp:g,
       mats: GROUP_MATS_LBL[g],
-      fy25Amt: cmp.iss25,                       /* 첨부표 FY25 발행 실적 금액 */
+      fy25Amt:+pyD.amt[g].toFixed(1),           /* 전년 발행 실적 금액 */
       fy25Pct:+fy25Pct.toFixed(1),
-      fy26Pct,
-      fy26Tol: mix.tol,
+      fy26Pct:+fy26Pct.toFixed(1),
+      fy26Tol: cyD.tol,
       fy26AmtEst:+fy26AmtEst.toFixed(1),
       dPct:+(fy26Pct-fy25Pct).toFixed(1)        /* 비중 이동 Δ%p */
     };
   });
-  const fy25GrpTotal = +PLAN_GROUP_CMP.reduce((s,c)=>s+c.iss25,0).toFixed(1);
-  return {rows, fy25GrpTotal};
+  const fy25GrpTotal = +PLAN_GROUPS.reduce((s,g)=>s+pyD.amt[g],0).toFixed(1);
+  return {rows, fy25GrpTotal, cy, py, cyTotal, cyPlanned:cyD.planned};
 }
 
-/* 그룹별 발행·순증 연도 비교 파생 (발행증감·순증증감 = FY26 − FY25) */
-function planGroupCmp(){
-  const rows = PLAN_GROUP_CMP.map(c=>({
-    grp:c.grp, mats:GROUP_MATS_LBL[c.grp],
-    iss25:c.iss25, iss26:c.iss26, issD:+(c.iss26-c.iss25).toFixed(1),
-    net25:c.net25, net26:c.net26, netD:+(c.net26-c.net25).toFixed(1)
+/* 그룹별 발행·순증 연도 비교 파생 (발행증감·순증증감 = 당해 − 전년).
+   yr 생략 시 planCurYear 사용. */
+function planGroupCmp(yr){
+  const cy = yr==null ? planCurYear : yr;
+  const py = cy-1;
+  const cyD = PLAN_YEAR_DATA[cy], pyD = PLAN_YEAR_DATA[py];
+  const rows = PLAN_GROUPS.map(g=>({
+    grp:g, mats:GROUP_MATS_LBL[g],
+    iss25:+pyD.amt[g].toFixed(1), iss26:+cyD.amt[g].toFixed(1), issD:+(cyD.amt[g]-pyD.amt[g]).toFixed(1),
+    net25:+pyD.net[g].toFixed(1), net26:+cyD.net[g].toFixed(1), netD:+(cyD.net[g]-pyD.net[g]).toFixed(1)
   }));
-  const tot = k => +PLAN_GROUP_CMP.reduce((s,c)=>s+c[k],0).toFixed(1);
+  const totP = k => +PLAN_GROUPS.reduce((s,g)=>s+pyD[k][g],0).toFixed(1);
+  const totC = k => +PLAN_GROUPS.reduce((s,g)=>s+cyD[k][g],0).toFixed(1);
   return {
-    rows,
-    iss25T:tot("iss25"), iss26T:tot("iss26"), issDT:+(tot("iss26")-tot("iss25")).toFixed(1),
-    net25T:tot("net25"), net26T:tot("net26"), netDT:+(tot("net26")-tot("net25")).toFixed(1)
+    rows, cy, py, cyPlanned:cyD.planned,
+    iss25T:totP("amt"), iss26T:totC("amt"), issDT:+(totC("amt")-totP("amt")).toFixed(1),
+    net25T:totP("net"), net26T:totC("net"), netDT:+(totC("net")-totP("net")).toFixed(1)
   };
 }
 
-/* 발행계획 증감 파생 계산기 — 만기별 YoY(연간)·동월YoY·YTD누적YoY·당월MoM 산출 */
-function planDeltas(){
-  const cm = PLAN_CUR_MONTH;
+/* 발행계획 증감 파생 계산기 — 만기별 YoY(연간)·동월YoY·YTD누적YoY·당월MoM 산출.
+   cmArg: 기준월(0-based). 생략 시 PL2 조회월(planViewMonth) 사용 → 월 네비게이터와 연동. */
+function planDeltas(cmArg){
+  const cm = cmArg==null ? planViewMonth : cmArg;
   return PLAN_MATS.map(mat=>{
     const yy = PLAN_YOY.find(p=>p.mat===mat);
     const s  = PLAN_MONTHLY[mat];
@@ -772,7 +805,39 @@ const SD_SERIES = {
   labels:["25-10","25-11","25-12","26-01","26-02","26-03","26-04","26-05","26-06","26-07","26-08","26-09"],
   issue:[14.8,13.2,9.6,16.4,14.1,15.8,13.9,14.6,15.2,13.4,14.9,15.2],
   redeem:[6.2,5.8,4.1,9.4,6.0,7.2,5.5,6.8,7.4,5.2,6.6,7.1],
-  buyback:[1.0,1.2,0.6,1.5,1.1,1.4,1.0,1.2,1.3,0.9,1.1,1.3]
+  buyback:[1.0,1.2,0.6,1.5,1.1,1.4,1.0,1.2,1.3,0.9,1.1,1.3],
+  exchange:[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]  /* 교환 순증감(±) 월별 */
+};
+
+/* ── R3 동일 만기 최근 6개월 추이 (월별 지표물 경쟁입찰 회차 집계, 더미데이터) ──────
+   각 만기별로 12개월(25-10~26-09) 응찰률(btc,배)·테일(tail,bp)·민평대비(spr,bp) 시계열.
+   R3 스파크라인은 이 중 선택 종목의 만기 × 최근 6개월(선택월 기준) 구간을 잘라 그린다.
+   최근 3개월(07~09)은 RESULTS 실측 회차와 정합하도록 tail 근사값을 맞췄다. 단위: 배/bp. */
+const MAT_MONTH_LABELS = ["25-10","25-11","25-12","26-01","26-02","26-03","26-04","26-05","26-06","26-07","26-08","26-09"];
+const MAT_MONTHLY_TREND = {
+  "2Y":  { btc:[3.0,3.1,2.9,3.2,3.1,3.3,3.2,3.4,3.3,3.3,3.3,3.5], tail:[1.0,0.9,1.1,0.8,0.9,0.7,0.7,0.6,0.6,0.5,0.5,0.4], spr:[-0.4,-0.5,-0.3,-0.6,-0.5,-0.7,-0.6,-0.8,-0.7,-0.9,-0.7,-0.9] },
+  "3Y":  { btc:[3.1,3.2,3.0,3.3,3.2,3.4,3.3,3.4,3.4,3.2,3.3,3.4], tail:[0.9,1.0,1.1,0.8,0.9,0.7,0.8,0.7,0.7,0.9,0.6,0.6], spr:[-0.6,-0.7,-0.5,-0.8,-0.7,-0.9,-0.8,-1.0,-1.1,-1.0,-1.3,-1.2] },
+  "5Y":  { btc:[3.1,3.2,3.0,3.3,3.4,3.5,3.4,3.6,3.5,3.2,3.4,3.5], tail:[1.1,1.0,1.2,0.9,0.7,0.6,0.7,0.5,0.6,1.1,0.9,0.6], spr:[-0.6,-0.8,-0.5,-1.0,-1.1,-1.3,-1.2,-1.5,-1.4,-1.1,-1.3,-1.5] },
+  "10Y": { btc:[3.4,3.3,3.5,3.2,3.1,3.0,3.1,2.9,3.0,3.0,3.0,2.9], tail:[0.6,0.7,0.5,0.9,1.2,1.5,1.7,1.9,2.1,2.3,2.6,2.8], spr:[-1.2,-1.0,-1.3,-0.6,-0.3,0.1,0.3,0.5,0.6,0.3,0.6,0.6] },
+  "20Y": { btc:[2.5,2.6,2.4,2.6,2.5,2.5,2.6,2.4,2.5,2.6,2.6,2.5], tail:[1.5,1.6,1.4,1.7,1.8,2.0,1.9,2.1,2.0,1.8,1.9,2.0], spr:[0.3,0.4,0.2,0.5,0.6,0.8,0.7,0.9,0.6,0.9,0.2,0.4] },
+  "30Y": { btc:[2.3,2.4,2.2,2.4,2.3,2.4,2.3,2.3,2.4,2.4,2.4,2.4], tail:[2.2,2.3,2.1,2.4,2.3,2.5,2.6,2.7,2.8,3.1,2.9,3.0], spr:[0.9,1.0,0.8,1.1,1.0,1.2,1.3,1.4,1.3,0.9,1.5,1.1] },
+  "50Y": { btc:[2.4,2.5,2.3,2.5,2.4,2.5,2.4,2.4,2.5,2.5,2.5,2.4], tail:[1.8,1.9,1.7,2.0,2.1,2.2,2.1,2.3,2.2,1.8,2.2,2.4], spr:[0.6,0.7,0.5,0.8,0.9,1.0,0.9,1.1,1.0,0.6,1.0,1.2] },
+  "KTBi":{ btc:[1.6,1.5,1.4,1.6,1.5,1.5,1.4,1.4,1.5,1.6,1.5,1.4], tail:[3.5,3.6,3.4,3.7,3.8,3.9,4.0,4.1,4.0,3.5,3.8,4.1], spr:[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0] }
+};
+
+/* ── D1/D2 만기별 월간 수요강도 스코어 시계열 (0~100, 高=강세, 더미데이터) ──────────
+   HEAT.score(회차 기준)를 월(25-10~26-09) 축으로 재구성. D1 라인차트·D2 히트맵이 공유하며
+   시작월/종료월 선택 구간으로 슬라이싱한다. 10Y는 3개월째 약화 스토리 유지. */
+const DMD_MONTH_LABELS = ["25-10","25-11","25-12","26-01","26-02","26-03","26-04","26-05","26-06","26-07","26-08","26-09"];
+const DMD_MONTHLY_SCORE = {
+  "2Y":  [60,62,59,63,64,66,65,67,66,69,71,74],
+  "3Y":  [63,64,62,65,66,66,67,68,69,70,72,73],
+  "5Y":  [61,63,60,64,67,69,68,72,71,73,74,76],
+  "10Y": [70,72,69,66,64,61,60,57,55,53,50,47],   /* 10Y 수요 지속 약화 */
+  "20Y": [54,55,53,54,52,53,51,50,52,50,51,50],
+  "30Y": [47,48,46,47,49,47,46,45,44,43,44,42],
+  "50Y": [51,52,50,51,52,50,49,48,50,49,48,47],
+  "KTBi":[44,43,45,44,42,43,41,40,42,41,40,40]
 };
 
 /* ---------- 유틸 ---------- */
@@ -879,9 +944,9 @@ function renderCal(){
 function updateMonthNav(){
   const idx = viewYear*12+viewMonth;
   const min = DATA_MIN.y*12+DATA_MIN.m, max = TODAY.y*12+TODAY.m;
-  document.querySelectorAll(".mnav-prev").forEach(b=>b.classList.toggle("off", idx<=min));
-  document.querySelectorAll(".mnav-next").forEach(b=>b.classList.toggle("off", idx>=max));
-  document.querySelectorAll(".mnav-lbl").forEach(l=>l.textContent = ymStr(viewYear,viewMonth));
+  document.querySelectorAll("#scr-auc .mnav-prev").forEach(b=>b.classList.toggle("off", idx<=min));
+  document.querySelectorAll("#scr-auc .mnav-next").forEach(b=>b.classList.toggle("off", idx>=max));
+  document.querySelectorAll("#scr-auc .mnav-lbl").forEach(l=>l.textContent = ymStr(viewYear,viewMonth));
 }
 /* 현재 blotFilter 에 해당하는 캘린더 칩 하이라이트 (재렌더/토글 후 동기화) */
 function markCalSelection(){
@@ -1112,16 +1177,22 @@ function kpiSpark(id,arr,color){
 }
 
 /* ---------- 나머지 탭 렌더 ---------- */
+/* R1 조회월 상태 — RESULTS 에 존재하는 월 목록(오름차순) 중 현재 선택 인덱스.
+   ◀ ▶ 로 월 이동, 선택 월의 경쟁입찰(comp) 낙찰분만 드릴다운에 표시. */
+const RES_MONTHS = [...new Set(RESULTS.map(r=>r.d.slice(0,7)))].sort();  /* ["2026-07","2026-08","2026-09"] */
+let resMonthIdx = RES_MONTHS.length-1;   /* 기본: 최신월(2026-09) */
 function renderRES(){
-  const compRows = RESULTS.filter(x=>x.t==="comp"&&!x.planned&&x.hi!=null);
+  const allComp = RESULTS.filter(x=>x.t==="comp"&&!x.planned&&x.hi!=null);
   /* R2 OHLC 공통 스케일: comp 전체에서 가장 큰 (최고−최저) 범위를 기준으로 정규화 →
      범위(테일)가 큰 입찰일수록 캔들이 길게 보인다. 범위 = 공시 (최고−최저) 낙찰금리. */
-  r2MaxRangeBp = Math.max(...compRows.map(x=>x.lo!=null?(x.hi-x.lo)*100:(x.hi-x.wavg)*1.5*100)) || 3;
+  r2MaxRangeBp = Math.max(...allComp.map(x=>x.lo!=null?(x.hi-x.lo)*100:(x.hi-x.wavg)*1.5*100)) || 3;
   document.getElementById("scr-res").innerHTML = `
   <div class="qbanner"><span class="qtag">KTB RES</span><b>이 화면이 답하는 질문:</b> 특정 종목·차수 입찰이 어떤 금리 구조로 낙찰됐고, 직전 회차 대비 수요가 어떻게 바뀌었는가?</div>
   <div class="grid3" style="grid-template-columns:38% 34% 28%; height:720px">
     <div class="panel">
-      <div class="p-head"><span class="p-code">R1</span><h3>종목·차수 드릴다운</h3><span class="p-sub">행 클릭 → 상세 · 헤더 더블클릭 → 정렬</span></div>
+      <div class="p-head"><span class="p-code">R1</span><h3>종목·차수 드릴다운</h3>
+        <span class="mnav"><button class="res-mnav-prev" title="이전 월">◀</button><span class="res-mnav-lbl mnav-lbl">2026-09</span><button class="res-mnav-next" title="다음 월">▶</button></span>
+        <span class="p-sub" style="margin-left:8px" id="resDrillSub">행 클릭 → 상세 · 헤더 더블클릭 → 정렬</span></div>
       <div class="p-body" style="padding:0">
         <table class="blot sortable" id="resDrill"><thead><tr>
           <th data-key="d">입찰일</th>
@@ -1140,15 +1211,17 @@ function renderRES(){
       <div class="p-body" id="r2body"></div>
     </div>
     <div class="panel">
-      <div class="p-head"><span class="p-code">R3</span><h3>회차별 시계열</h3><span class="p-sub">최근 6회</span></div>
+      <div class="p-head"><span class="p-code">R3</span><h3>동일 만기 최근 6개월 추이</h3><span class="p-sub" id="r3Sub">최근 6개월</span></div>
       <div class="p-body">
-        <div class="section-title">응찰률 Bid-to-Cover</div><canvas id="resBTC" width="330" height="90"></canvas>
+        <div class="section-title">응찰률 Bid-to-Cover <span class="dim" id="r3btcSub"></span></div><canvas id="resBTC" width="330" height="90"></canvas>
         <div class="section-title" style="margin-top:10px">테일 Tail (bp)</div><canvas id="resTail" width="330" height="90"></canvas>
         <div class="section-title" style="margin-top:10px">민평대비 스프레드 (bp)</div><canvas id="resSpr" width="330" height="90"></canvas>
-        <div class="dim" style="font-size:9px;margin-top:8px"><span class="badge conf">확정</span> 응찰률·낙찰금리는 한은/기재부 공시 · <span class="badge est">추정</span> 구간분포·옵션한도는 미공시 추정</div>
+        <div class="dim" style="font-size:9px;margin-top:8px"><span class="badge conf">확정</span> 응찰률·낙찰금리는 한은/기재부 공시 · 같은 만기 지표물 경쟁입찰 월별 추이(선택 종목 만기 기준)</div>
       </div>
     </div>
   </div>`;
+  /* 선택 월의 comp 낙찰분 (드릴다운 대상) */
+  let compRows = allComp.filter(x=>x.d.slice(0,7)===RES_MONTHS[resMonthIdx]);
   const tb = document.getElementById("resDrill");
   /* 열 정의: key → {정렬값 추출, 셀 HTML} · 문자열 열은 localeCompare, 숫자 열은 수치 비교 */
   const colDefs = {
@@ -1174,6 +1247,10 @@ function renderRES(){
   }
   function renderBody(){
     const body = document.getElementById("resDrillBody");
+    if(!compRows.length){
+      body.innerHTML = `<tr><td class="l" colspan="8" style="padding:14px;color:var(--tx-dim)">해당 월 경쟁입찰 낙찰 데이터 없음</td></tr>`;
+      return;
+    }
     const rows = sortedRows();
     body.innerHTML = rows.map(x=>{
       const i = compRows.indexOf(x);
@@ -1197,8 +1274,22 @@ function renderRES(){
     th.classList.add(sortState.dir>0?"sort-asc":"sort-desc");
     renderBody();
   }));
-  renderBody();
-  renderR2(compRows[0]);
+  /* R1 월 네비게이터 상태 갱신 + 선택 월 데이터 재적용 */
+  function applyResMonth(){
+    compRows = allComp.filter(x=>x.d.slice(0,7)===RES_MONTHS[resMonthIdx]);
+    selIdx = 0;
+    const lbl = document.querySelector(".res-mnav-lbl");
+    if(lbl) lbl.textContent = RES_MONTHS[resMonthIdx];
+    document.querySelector(".res-mnav-prev")?.classList.toggle("off", resMonthIdx<=0);
+    document.querySelector(".res-mnav-next")?.classList.toggle("off", resMonthIdx>=RES_MONTHS.length-1);
+    renderBody();
+    if(compRows.length) renderR2(compRows[0]);
+    else { document.getElementById("r2body").innerHTML = '<div class="dim" style="padding:14px">선택 월 데이터 없음</div>'; document.getElementById("r2Sub").textContent=""; }
+  }
+  /* R1 월 이동 버튼 바인딩 (P1/P2 글로벌 mnav 와 클래스 분리) */
+  document.querySelector(".res-mnav-prev")?.addEventListener("click",()=>{ if(resMonthIdx>0){resMonthIdx--; applyResMonth();} });
+  document.querySelector(".res-mnav-next")?.addEventListener("click",()=>{ if(resMonthIdx<RES_MONTHS.length-1){resMonthIdx++; applyResMonth();} });
+  applyResMonth();
 }
 function renderR2(r){
   document.getElementById("r2Sub").textContent = `${r.code} ${r.seq}`;
@@ -1302,12 +1393,32 @@ function drawR2OHLC({lo,wavg,hi,tail,lowIsEst}){
 function drawResSeries(r){
   if(typeof Chart==="undefined")return;
   const mk=(id,ref,cfg)=>{const el=document.getElementById(id);if(!el)return null;if(ref)ref.destroy();return new Chart(el,cfg);};
-  const seq=["회차-5","-4","-3","-2","-1","최근"];
+  /* R3 = 선택 종목의 만기(mat) 동일 지표물의 '최근 6개월' 추이.
+     선택 입찰의 월(r.d 의 YYYY-MM)을 6개월 창의 끝점으로 삼아 MAT_MONTHLY_TREND 를 슬라이스. */
+  const S = MAT_MONTHLY_TREND[r.mat];
+  const r3Sub = document.getElementById("r3Sub");
+  const r3btcSub = document.getElementById("r3btcSub");
+  if(!S){
+    [resBTCRef,resTailRef,resSprRef]=[resBTCRef,resTailRef,resSprRef].map(ref=>{if(ref)ref.destroy();return null;});
+    if(r3Sub) r3Sub.textContent = `${r.mat} · 추이 데이터 없음`;
+    if(r3btcSub) r3btcSub.textContent = "";
+    return;
+  }
+  const ym = r.d.slice(0,7);                                  /* "YYYY-MM" */
+  const endIdx = Math.max(0, MAT_MONTH_LABELS.indexOf(ym.slice(2)));  /* "YY-MM" 라벨 인덱스 */
+  const startIdx = Math.max(0, endIdx-5);                     /* 최근 6개월 창 시작 */
+  const labels = MAT_MONTH_LABELS.slice(startIdx, endIdx+1);
+  const btcArr = S.btc.slice(startIdx, endIdx+1);
+  const tailArr= S.tail.slice(startIdx, endIdx+1);
+  const sprArr = S.spr.slice(startIdx, endIdx+1);
+  /* 선택 회차(마지막 = 현재월) 강조용 포인트 반경 */
+  const ptR = labels.map((_,i)=> i===labels.length-1 ? 4 : 2);
+  if(r3Sub) r3Sub.textContent = `${r.mat} · ${labels[0]}~${labels[labels.length-1]} (${labels.length}개월)`;
+  if(r3btcSub) r3btcSub.textContent = `${r.mat} 지표물`;
   const opt={responsive:false,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:"#5c6675",font:{size:8}},grid:{color:"#1a2029"}},y:{ticks:{color:"#5c6675",font:{size:9}},grid:{color:"#1a2029"}}}};
-  const btc=+(r.bid/r.plan).toFixed(1), tail=+((r.hi-r.wavg)*100).toFixed(1), spr=r.spr;
-  resBTCRef=mk("resBTC",resBTCRef,{type:"line",data:{labels:seq,datasets:[{data:[btc+0.6,btc+0.5,btc+0.3,btc+0.3,btc+0.1,btc],borderColor:"#3b82f6",backgroundColor:"rgba(59,130,246,.1)",tension:.3,pointRadius:2,fill:true}]},options:opt});
-  resTailRef=mk("resTail",resTailRef,{type:"line",data:{labels:seq,datasets:[{data:[Math.max(0,tail-1.2),Math.max(0,tail-1.0),Math.max(0,tail-0.6),Math.max(0,tail-0.4),Math.max(0,tail-0.1),tail],borderColor:"#ef4444",tension:.3,pointRadius:2}]},options:opt});
-  resSprRef=mk("resSpr",resSprRef,{type:"bar",data:{labels:seq,datasets:[{data:[spr-0.6,spr-0.4,spr-0.2,spr-0.1,spr-0.05,spr].map(v=>+v.toFixed(2)),backgroundColor:[spr-0.6,spr-0.4,spr-0.2,spr-0.1,spr-0.05,spr].map(v=>v<0?"#22c55e":"#ef4444")}]},options:opt});
+  resBTCRef=mk("resBTC",resBTCRef,{type:"line",data:{labels,datasets:[{data:btcArr,borderColor:"#3b82f6",backgroundColor:"rgba(59,130,246,.1)",tension:.3,pointRadius:ptR,pointBackgroundColor:"#3b82f6",fill:true}]},options:opt});
+  resTailRef=mk("resTail",resTailRef,{type:"line",data:{labels,datasets:[{data:tailArr,borderColor:"#ef4444",tension:.3,pointRadius:ptR,pointBackgroundColor:"#ef4444"}]},options:opt});
+  resSprRef=mk("resSpr",resSprRef,{type:"bar",data:{labels,datasets:[{data:sprArr,backgroundColor:sprArr.map(v=>v<0?"#22c55e":"#ef4444")}]},options:opt});
 }
 let resBTCRef=null,resTailRef=null,resSprRef=null;
 /* OHLC 공통 스케일 기준: comp 전체 최대 (최고−최저) 범위(bp). 모듈 로드 시 RESULTS로 1회 계산 →
@@ -1316,12 +1427,37 @@ let r2MaxRangeBp = (()=>{
   const rows = RESULTS.filter(x=>x.t==="comp"&&!x.planned&&x.hi!=null);
   return Math.max(...rows.map(x=>x.lo!=null?(x.hi-x.lo)*100:(x.hi-x.wavg)*1.5*100)) || 3;
 })();
+/* ── D1/D2 기간 선택 상태 ─────────────────────────────────────────────
+   DMD_MONTH_LABELS(12개월) 위에서 시작월~종료월 인덱스로 구간 선택.
+   D1 라인차트와 D2 히트맵이 이 구간을 공유한다. D2는 Max 열수(DMD_HEAT_MAX)를 넘으면
+   가장 최근 Max개월만 표시한다. */
+const DMD_HEAT_MAX = 8;               /* D2 히트맵 최대 표시 개월(열) */
+let dmdStartIdx = 0;                  /* 기본: 전체 구간(25-10 ~ 26-09) */
+let dmdEndIdx = DMD_MONTH_LABELS.length-1;
+let dmdTrendRef = null;               /* D1 Chart 인스턴스(재렌더 시 destroy) */
+const DMD_TREND_MATS = ["2Y","3Y","5Y","10Y","20Y","30Y"];
+/* ── SD1/SD2 기간·선택월 상태 ─────────────────────────────────────────
+   SD_SERIES.labels(12개월) 위에서 시작월~종료월 인덱스로 SD1 시계열 구간 선택.
+   SD2 워터폴은 SD1 구간 내 '선택월'(sdSelIdx)의 발행/상환/바이백/교환으로 동적 구성.
+   차트의 월 막대를 클릭하면 sdSelIdx 가 그 월로 바뀌고 SD2 가 재렌더된다. */
+let sdStartIdx = 0;                        /* 기본: 전체 구간(25-10 ~ 26-09) */
+let sdEndIdx = SD_SERIES.labels.length-1;
+let sdSelIdx = SD_SERIES.labels.length-1;  /* SD2 대상 월(기본 최신월 26-09) */
+let sdChartRef = null;                     /* SD1 Chart 인스턴스(재렌더 시 destroy) */
 function renderDMD(){
+  const opts = DMD_MONTH_LABELS.map((l,i)=>`<option value="${i}">${l}</option>`).join("");
   document.getElementById("scr-dmd").innerHTML = `
-  <div class="qbanner"><span class="qtag">KTB DMD</span><b>이 화면이 답하는 질문:</b> 어느 만기의 수요가 강해지고 약해지는가? (10Y 수요가 3개월째 약화되는 추세를 포착)</div>
+  <div class="qbanner"><span class="qtag">KTB DMD</span><b>이 화면이 답하는 질문:</b> 어느 만기의 수요가 강해지고 약해지는가? (선택 기간의 만기별 수요강도 추이·히트맵)</div>
   <div class="grid3" style="grid-template-columns:60% 40%; height:720px">
     <div class="panel">
-      <div class="p-head"><span class="p-code">D1</span><h3>수요강도 종합 트렌드</h3><span class="p-sub">만기별 스코어 추이 (0~100, 高=강세)</span></div>
+      <div class="p-head"><span class="p-code">D1</span><h3>수요강도 종합 트렌드</h3>
+        <span class="rangesel">
+          <span class="rs-lbl">기간</span>
+          <select id="dmdStart">${opts}</select>
+          <span class="rs-tilde">~</span>
+          <select id="dmdEnd">${opts}</select>
+        </span>
+        <span class="p-sub" id="dmdRangeSub">만기별 스코어 추이 (0~100, 高=강세)</span></div>
       <div class="p-body"><canvas id="dmdTrend" width="820" height="360"></canvas>
         <div class="section-title" style="margin-top:12px">수요강도 스코어 산식</div>
         <div class="erd" style="font-size:10px">수요강도 = z(응찰률)×0.4 − z(테일)×0.3 − z(민평대비)×0.3  →  0~100 정규화
@@ -1329,18 +1465,38 @@ function renderDMD(){
       </div>
     </div>
     <div class="panel">
-      <div class="p-head"><span class="p-code">D2</span><h3>만기 × 회차 히트맵</h3>
-        <div class="toggles" id="dmdToggle"><span class="chip on" data-m="score">종합</span><span class="chip" data-m="btc">응찰률</span><span class="chip" data-m="tail">테일</span><span class="chip" data-m="spr">민평</span></div>
+      <div class="p-head"><span class="p-code">D2</span><h3>만기 × 월 히트맵</h3>
+        <span class="p-sub" id="dmdHeatSub"></span>
       </div>
       <div class="p-body"><div class="heat" id="dmdHeat"></div>
-        <div class="legend" style="margin-top:8px"><span><i style="background:var(--dmd-s2)"></i>강세</span><span><i style="background:var(--dmd-n)"></i>중립</span><span><i style="background:var(--dmd-w2)"></i>약세</span></div>
-        <div class="speccard" style="margin-top:12px">
-          <div class="section-title" style="margin:0 0 6px">⚑ 자동 포착된 스토리</div>
-          <div style="font-size:11px;line-height:1.5">10Y 지표물 수요강도가 <b class="up">71 → 47</b>로 3개월 연속 약화. 테일 <b class="up">0.6→2.8bp</b> 확대, 민평대비 <b class="up">−1.2→+1.0bp</b> 전환. 장기물 공급부담·금리 상방 압력 신호.</div>
-        </div>
+        <div class="legend" style="margin-top:8px"><span><i style="background:var(--dmd-s2)"></i>강세</span><span><i style="background:var(--dmd-n)"></i>중립</span><span><i style="background:var(--dmd-w2)"></i>약세</span><span class="dim" id="dmdHeatCap"></span></div>
       </div>
     </div>
   </div>`;
+  /* 셀렉트 초기값 반영 */
+  const selS = document.getElementById("dmdStart"), selE = document.getElementById("dmdEnd");
+  selS.value = dmdStartIdx; selE.value = dmdEndIdx;
+  const onChange = ()=>{
+    let s = +selS.value, e = +selE.value;
+    if(s>e){ /* 시작>종료면 자동 보정: 방금 바뀐 쪽 기준으로 스왑 */ [s,e]=[e,s]; selS.value=s; selE.value=e; }
+    dmdStartIdx = s; dmdEndIdx = e;
+    drawDMDTrend(); renderDMDHeat();
+  };
+  selS.addEventListener("change", onChange);
+  selE.addEventListener("change", onChange);
+}
+/* D1 라인차트 — 선택 구간(dmdStartIdx~dmdEndIdx)의 만기별 수요강도 스코어 */
+function drawDMDTrend(){
+  if(typeof Chart==="undefined")return;
+  const el = document.getElementById("dmdTrend"); if(!el) return;
+  const cols={ "2Y":"#67e8f9","3Y":"#86efac","5Y":"#bef264","10Y":"#3b82f6","20Y":"#f0abfc","30Y":"#fca5a5" };
+  const labels = DMD_MONTH_LABELS.slice(dmdStartIdx, dmdEndIdx+1);
+  const gopt={responsive:false,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{color:"#8a94a6",font:{size:9},boxWidth:8}}},
+    scales:{x:{ticks:{color:"#5c6675",font:{size:9}},grid:{color:"#1a2029"}},y:{ticks:{color:"#5c6675",font:{size:9}},grid:{color:"#1a2029"}}}};
+  if(dmdTrendRef) dmdTrendRef.destroy();
+  dmdTrendRef = new Chart(el,{type:"line",data:{labels,datasets:DMD_TREND_MATS.map(m=>({label:m,data:DMD_MONTHLY_SCORE[m].slice(dmdStartIdx,dmdEndIdx+1),borderColor:cols[m],backgroundColor:cols[m],tension:.3,pointRadius:2,borderWidth:m==="10Y"?2.5:1.3}))},options:gopt});
+  const sub = document.getElementById("dmdRangeSub");
+  if(sub) sub.textContent = `${labels[0]}~${labels[labels.length-1]} · ${labels.length}개월 (0~100, 高=강세)`;
 }
 function renderPLAN(){
   const D = planDeltas();
@@ -1357,8 +1513,8 @@ function renderPLAN(){
   const momoDT=momoCyT-momoPyT, momoDP=momoPyT?momoDT/momoPyT*100:0;
   const ytdDT=ytdCyT-ytdPyT, ytdDP=ytdPyT?ytdDT/ytdPyT*100:0;
   const momDT=momCurT-momPrevT, momDP=momPrevT?momDT/momPrevT*100:0;
-  const curLbl = PLAN_MONTH_LABELS[PLAN_CUR_MONTH];
-  const prevLbl= PLAN_CUR_MONTH===0 ? "전년12월" : PLAN_MONTH_LABELS[PLAN_CUR_MONTH-1];
+  const curLbl = PLAN_MONTH_LABELS[planViewMonth];
+  const prevLbl= planViewMonth===0 ? "전년12월" : PLAN_MONTH_LABELS[planViewMonth-1];
 
   /* 자동 포착 스토리: YoY·MoM 각각 최대 증가/감소 만기 */
   const topAnn = [...D].sort((a,b)=>b.ann.d-a.ann.d);
@@ -1372,6 +1528,13 @@ function renderPLAN(){
   const maxAbsShift = Math.max(...GM.rows.map(g=>Math.abs(g.dPct)), 0.1);
   const GC = planGroupCmp();
   const maxAbsCmp = Math.max(...GC.rows.flatMap(g=>[Math.abs(g.issD),Math.abs(g.netD)]), 0.1);
+  const cy = GM.cy, py = GM.py;                 /* 당해/전년 (연도 네비게이터 연동) */
+  const cyEst = GM.cyPlanned;                   /* 당해가 계획공표연도면 금액 추정(EST) */
+  /* PL1 연도 네비 min/max: py=cy-1 데이터가 있어야 하므로 최소 cy는 두 번째 연도 */
+  const plYmin = PLAN_YEARS[1], plYmax = PLAN_YEARS[PLAN_YEARS.length-1];
+  /* PL2 월 네비: planViewMonth 기준. 공표된 월(1~PLAN_CUR_MONTH)만 이동 허용 */
+  const vLbl = PLAN_MONTH_LABELS[planViewMonth];
+  const vPrevLbl = planViewMonth===0 ? "전년12월" : PLAN_MONTH_LABELS[planViewMonth-1];
 
   document.getElementById("scr-plan").innerHTML = `
   <div class="qbanner"><span class="qtag">KTB PLAN</span><b>이 화면이 답하는 질문:</b> 국고채 발행 공급이 <b>작년 대비</b>, 그리고 <b>직전 달 대비</b> 만기별로 얼마나 늘고 줄었는가? <span class="dim" style="margin-left:8px">▲증가=공급확대(수급부담) · ▼감소=공급축소(수급완화)</span></div>
@@ -1393,27 +1556,29 @@ function renderPLAN(){
       <div class="k-d ${dCls(ytdDT)}">${arrow(ytdDT)} ${fmtD(ytdDP)}% · 1~${curLbl} 누적 vs 전년동기</div></div>
   </div>
   <div class="grid3" style="grid-template-columns:46% 54%; height:660px">
-    <div class="panel"><div class="p-head"><span class="p-code">PL1</span><h3>만기 구조 변화: 2025 확정 vs 2026 비중계획</h3><span class="p-sub">그룹 비중 mix · FY25 확정금액 → FY26 공표비중(%)</span></div>
+    <div class="panel"><div class="p-head"><span class="p-code">PL1</span><h3>만기 구조 변화: ${py} 확정 vs ${cy} ${cyEst?"비중계획":"확정"}</h3>
+      <span class="mnav"><button class="pl1-mnav-prev${cy<=plYmin?" off":""}" title="이전 연도">◀</button><span class="pl1-mnav-lbl mnav-lbl">${cy}</span><button class="pl1-mnav-next${cy>=plYmax?" off":""}" title="다음 연도">▶</button></span>
+      <span class="p-sub">그룹 비중 mix · ${py} 확정금액 → ${cy} ${cyEst?"공표비중(%)":"확정"}</span></div>
       <div class="p-body">
         <div class="legend" style="margin-bottom:8px">${PLAN_GROUPS.map(g=>`<span><i style="background:${GROUP_COLOR[g]}"></i>${g} <span class="dim" style="text-transform:none">(${GROUP_MATS_LBL[g]})</span></span>`).join("")}</div>
         <div class="section-title">그룹별 발행 비중 — 100% 누적 비교</div>
         <div class="mix-wrap">
           <div class="mix-col">
-            <div class="mix-yr">FY25 <b>확정</b> <span class="dim" style="text-transform:none;font-size:9px">만기별 실적 집계</span></div>
+            <div class="mix-yr">${py} <b>확정</b> <span class="dim" style="text-transform:none;font-size:9px">만기별 실적 집계</span></div>
             <div class="mix-bar" data-field="plan.group_mix" data-source="MOEF_KTB" data-freq="연간 전년말">
               ${GM.rows.map(g=>`<div class="mix-seg" style="height:${g.fy25Pct}%;background:${GROUP_COLOR[g.grp]}" title="${g.grp} ${g.fy25Pct}% · ${g.fy25Amt}조">
                 <span class="seg-g">${g.grp}</span><span class="seg-p">${g.fy25Pct.toFixed(1)}%</span></div>`).join("")}
             </div>
           </div>
           <div class="mix-col">
-            <div class="mix-yr">FY26 <b>비중계획</b> <span class="dim" style="text-transform:none;font-size:9px">공표 %만 (금액 미공표)</span></div>
+            <div class="mix-yr">${cy} <b>${cyEst?"비중계획":"확정"}</b> <span class="dim" style="text-transform:none;font-size:9px">${cyEst?"공표 %만 (금액 미공표)":"만기별 실적 집계"}</span></div>
             <div class="mix-bar" data-field="plan.group_mix" data-source="MOEF_KTB" data-freq="연간 전년말">
-              ${GM.rows.map(g=>`<div class="mix-seg est" style="height:${g.fy26Pct}%;background:${GROUP_COLOR[g.grp]}" title="${g.grp} 목표 ${g.fy26Pct}% (±${g.fy26Tol}%p)">
-                <span class="seg-g">${g.grp}</span><span class="seg-p">${g.fy26Pct}%<span class="dim" style="font-size:8px"> ±${g.fy26Tol}</span></span></div>`).join("")}
+              ${GM.rows.map(g=>`<div class="mix-seg${cyEst?" est":""}" style="height:${g.fy26Pct}%;background:${GROUP_COLOR[g.grp]}" title="${g.grp} ${cyEst?"목표 ":""}${g.fy26Pct}%${cyEst?` (±${g.fy26Tol}%p)`:""}">
+                <span class="seg-g">${g.grp}</span><span class="seg-p">${g.fy26Pct}%${cyEst?`<span class="dim" style="font-size:8px"> ±${g.fy26Tol}</span>`:""}</span></div>`).join("")}
             </div>
           </div>
         </div>
-        <div class="section-title">그룹 비중 이동 <span class="dim" style="text-transform:none">— Δ%p (FY25→FY26). ▲확대=공급확대(수급부담) · ▼축소=완화</span></div>
+        <div class="section-title">그룹 비중 이동 <span class="dim" style="text-transform:none">— Δ%p (${py}→${cy}). ▲확대=공급확대(수급부담) · ▼축소=완화</span></div>
         <div class="mix-shift">
           ${GM.rows.map(g=>{
             const w = Math.abs(g.dPct)/maxAbsShift*50;   /* 좌/우 각 최대 50% */
@@ -1427,20 +1592,20 @@ function renderPLAN(){
               <div class="ms-val ${dCls(g.dPct)}">${arrow(g.dPct)} ${fmtD(g.dPct)}%p</div>
             </div>`}).join("")}
         </div>
-        <div class="section-title" style="margin-top:12px">FY26 그룹 금액 <span class="badge est">추정</span> <span class="dim" style="text-transform:none">— 공표비중 × 총한도 ${PLAN_FY26_TOTAL}조 역산</span></div>
-        <table class="blot" style="font-size:10.5px"><thead><tr><th class="l">그룹</th><th class="l">만기</th><th>FY25 %</th><th>FY26 %</th><th>Δ%p</th><th>FY26 금액</th></tr></thead><tbody>
+        <div class="section-title" style="margin-top:12px">${cy} 그룹 금액 ${cyEst?'<span class="badge est">추정</span>':''} <span class="dim" style="text-transform:none">— ${cyEst?`공표비중 × 총한도 ${GM.cyTotal}조 역산`:"확정 실적"}</span></div>
+        <table class="blot" style="font-size:10.5px"><thead><tr><th class="l">그룹</th><th class="l">만기</th><th>${py} %</th><th>${cy} %</th><th>Δ%p</th><th>${cy} 금액</th></tr></thead><tbody>
         ${GM.rows.map(g=>`<tr>
           <td class="l">${g.grp}</td>
           <td class="l" style="color:var(--tx-dim);font-size:9.5px">${g.mats}</td>
           <td data-field="plan.group_mix" data-source="MOEF_KTB" data-freq="연간 전년말">${g.fy25Pct.toFixed(1)}</td>
-          <td data-field="plan.group_mix" data-source="MOEF_KTB" data-freq="연간 전년말">${g.fy26Pct}<span class="dim" style="font-size:8px"> ±${g.fy26Tol}</span></td>
+          <td data-field="plan.group_mix" data-source="MOEF_KTB" data-freq="연간 전년말">${g.fy26Pct}${cyEst?`<span class="dim" style="font-size:8px"> ±${g.fy26Tol}</span>`:""}</td>
           <td class="${dCls(g.dPct)}">${fmtD(g.dPct)}</td>
-          <td data-field="plan.group_amt_est" data-source="EST" data-freq="연간 전년말 (추정)">${g.fy26AmtEst.toFixed(1)}<small style="color:var(--tx-dim)">조</small></td></tr>`).join("")}
+          <td data-field="plan.group_amt_est" data-source="${cyEst?"EST":"MOEF_KTB"}" data-freq="연간 전년말${cyEst?" (추정)":""}">${g.fy26AmtEst.toFixed(1)}<small style="color:var(--tx-dim)">조</small></td></tr>`).join("")}
         <tr style="border-top:1px solid var(--bd-2)"><td class="l" style="color:var(--tx)">합계</td><td class="l"></td>
           <td style="color:var(--tx)">100.0</td><td style="color:var(--tx)">100</td><td class="mut">—</td>
-          <td style="color:var(--tx)">${PLAN_FY26_TOTAL.toFixed(1)}<small style="color:var(--tx-dim)">조</small></td></tr>
+          <td style="color:var(--tx)">${GC.iss26T.toFixed(1)}<small style="color:var(--tx-dim)">조</small></td></tr>
         </tbody></table>
-        <div class="section-title" style="margin-top:12px">그룹별 연간 발행·순증 비교 (조원) <span class="dim" style="text-transform:none">— 2025 vs 2026 · ▲증가=공급확대 · ▼감소=완화</span></div>
+        <div class="section-title" style="margin-top:12px">그룹별 연간 발행·순증 비교 (조원) <span class="dim" style="text-transform:none">— ${py} vs ${cy} · ▲증가=공급확대 · ▼감소=완화</span></div>
         <div class="cmp-grid">
           ${GC.rows.map(g=>{
             const iw = Math.abs(g.issD)/maxAbsCmp*50, nw = Math.abs(g.netD)/maxAbsCmp*50;
@@ -1459,14 +1624,14 @@ function renderPLAN(){
               </div>
             </div>`}).join("")}
         </div>
-        <table class="blot" style="font-size:10.5px;margin-top:8px"><thead><tr><th class="l">그룹</th><th>발행 25</th><th>발행 26</th><th>발행Δ</th><th>순증 25</th><th>순증 26</th><th>순증Δ</th></tr></thead><tbody>
+        <table class="blot" style="font-size:10.5px;margin-top:8px"><thead><tr><th class="l">그룹</th><th>발행 ${String(py).slice(2)}</th><th>발행 ${String(cy).slice(2)}</th><th>발행Δ</th><th>순증 ${String(py).slice(2)}</th><th>순증 ${String(cy).slice(2)}</th><th>순증Δ</th></tr></thead><tbody>
         ${GC.rows.map(g=>`<tr>
           <td class="l">${g.grp} <span class="dim" style="font-size:8.5px">${g.mats}</span></td>
           <td data-field="plan.group_issue" data-source="MOEF_KTB" data-freq="연간 전년말">${g.iss25.toFixed(1)}</td>
-          <td data-field="plan.group_issue" data-source="EST" data-freq="연간 전년말 (추정)">${g.iss26.toFixed(1)} <span class="badge est">추정</span></td>
+          <td data-field="plan.group_issue" data-source="${cyEst?"EST":"MOEF_KTB"}" data-freq="연간 전년말${cyEst?" (추정)":""}">${g.iss26.toFixed(1)}${cyEst?' <span class="badge est">추정</span>':''}</td>
           <td class="${dCls(g.issD)}">${fmtD(g.issD)}</td>
           <td data-field="plan.group_net" data-source="DERIVED" data-freq="연간 전년말">${g.net25.toFixed(1)}</td>
-          <td data-field="plan.group_net" data-source="EST" data-freq="연간 전년말 (추정)">${g.net26.toFixed(1)} <span class="badge est">추정</span></td>
+          <td data-field="plan.group_net" data-source="${cyEst?"EST":"DERIVED"}" data-freq="연간 전년말${cyEst?" (추정)":""}">${g.net26.toFixed(1)}${cyEst?' <span class="badge est">추정</span>':''}</td>
           <td class="${dCls(g.netD)}">${fmtD(g.netD)}</td></tr>`).join("")}
         <tr style="border-top:1px solid var(--bd-2)"><td class="l" style="color:var(--tx)">합계</td>
           <td style="color:var(--tx)">${GC.iss25T.toFixed(1)}</td><td style="color:var(--tx)">${GC.iss26T.toFixed(1)}</td><td class="${dCls(GC.issDT)}">${fmtD(GC.issDT)}</td>
@@ -1474,7 +1639,9 @@ function renderPLAN(){
         </tbody></table>
         <div class="dim" style="font-size:9.5px;margin-top:10px;line-height:1.5">원천: MOEF_KTB (2026년 국고채 발행계획 «연물별 배분» / «연간 발행계획 비교») · <b style="color:var(--tx-mut)">FY25=그룹별 발행실적 비중 공표(단기 31.6·중기 29.8·장기 38.6%), FY26=만기 그룹 비중계획 공표(만기별 금액 미공표)</b> · 두 연도 공통 해상도인 만기 그룹 레벨에서만 비교 · KTBi(물가)는 그룹 비중 공표 대상이 아니어서 그룹 비교에서 제외 · FY26 그룹 금액·순증은 공표비중×총한도(225.7조) 역산 <span class="badge est">추정</span> · 모두 더미데이터</div>
       </div></div>
-    <div class="panel"><div class="p-head"><span class="p-code">PL2</span><h3>월간 증감 (동월 YoY · 당월 MoM) & YTD 누적</h3><span class="p-sub">기준 2026-${String(PLAN_CUR_MONTH+1).padStart(2,"0")}</span></div>
+    <div class="panel"><div class="p-head"><span class="p-code">PL2</span><h3>월간 증감 (동월 YoY · 당월 MoM) & YTD 누적</h3>
+      <span class="mnav"><button class="pl2-mnav-prev${planViewMonth<=0?" off":""}" title="이전 월">◀</button><span class="pl2-mnav-lbl mnav-lbl">2026-${String(planViewMonth+1).padStart(2,"0")}</span><button class="pl2-mnav-next${planViewMonth>=PLAN_CUR_MONTH?" off":""}" title="다음 월">▶</button></span>
+      <span class="p-sub">기준 2026-${String(planViewMonth+1).padStart(2,"0")}</span></div>
       <div class="p-body">
         <div class="section-title">만기별 동월 YoY vs 당월 MoM <span class="dim" style="text-transform:none">— 작년 동월 대비(청) / 지난달 대비(황) 증감액(조)</span></div>
         <canvas id="planYoyMom" width="700" height="220"></canvas>
@@ -1491,28 +1658,127 @@ function renderPLAN(){
         </div>
       </div></div>
   </div>`;
+  wirePlanNav();
+}
+/* PL2 차트(동월YoY·MoM / YTD누적) 그리기 — planViewMonth 반영. 재렌더 시 destroy 후 재생성 */
+function drawPlanCharts(){
+  if(typeof Chart==="undefined")return;
+  const elYm = document.getElementById("planYoyMom"), elYtd = document.getElementById("planYtd");
+  if(!elYm||!elYtd)return;
+  planCharts.forEach(c=>c.destroy()); planCharts=[];
+  const D = planDeltas();
+  const curLbl = PLAN_MONTH_LABELS[planViewMonth];
+  const prevLbl = planViewMonth===0 ? "전년12월" : PLAN_MONTH_LABELS[planViewMonth-1];
+  const gopt=(extra={})=>({responsive:false,maintainAspectRatio:false,plugins:{legend:{display:extra.leg!==false,labels:{color:"#8a94a6",font:{size:9},boxWidth:8}}},
+    scales:{x:{ticks:{color:"#5c6675",font:{size:9}},grid:{color:"#1a2029"}},y:{ticks:{color:"#5c6675",font:{size:9}},grid:{color:"#1a2029"}}}});
+  /* 만기별 동월 YoY vs 당월 MoM — 증감액(조) 그룹 막대 */
+  planCharts.push(new Chart(elYm,{type:"bar",data:{labels:D.map(x=>x.mat),datasets:[
+    {label:`동월 YoY (vs 전년 ${curLbl})`, data:D.map(x=>x.momo.d), backgroundColor:"#3b82f6"},
+    {label:`당월 MoM (vs ${prevLbl})`,     data:D.map(x=>x.mom.d),  backgroundColor:"#eab308"}
+  ]},options:{...gopt(),scales:{x:{ticks:{color:"#5c6675",font:{size:9}},grid:{color:"#1a2029"}},y:{ticks:{color:"#5c6675",font:{size:9},callback:v=>(v>0?"+":"")+v},grid:{color:c=>c.tick.value===0?"#2d3644":"#1a2029"}}}}}));
+  /* YTD 누적 발행계획 — 당해 vs 전년동기 (만기별 그룹 막대) */
+  planCharts.push(new Chart(elYtd,{type:"bar",data:{labels:D.map(x=>x.mat),datasets:[
+    {label:`전년 1~${curLbl} 누적`, data:D.map(x=>x.ytd.py), backgroundColor:"#334155"},
+    {label:`당해 1~${curLbl} 누적`, data:D.map(x=>x.ytd.cy), backgroundColor:"#60a5fa"}
+  ]},options:gopt()}));
+}
+/* PLAN 화면 전체 재렌더(연도/월 네비 반영) → HTML 재작성 후 차트 재생성 */
+function renderPLANAll(){ renderPLAN(); drawPlanCharts(); }
+/* PL1(연도)·PL2(월) 네비게이터 클릭 배선. innerHTML 재작성마다 재배선. */
+function wirePlanNav(){
+  const plYmin = PLAN_YEARS[1], plYmax = PLAN_YEARS[PLAN_YEARS.length-1];
+  document.querySelector(".pl1-mnav-prev")?.addEventListener("click",()=>{ if(planCurYear>plYmin){planCurYear--; renderPLANAll();} });
+  document.querySelector(".pl1-mnav-next")?.addEventListener("click",()=>{ if(planCurYear<plYmax){planCurYear++; renderPLANAll();} });
+  document.querySelector(".pl2-mnav-prev")?.addEventListener("click",()=>{ if(planViewMonth>0){planViewMonth--; renderPLANAll();} });
+  document.querySelector(".pl2-mnav-next")?.addEventListener("click",()=>{ if(planViewMonth<PLAN_CUR_MONTH){planViewMonth++; renderPLANAll();} });
 }
 function renderSD(){
+  const opts = SD_SERIES.labels.map((l,i)=>`<option value="${i}">${l}</option>`).join("");
   document.getElementById("scr-sd").innerHTML = `
   <div class="qbanner"><span class="qtag">KTB S/D</span><b>이 화면이 답하는 질문:</b> 발행에서 만기상환·바이백·교환을 뺀 실제 시장 순공급은 얼마이며 추세는 어떤가?</div>
   <div class="grid3" style="grid-template-columns:60% 40%; height:720px">
-    <div class="panel"><div class="p-head"><span class="p-code">SD1</span><h3>월별 순공급 시계열</h3><span class="p-sub">발행 − 상환 − 바이백 (조원)</span></div>
+    <div class="panel"><div class="p-head"><span class="p-code">SD1</span><h3>월별 순공급 시계열</h3>
+      <span class="rangesel">
+        <span class="rs-lbl">기간</span>
+        <select id="sdStart">${opts}</select>
+        <span class="rs-tilde">~</span>
+        <select id="sdEnd">${opts}</select>
+      </span>
+      <span class="p-sub" id="sdRangeSub">발행 − 상환 − 바이백 (조원)</span></div>
       <div class="p-body"><canvas id="sdStack" width="820" height="380"></canvas>
+        <div class="dim" style="font-size:9.5px;margin-top:6px">막대(월)를 클릭하면 우측 SD2 워터폴이 해당 월로 전환됩니다.</div>
         <div class="section-title" style="margin-top:12px">순공급 산식</div>
         <div class="erd" style="font-size:10px">순공급 = 발행액 − 만기상환액 − 매입(바이백)액 ± 교환 순증감</div>
       </div></div>
-    <div class="panel"><div class="p-head"><span class="p-code">SD2</span><h3>2026-09 수급 워터폴</h3></div>
+    <div class="panel"><div class="p-head"><span class="p-code">SD2</span><h3 id="sdWFTitle">수급 워터폴</h3></div>
       <div class="p-body"><div class="wf" id="sdWF" style="height:200px"></div>
         <div class="legend" style="margin-top:4px;justify-content:center"><span><i style="background:var(--accent)"></i>발행(+)</span><span><i style="background:var(--up)"></i>상환/매입(−)</span><span><i style="background:var(--warn)"></i>교환(±)</span><span><i style="background:#fff"></i>순공급</span></div>
-        <div class="speccard" style="margin-top:16px">
-          <div class="row"><span class="k">9월 총발행</span><span class="v" data-field="sd.issue" data-source="MOEF_KTB" data-freq="입찰일 T+0">15.2조</span></div>
-          <div class="row"><span class="k">만기상환</span><span class="v" data-field="sd.redeem" data-source="MOEF_KTB" data-freq="월간">−7.1조</span></div>
-          <div class="row"><span class="k">매입(바이백)</span><span class="v" data-field="sd.buyback" data-source="MOEF_KTB" data-freq="입찰일 T+0">−1.3조</span></div>
-          <div class="row"><span class="k">교환 순증감</span><span class="v" data-field="sd.exchange" data-source="MOEF_KTB" data-freq="입찰일 T+0">±0.0조</span></div>
-          <div class="row"><span class="k accent">순공급 Net Supply</span><span class="v down" data-field="sd.net_supply" data-source="DERIVED" data-freq="입찰일 T+0">+6.8조</span></div>
-        </div>
+        <div class="speccard" id="sdWFDetail" style="margin-top:16px"></div>
       </div></div>
   </div>`;
+  /* 셀렉트 초기값 반영 */
+  const selS = document.getElementById("sdStart"), selE = document.getElementById("sdEnd");
+  selS.value = sdStartIdx; selE.value = sdEndIdx;
+  const onChange = ()=>{
+    let s = +selS.value, e = +selE.value;
+    if(s>e){ [s,e]=[e,s]; selS.value=s; selE.value=e; }   /* 시작>종료 자동 스왑 */
+    sdStartIdx = s; sdEndIdx = e;
+    /* 선택월이 구간을 벗어나면 구간 끝(최신월)로 재설정 */
+    if(sdSelIdx<s || sdSelIdx>e) sdSelIdx = e;
+    drawSDChart(); renderSD2();
+  };
+  selS.addEventListener("change", onChange);
+  selE.addEventListener("change", onChange);
+  renderSD2();
+}
+/* SD1 스택 시계열 — 선택 구간(sdStartIdx~sdEndIdx). 막대 클릭 시 SD2 대상월(sdSelIdx) 전환 */
+function drawSDChart(){
+  if(typeof Chart==="undefined")return;
+  const el = document.getElementById("sdStack"); if(!el) return;
+  const s = sdStartIdx, e = sdEndIdx;
+  const labels = SD_SERIES.labels.slice(s, e+1);
+  const issue = SD_SERIES.issue.slice(s, e+1);
+  const redeem = SD_SERIES.redeem.slice(s, e+1);
+  const buyback = SD_SERIES.buyback.slice(s, e+1);
+  const exchange = SD_SERIES.exchange.slice(s, e+1);
+  const net = labels.map((_,i)=>+(issue[i]-redeem[i]-buyback[i]+exchange[i]).toFixed(1));
+  if(sdChartRef) sdChartRef.destroy();
+  sdChartRef = new Chart(el,{type:"bar",data:{labels,datasets:[
+    {label:"발행",data:issue,backgroundColor:"#3b82f6",stack:"s"},
+    {label:"만기상환",data:redeem.map(v=>-v),backgroundColor:"#ef4444",stack:"s"},
+    {label:"바이백",data:buyback.map(v=>-v),backgroundColor:"#b91c1c",stack:"s"},
+    {label:"교환",data:exchange,backgroundColor:"#eab308",stack:"s"},
+    {label:"순공급",type:"line",data:net,borderColor:"#e6e6e6",tension:.2,pointRadius:2}
+  ]},options:{responsive:false,maintainAspectRatio:false,
+    onClick:(evt,els)=>{ if(els.length){ sdSelIdx = sdStartIdx + els[0].index; renderSD2(); } },
+    plugins:{legend:{labels:{color:"#8a94a6",font:{size:9},boxWidth:8}}},
+    scales:{x:{stacked:true,ticks:{color:"#5c6675",font:{size:8}},grid:{color:"#1a2029"}},y:{stacked:true,ticks:{color:"#5c6675",font:{size:9}},grid:{color:"#1a2029"}}}}});
+  const sub = document.getElementById("sdRangeSub");
+  if(sub) sub.textContent = `${labels[0]}~${labels[labels.length-1]} · ${labels.length}개월 (조원)`;
+}
+/* SD2 워터폴 — SD1에서 선택한 월(sdSelIdx)의 발행/상환/바이백/교환으로 동적 구성 */
+function renderSD2(){
+  const i = sdSelIdx;
+  const lbl = SD_SERIES.labels[i];
+  const issue = SD_SERIES.issue[i], redeem = SD_SERIES.redeem[i], buyback = SD_SERIES.buyback[i], exchange = SD_SERIES.exchange[i];
+  const net = +(issue - redeem - buyback + exchange).toFixed(1);
+  const items = [
+    {k:"발행", v:+issue.toFixed(1), sign:1, src:"MOEF_KTB"},
+    {k:"만기상환", v:-redeem, sign:-1, src:"MOEF_KTB"},
+    {k:"매입(바이백)", v:-buyback, sign:-1, src:"MOEF_KTB"},
+    {k:"교환 순증감", v:+exchange.toFixed(1), sign:exchange>0?1:exchange<0?-1:0, src:"MOEF_KTB"}
+  ];
+  const title = document.getElementById("sdWFTitle");
+  if(title) title.textContent = `20${lbl.slice(0,2)}-${lbl.slice(3)} 수급 워터폴`;
+  drawWF("sdWF", items, net);
+  const fmtV = v => (v>0?"+":"") + v.toFixed(1);
+  const detail = document.getElementById("sdWFDetail");
+  if(detail) detail.innerHTML = `
+    <div class="row"><span class="k">${lbl.slice(3)} 총발행</span><span class="v" data-field="sd.issue" data-source="MOEF_KTB" data-freq="입찰일 T+0">${issue.toFixed(1)}조</span></div>
+    <div class="row"><span class="k">만기상환</span><span class="v" data-field="sd.redeem" data-source="MOEF_KTB" data-freq="월간">−${redeem.toFixed(1)}조</span></div>
+    <div class="row"><span class="k">매입(바이백)</span><span class="v" data-field="sd.buyback" data-source="MOEF_KTB" data-freq="입찰일 T+0">−${buyback.toFixed(1)}조</span></div>
+    <div class="row"><span class="k">교환 순증감</span><span class="v" data-field="sd.exchange" data-source="MOEF_KTB" data-freq="입찰일 T+0">${exchange>0?"+":exchange<0?"":"±"}${exchange.toFixed(1)}조</span></div>
+    <div class="row"><span class="k accent">순공급 Net Supply</span><span class="v ${net<0?'down':'up'}" data-field="sd.net_supply" data-source="DERIVED" data-freq="입찰일 T+0">${fmtV(net)}조</span></div>`;
 }
 function renderPD(){
   const totWon = NCB_ROWS.reduce((s,r)=>s+r.won,0);
@@ -1566,31 +1832,14 @@ function initCharts(scr){
   const cols={ "2Y":"#67e8f9","3Y":"#86efac","5Y":"#bef264","10Y":"#3b82f6","20Y":"#f0abfc","30Y":"#fca5a5" };
   if(scr==="dmd"){
     renderDMDHeat();
-    new Chart(document.getElementById("dmdTrend"),{type:"line",data:{labels:HEAT_LABELS,datasets:["2Y","3Y","5Y","10Y","20Y","30Y"].map(m=>({label:m,data:HEAT.score[m],borderColor:cols[m],backgroundColor:cols[m],tension:.3,pointRadius:2,borderWidth:m==="10Y"?2.5:1.3}))},options:gopt()});
+    drawDMDTrend();
   }
   if(scr==="plan"){
-    const D = planDeltas();
-    const curLbl = PLAN_MONTH_LABELS[PLAN_CUR_MONTH];
-    const prevLbl = PLAN_CUR_MONTH===0 ? "전년12월" : PLAN_MONTH_LABELS[PLAN_CUR_MONTH-1];
-    /* 만기별 동월 YoY vs 당월 MoM — 증감액(조) 그룹 막대 */
-    new Chart(document.getElementById("planYoyMom"),{type:"bar",data:{labels:D.map(x=>x.mat),datasets:[
-      {label:`동월 YoY (vs 전년 ${curLbl})`, data:D.map(x=>x.momo.d), backgroundColor:"#3b82f6"},
-      {label:`당월 MoM (vs ${prevLbl})`,     data:D.map(x=>x.mom.d),  backgroundColor:"#eab308"}
-    ]},options:{...gopt(),scales:{x:{ticks:{color:"#5c6675",font:{size:9}},grid:{color:"#1a2029"}},y:{ticks:{color:"#5c6675",font:{size:9},callback:v=>(v>0?"+":"")+v},grid:{color:c=>c.tick.value===0?"#2d3644":"#1a2029"}}}}});
-    /* YTD 누적 발행계획 — 당해 vs 전년동기 (만기별 그룹 막대) */
-    new Chart(document.getElementById("planYtd"),{type:"bar",data:{labels:D.map(x=>x.mat),datasets:[
-      {label:`전년 1~${curLbl} 누적`, data:D.map(x=>x.ytd.py), backgroundColor:"#334155"},
-      {label:`당해 1~${curLbl} 누적`, data:D.map(x=>x.ytd.cy), backgroundColor:"#60a5fa"}
-    ]},options:gopt()});
+    drawPlanCharts();
   }
   if(scr==="sd"){
-    new Chart(document.getElementById("sdStack"),{type:"bar",data:{labels:SD_SERIES.labels,datasets:[
-      {label:"발행",data:SD_SERIES.issue,backgroundColor:"#3b82f6",stack:"s"},
-      {label:"만기상환",data:SD_SERIES.redeem.map(v=>-v),backgroundColor:"#ef4444",stack:"s"},
-      {label:"바이백",data:SD_SERIES.buyback.map(v=>-v),backgroundColor:"#b91c1c",stack:"s"},
-      {label:"순공급",type:"line",data:SD_SERIES.labels.map((_,i)=>+(SD_SERIES.issue[i]-SD_SERIES.redeem[i]-SD_SERIES.buyback[i]).toFixed(1)),borderColor:"#e6e6e6",tension:.2,pointRadius:2}
-    ]},options:{responsive:false,maintainAspectRatio:false,plugins:{legend:{labels:{color:"#8a94a6",font:{size:9},boxWidth:8}}},scales:{x:{stacked:true,ticks:{color:"#5c6675",font:{size:8}},grid:{color:"#1a2029"}},y:{stacked:true,ticks:{color:"#5c6675",font:{size:9}},grid:{color:"#1a2029"}}}}});
-    renderWFInto("sdWF");
+    drawSDChart();
+    renderSD2();
   }
   if(scr==="pd"){
     const ratioSeries = NCB_SERIES.labels.map((_,i)=>+(NCB_SERIES.noncomp[i]/(NCB_SERIES.won[i]+NCB_SERIES.noncomp[i])*100).toFixed(1));
@@ -1603,17 +1852,35 @@ function initCharts(scr){
 }
 function renderDMDHeat(){
   const g=document.getElementById("dmdHeat"); if(!g)return;
-  g.style.gridTemplateColumns=`44px repeat(${HEAT_LABELS.length},1fr)`;
-  let html=`<div class="hcol"></div>`+HEAT_LABELS.map(l=>`<div class="hcol">${l}</div>`).join("");
-  MATS.forEach(m=>{html+=`<div class="hlbl">${m}</div>`;HEAT[dmdMetric][m].forEach((v,ci)=>{const c=heatColor(dmdMetric,v);const disp=v==null?"":dmdMetric==="score"?v:v.toFixed(1);html+=`<div class="hcell" style="background:${c.bg};color:${c.tx}" data-field="dmd.heat_${dmdMetric}" data-source="DERIVED" data-freq="입찰일 T+0 16:00" title="${m} ${HEAT_LABELS[ci]}: ${disp}">${disp}</div>`;});});
+  /* D1과 동일 구간(dmdStartIdx~dmdEndIdx). 단 Max 열수(DMD_HEAT_MAX) 초과 시 최근 Max개월만 표시 */
+  let s = dmdStartIdx, e = dmdEndIdx;
+  const capped = (e - s + 1) > DMD_HEAT_MAX;
+  if(capped) s = e - DMD_HEAT_MAX + 1;      /* 최근 Max개월만 */
+  const labels = DMD_MONTH_LABELS.slice(s, e+1);
+  g.style.gridTemplateColumns=`44px repeat(${labels.length},1fr)`;
+  let html=`<div class="hcol"></div>`+labels.map(l=>`<div class="hcol">${l}</div>`).join("");
+  MATS.forEach(m=>{
+    html+=`<div class="hlbl">${m}</div>`;
+    DMD_MONTHLY_SCORE[m].slice(s,e+1).forEach((v,ci)=>{
+      const c=heatColor("score",v);
+      const disp=v==null?"":v;
+      html+=`<div class="hcell" style="background:${c.bg};color:${c.tx}" data-field="dmd.heat_score" data-source="DERIVED" data-freq="입찰일 T+0 16:00" title="${m} ${labels[ci]}: ${disp}">${disp}</div>`;
+    });
+  });
   g.innerHTML=html;
+  const sub=document.getElementById("dmdHeatSub");
+  if(sub) sub.textContent = `${labels[0]}~${labels[labels.length-1]} · 수요강도 스코어`;
+  const cap=document.getElementById("dmdHeatCap");
+  if(cap) cap.textContent = capped ? `· 최대 ${DMD_HEAT_MAX}개월 표시(최근 기준)` : "· 열 = 월";
 }
-function renderWFInto(id){
+/* 워터폴 렌더 (범용) — items:[{k,v,sign,src}], net=순공급. maxAbs=축 스케일 */
+function drawWF(id, items, net){
   const w=document.getElementById(id); if(!w)return;
-  const net=WF.reduce((s,x)=>s+x.v,0); const all=[...WF,{k:"순공급",v:net,sign:2,src:"DERIVED"}]; const maxAbs=16; let cum=0;
+  const all=[...items,{k:"순공급",v:net,sign:2,src:"DERIVED"}];
+  const maxAbs=Math.max(16, ...all.map(x=>Math.abs(x.v)));
+  let cum=0;
   w.innerHTML=all.map(x=>{const isNet=x.sign===2;const h=Math.abs(x.v)/maxAbs*140;const bottom=isNet?0:(x.v>=0?cum:cum+x.v);if(!isNet)cum+=x.v;const color=isNet?"#e6e6e6":x.sign>0?"var(--accent)":x.sign<0?"var(--up)":"var(--warn)";return `<div class="col"><span class="cap">${x.v>=0&&!isNet?"+":""}${x.v.toFixed(1)}</span><div class="bar" style="height:${Math.max(3,h)}px;background:${color};margin-bottom:${bottom/maxAbs*140}px" data-field="sd.wf_${x.k}" data-source="${x.src}" data-freq="입찰일 T+0 16:00"></div><span class="cl">${x.k}</span></div>`;}).join("");
 }
-let dmdMetric="score";
 
 /* ---------- 탭 전환 ---------- */
 function switchScreen(scr){
@@ -1763,10 +2030,9 @@ function renderDict(){
 document.getElementById("tabbar").addEventListener("click",e=>{const t=e.target.closest(".tab");if(t)switchScreen(t.dataset.scr);});
 document.getElementById("typeFilter").addEventListener("click",e=>{const c=e.target.closest(".chip");if(!c)return;c.classList.toggle("on");c.classList.contains("on")?activeTypes.add(c.dataset.t):activeTypes.delete(c.dataset.t);renderBlotter();});
 document.getElementById("heatToggle").addEventListener("click",e=>{const c=e.target.closest(".chip");if(!c)return;document.querySelectorAll("#heatToggle .chip").forEach(x=>x.classList.remove("on"));c.classList.add("on");heatMetric=c.dataset.m;renderHeat();});
-document.addEventListener("click",e=>{const c=e.target.closest("#dmdToggle .chip");if(!c)return;document.querySelectorAll("#dmdToggle .chip").forEach(x=>x.classList.remove("on"));c.classList.add("on");dmdMetric=c.dataset.m;renderDMDHeat();});
 document.getElementById("codeInput").addEventListener("keydown",e=>{if(e.key==="Enter"){const v=e.target.value.trim().toUpperCase().replace("KTB ","").replace("/","");const map={AUC:"auc",RES:"res",DMD:"dmd",PLAN:"plan","SD":"sd","S/D":"sd","S":"sd",PD:"pd"};if(map[v])switchScreen(map[v]);}});
 /* 월 네비게이터: P1·P2 어느 쪽 버튼을 눌러도 stepViewMonth()가 양쪽을 동시 재렌더 → 조회월 연동 */
-document.addEventListener("click",e=>{if(e.target.closest(".mnav-prev")){stepViewMonth(-1);}else if(e.target.closest(".mnav-next")){stepViewMonth(1);}});
+document.addEventListener("click",e=>{if(e.target.closest("#scr-auc .mnav-prev")){stepViewMonth(-1);}else if(e.target.closest("#scr-auc .mnav-next")){stepViewMonth(1);}});
 
 /* ---------- init ---------- */
 renderCal(); renderBlotter(); renderHeat(); renderP5(); renderWF();
