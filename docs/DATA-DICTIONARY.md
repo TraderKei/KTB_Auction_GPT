@@ -40,8 +40,8 @@
 | `auc.pd_count` | 참여 PD수 | number | 개 | 18 | 기재부 | 입찰결과공시 | 입찰일 T+0 16:00 | N | — | auction_result(pd_count) |
 | `auc.pay_date` | 납입일 | date | — | 2026-09-10 | 기재부 | 입찰공고 | 발행공고 T-3일 | N | — | auction_schedule(pay_date) |
 | `auc.cutoff_tier` | 차등가격 낙찰구간 | array | %/억 | [2.94, 5500] | **추정** | 미공시(EST) | 입찰일 T+0 (추정) | **Y** | 구간별 낙찰액 미공시(역산 불가) → OHLC형 3금리로 대체 | auction_result 파생(추정) |
-| `auc.low_rate` | 최저낙찰금리 | number | % | 2.905 | 한은/추정 | 입찰집행결과 | 입찰일 T+0 16:00 | **Y** | 구간 하단(공시) 또는 가중평균−테일 근사 | auction_result(low_rate) |
-| `auc.partial_alloc_rate` | 부분낙찰률 | number | % | 100.0 | 파생 | — | 입찰일 T+0 16:00 | **Y** | 낙찰액 ÷ 발행예정액 | auction_result 파생 |
+| `auc.low_rate` | 최저낙찰금리 | number | % | 2.905 | 기재부 | 입찰결과공시 | 입찰일 T+0 16:00 | N | 최저 낙찰금리(결과공시값 그대로) | auction_result(low_rate) |
+| `auc.partial_alloc_rate` | 부분낙찰률 | number | % | 41.7 | 기재부 | 입찰결과공시 | 입찰일 T+0 16:00 | N | 최고금리 배정액 ÷ 최고금리 응찰액 × 100 (공시값 그대로) | auction_result(partial_alloc_rate) |
 | `dmd.score` | 수요강도 스코어 | number | 0~100 | 47 | 파생 | — | 입찰일 T+0 16:00 | **Y** | z(BTC)×0.4 − z(Tail)×0.3 − z(Spr)×0.3 → 정규화 | demand_index 파생 |
 | `plan.month_total` | 월 발행계획액 | number | 조원 | 15.2 | 기재부 | 월간 발행계획 | 월간 전월말목 09:00 | N | — | issuance_plan(month,total) |
 | `plan.annual_total` | 연간계획 총액 | number | 조원 | 240 | 기재부 | 연간 국채발행계획 | 연간 전년말 | N | — | issuance_plan(year,total) |
@@ -54,6 +54,19 @@
 | `sd.buyback` | 매입(바이백)액 | number | 조원 | 1.3 | 기재부 | 매입결과공시 | 입찰일 T+0 | N | — | buyback_exchange(type=BB) |
 | `sd.exchange` | 교환 순증감 | number | 조원 | 0.0 | 기재부 | 교환결과공시 | 입찰일 T+0 | N | — | buyback_exchange(type=EX) |
 | `sd.net_supply` | 순공급 | number | 조원 | +6.8 | 파생 | — | 입찰일 T+0 | **Y** | 발행 − 상환 − 바이백 ± 교환 | 월별 집계 파생 |
+| `ncb.bond_name` | (비경쟁) 종목명 | string | — | 국고02750-3509(24-6) | 기재부 | 입찰결과공시 | 입찰일 T+0 | N | — | bond_master(bond_name) |
+| `ncb.tranche` | (비경쟁) 차수 | string | — | 24-6 | 기재부 | 입찰공고 | 입찰일 T+0 | N | — | auction_schedule(tranche) |
+| `ncb.won_amt` | 경쟁낙찰액 | number | 억원 | 15,200 | 기재부 | 입찰결과공시 | 입찰일 T+0 | N | — | auction_result(won_amt) |
+| `ncb.noncomp_amt` | 비경쟁인수액 | number | 억원 | 2,200 | 기재부 | 입찰결과공시 | 입찰일 T+1 | N | — | auction_result(noncomp_amt) |
+| `ncb.pd_count` | 참여 PD수 | number | 개 | 18 | 기재부 | 입찰결과공시 | 입찰일 T+0 16:00 | N | — | auction_result(pd_count) |
+| `ncb.noncomp_ratio` | 비경쟁 비중 | number | % | 12.6 | 파생 | — | 입찰일 T+1 | **Y** | 비경쟁인수액 ÷ (경쟁낙찰액 + 비경쟁인수액) | auction_result 파생 |
+| `ncb.type_amt` | 비경쟁 유형별 인수액 | number | 억원 | 6,400 | 기재부 | 입찰결과공시 | 입찰일 T+0 | N | 유형(nc1~nc4)별 집계 | auction_schedule(auction_type) + auction_result |
+| `auc.auction_date` | 입찰일(RESULTS) | date | — | 2026-09-09 | 기재부 | 입찰공고 | 발행공고 T-3일 | N | — | auction_schedule(auction_date) |
+| `plan.group_mix` | 만기그룹 비중 | number | % | 42.0 | 기재부 | 연간 국채발행계획 | 연간 전년말 | N | 단기/중기/장기 그룹별 계획 비중 | issuance_plan(만기그룹 집계) |
+| `plan.group_mix_shift` | 그룹 비중 증감 | number | %p | +1.5 | 파생 | — | 연간 전년말 | **Y** | 당해 그룹비중 − 전년 그룹비중 | issuance_plan(그룹 비중 파생) |
+| `plan.group_amt_est` | 그룹 계획액 | number | 조원 | 100.8 | 기재부 | 연간 국채발행계획 | 연간 전년말 | N | 만기그룹별 계획액 집계(당해 미확정시 EST) | issuance_plan(그룹 집계) |
+| `plan.group_issue` | 그룹 발행 비교 | number | 조원 | 96.5 | 기재부 | 연간 국채발행계획 | 연간 전년말 | N | 만기그룹별 전년/당해 발행 비교(당해 미확정시 EST) | issuance_plan(그룹 집계) |
+| `plan.group_net` | 그룹 순증 | number | 조원 | +4.3 | 파생 | — | 연간 전년말 | **Y** | 만기그룹별 발행 − 상환 순증 | issuance_plan × redemption_schedule(그룹 파생) |
 | `pd.comp_won` | PD 경쟁낙찰액 | number | 조원 | 18.4 | 기재부 | PD 실적공시 | 월간 | N | — | pd_allotment(pd_id,comp_won) |
 | `pd.nc2_amt` | 비경쟁II 인수액 | number | 조원 | 2.6 | 기재부 | PD 실적공시 | 옵션행사일 T+0 | N | — | pd_allotment(pd_id,nc2_amt) |
 | `pd.option_limit` | 옵션 한도 | number | 조원 | 3.7 | **추정** | 미공시(EST) | 입찰일 T+0 (추정) | **Y** | 낙찰액 × 옵션비율 추정 | pd_allotment 파생(추정) |

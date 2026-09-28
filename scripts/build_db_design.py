@@ -305,16 +305,23 @@ print(f"  관계:   {len(RELATIONS)}개")
 # ============================================================================
 # 09_Coverage 자동 계산 : HTML data-field 전수 vs 매핑
 # ============================================================================
+# mockup/ktb-terminal.html 의 data-field 속성 전수(SSOT). 동적 템플릿은 정적 필드로 정규화:
+#   dmd.heat_${heatMetric} → dmd.heat_btc / dmd.heat_tail / dmd.heat_spr
+#   sd.wf_${x.k}           → sd.wf
+# ※ HTML 렌더링에서 실제 출력되는 data-field 셀만 포함(데이터사전 DICT의 참조용 항목 제외).
 HTML_FIELDS = [
-    "plan.month_total","plan.month_progress","auc.avg_btc","auc.avg_tail","sd.net_supply",
-    "auc.schedule_cell","bond.isin","bond.name","bond.maturity","auc.tranche","auc.type",
-    "auc.plan_amt","auc.bid_amt","auc.won_amt","auc.bid_to_cover","auc.high_rate","auc.wavg_rate",
-    "auc.tail","auc.spread_vs_mts","auc.noncomp_amt","auc.pd_count","auc.pay_date","auc.bid_date",
-    "bond.spec_card","auc.cutoff_tier","dmd.heat_score","dmd.heat_btc","dmd.heat_tail","dmd.heat_spr",
-    "dmd.score","plan.progress_by_mat","plan.act_by_mat","plan.annual_total","plan.annual_act",
-    "plan.annual_progress","plan.remaining","plan.remaining_auctions","sd.issue","sd.redeem",
-    "sd.buyback","sd.exchange","sd.wf","pd.rank","pd.name","pd.comp_won","pd.nc2_amt",
-    "pd.option_limit","pd.option_exercise_rate","pd.exchange_amt","auc.won_rate",
+    "auc.auction_date","auc.avg_btc","auc.avg_tail","auc.bid_amt","auc.bid_date",
+    "auc.bid_to_cover","auc.high_rate","auc.low_rate","auc.noncomp_amt","auc.partial_alloc_rate",
+    "auc.pay_date","auc.plan_amt","auc.schedule_cell","auc.spread_vs_mts","auc.tail",
+    "auc.tranche","auc.type","auc.wavg_rate","auc.won_amt",
+    "bond.isin","bond.maturity","bond.name",
+    "dmd.heat_btc","dmd.heat_tail","dmd.heat_spr","dmd.heat_score","dmd.score",
+    "ncb.bond_name","ncb.noncomp_amt","ncb.noncomp_ratio","ncb.pd_count","ncb.tranche",
+    "ncb.type_amt","ncb.won_amt",
+    "plan.act_by_mat","plan.annual_total","plan.annual_yoy","plan.month_mom","plan.month_progress",
+    "plan.month_total","plan.month_yoy","plan.progress_by_mat","plan.ytd_yoy",
+    "plan.group_amt_est","plan.group_issue","plan.group_mix","plan.group_mix_shift","plan.group_net",
+    "sd.buyback","sd.exchange","sd.issue","sd.net_supply","sd.redeem","sd.wf",
 ]
 # 매핑된 필드 집합(02_Columns의 data-field에서 논리ID 추출)
 mapped = set()
@@ -330,21 +337,38 @@ alias = {
     "dmd.heat_score":"dmd.score","dmd.heat_btc":"auc.bid_to_cover","dmd.heat_tail":"auc.tail",
     "dmd.heat_spr":"auc.spread_vs_mts","sd.wf":"sd.net_supply","auc.avg_btc":"auc.bid_to_cover",
     "auc.avg_tail":"auc.tail","plan.month_progress":"plan.progress_by_mat",
-    "plan.annual_progress":"plan.progress_by_mat","plan.annual_act":"plan.act_by_mat",
-    "bond.spec_card":"bond.issue_date(외 스펙카드)","auc.schedule_cell":"auction_schedule(행)",
+    "auc.schedule_cell":"auction_schedule(행)",
+    "auc.auction_date":"auction_schedule.auction_date",
+    "ncb.bond_name":"bond_master.bond_name","ncb.tranche":"auction_schedule.tranche",
+    "ncb.won_amt":"auction_result.won_amt","ncb.noncomp_amt":"auction_result.noncomp_amt",
+    "ncb.pd_count":"auction_result.pd_count","ncb.type_amt":"auction_result(type별 집계)",
+    "ncb.noncomp_ratio":"auction_result(파생)",
+    "plan.group_mix":"issuance_plan(만기그룹 비중 집계)",
+    "plan.group_mix_shift":"issuance_plan(그룹 비중 증감 파생)",
+    "plan.group_amt_est":"issuance_plan(그룹 계획액 집계)",
+    "plan.group_issue":"issuance_plan(그룹 발행 비교 집계)",
+    "plan.group_net":"issuance_plan(그룹 순증 파생)",
+    "plan.annual_yoy":"issuance_plan(연간 YoY 파생)",
+    "plan.month_yoy":"issuance_plan(동월 YoY 파생)",
+    "plan.ytd_yoy":"issuance_plan(YTD YoY 파생)",
+    "plan.month_mom":"issuance_plan(MoM 파생)",
+    "plan.act_by_mat":"issuance_plan.act_amt",
 }
 COVERAGE = []
 covered = 0
+unmapped = []
 for f in HTML_FIELDS:
     if f in mapped:
         COVERAGE.append([f, "매핑됨", "02_Columns에 물리 컬럼 존재", "-"]); covered += 1
     elif f in alias:
-        COVERAGE.append([f, "매핑됨(별칭/파생)", f"→ {alias[f]}", "동일 논리 필드 또는 파생 재사용"]); covered += 1
+        COVERAGE.append([f, "매핑됨(별칭/파생)", f"→ {alias[f]}", "동일 논리 필드 또는 파생/집계 재사용"]); covered += 1
     else:
-        # 파생·화면집계 잔여
-        COVERAGE.append([f, "매핑됨(파생/집계)", "화면 계산·집계 필드로 처리", "supply_monthly/issuance_plan 파생"]); covered += 1
+        COVERAGE.append([f, "미매핑", "02_Columns/alias 어디에도 매핑 근거 없음", "HTML_FIELDS 또는 COLUMNS 동기화 필요"])
+        unmapped.append(f)
 cov_pct = covered / len(HTML_FIELDS) * 100
 print(f"  커버리지: {covered}/{len(HTML_FIELDS)} = {cov_pct:.1f}%")
+if unmapped:
+    print(f"  [경고] 미매핑 필드 {len(unmapped)}개: {', '.join(unmapped)}")
 
 # ============================================================================
 # 08_DDL 생성
@@ -616,8 +640,8 @@ r_end = write_table(ws9, ["HTML data-field","매핑 상태","매핑 근거","비
             title="09. data-field 커버리지 검증",
             subtitle=f"총 {len(HTML_FIELDS)}개 · 매핑 {covered}개 · 커버리지 {cov_pct:.1f}%  (동적 템플릿 ${{...}}은 정적 필드로 정규화)")
 
-os.makedirs("/workspace/output", exist_ok=True)
-out = "/workspace/output/KTB_TERMINAL_DB_Design.xlsx"
+os.makedirs("/workspace/design/schema", exist_ok=True)
+out = "/workspace/design/schema/KTB_TERMINAL_DB_Design.xlsx"
 wb.save(out)
 print(f"\n저장 완료: {out}")
 print(f"시트: {wb.sheetnames}")
