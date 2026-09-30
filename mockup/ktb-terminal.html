@@ -375,7 +375,7 @@ table.dict code{font-family:var(--mono); background:#000; padding:0 3px; border-
     </div>
   </div>
 
-  <div class="grid3" style="grid-template-columns:33% 46% 21%; height:398px">
+  <div class="grid3" style="grid-template-columns:38% 62%; height:398px">
     <div class="panel">
       <div class="p-head"><span class="p-code">P1</span><h3>입찰 캘린더</h3>
         <span class="mnav"><button class="mnav-prev" title="이전 월">◀</button><span class="mnav-lbl">2026-09</span><button class="mnav-next" title="다음 월">▶</button></span>
@@ -409,58 +409,6 @@ table.dict code{font-family:var(--mono); background:#000; padding:0 3px; border-
           </tr></thead>
           <tbody id="blotBody"></tbody>
         </table>
-      </div>
-    </div>
-
-    <div class="panel">
-      <div class="p-head"><span class="p-code">P3</span><h3>낙찰 상세</h3><span class="p-sub" id="p3Sub">KR103501GD68 · 10Y 24-6</span></div>
-      <div class="p-body" id="p3body">
-        <div class="section-title">낙찰금리 구조 <span class="dim">(최저 · 가중평균 · 최고, OHLC형)</span></div>
-        <canvas id="ohlcChart" width="280" height="150"></canvas>
-        <div id="ohlcStat" class="ohlc-stat"></div>
-        <div class="section-title" style="margin-top:10px">동일 만기 과거 입찰 추이 <span class="dim" id="sparkSub"></span></div>
-        <div style="display:flex; flex-direction:column; gap:8px">
-          <canvas id="sparkBTC" width="280" height="48"></canvas>
-          <canvas id="sparkTail" width="280" height="48"></canvas>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="grid3" style="grid-template-columns:34% 34% 32%; height:250px; margin-top:1px">
-    <div class="panel">
-      <div class="p-head"><span class="p-code">P4</span><h3>만기별 수요강도 히트맵</h3>
-        <div class="toggles" id="heatToggle">
-          <span class="chip on" data-m="score">종합</span><span class="chip" data-m="btc">응찰률</span>
-          <span class="chip" data-m="tail">테일</span><span class="chip" data-m="spr">민평대비</span>
-        </div>
-      </div>
-      <div class="p-body">
-        <div class="heat" id="heatGrid"></div>
-        <div class="legend" style="margin-top:6px">
-          <span><i style="background:var(--dmd-s2)"></i>강세(수요강함)</span>
-          <span><i style="background:var(--dmd-n)"></i>중립</span>
-          <span><i style="background:var(--dmd-w2)"></i>약세(수요약함)</span>
-          <span class="dim">열 = 최근 입찰회차</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="panel">
-      <div class="p-head"><span class="p-code">P5</span><h3>발행계획 대비 실적</h3><span class="p-sub">2026 연간</span></div>
-      <div class="p-body" id="p5body"></div>
-    </div>
-
-    <div class="panel">
-      <div class="p-head"><span class="p-code">P6</span><h3>수급 워터폴</h3><span class="p-sub">2026-09 순공급</span></div>
-      <div class="p-body">
-        <div class="wf" id="wfWrap"></div>
-        <div class="legend" style="margin-top:2px; justify-content:center">
-          <span><i style="background:var(--accent)"></i>발행(+)</span>
-          <span><i style="background:var(--up)"></i>상환/매입(−)</span>
-          <span><i style="background:var(--warn)"></i>교환(±)</span>
-          <span><i style="background:#fff"></i>순공급</span>
-        </div>
       </div>
     </div>
   </div>
@@ -855,7 +803,6 @@ function heatColor(metric, v){
 
 /* ---------- 상태 ---------- */
 let activeTypes = new Set(Object.keys(AT));
-let heatMetric = "score";
 let blotFilter = null;   /* P1 캘린더 → P2 블로터 필터 대상 종목코드 (null=전체) */
 
 /* 조회월 상태 — P1 캘린더와 P2 블로터가 공유(연동). 기준시점 2026-09.
@@ -983,8 +930,12 @@ function renderBlotter(codeFilter){
 function filterBlotter(code){ blotFilter = code; renderBlotter(code); markCalSelection(); }
 
 /* ---------- P3 낙찰 상세 ---------- */
+/* STEP 1에서 P3 HTML 컨테이너(#p3Sub/#ohlcChart 등)는 제거됨. 함수 정의는 STEP 2·3 재사용을
+   위해 유지하되, 대상 DOM이 없으면 안전하게 no-op 하여 콘솔 에러를 방지한다. */
 function renderP3(r){
-  document.getElementById("p3Sub").textContent = `${r.code} · ${matLabel(r.mat)} ${r.seq}`;
+  const sub = document.getElementById("p3Sub");
+  if(!sub) return;                     /* P3 컨테이너 미존재 → no-op (drawOHLC 등은 STEP 2·3에서 사용) */
+  sub.textContent = `${r.code} · ${matLabel(r.mat)} ${r.seq}`;
   drawOHLC(r);
   drawMatTrend(r);
 }
@@ -1074,58 +1025,6 @@ function drawOHLC(r){
       <span class="up"><b class="mono">${hi.toFixed(3)}</b><small>최고%</small></span>
       <span><b class="mono">${(tail*100).toFixed(1)}</b><small>테일bp</small></span>${estBadge}`;
   }
-}
-
-/* ---------- P4 히트맵 ---------- */
-function renderHeat(){
-  const g = document.getElementById("heatGrid");
-  g.style.gridTemplateColumns = `44px repeat(${HEAT_LABELS.length},1fr)`;
-  let html = `<div class="hcol"></div>` + HEAT_LABELS.map(l=>`<div class="hcol">${l}</div>`).join("");
-  MATS.forEach(m=>{
-    html += `<div class="hlbl">${matLabel(m)}</div>`;
-    HEAT[heatMetric][m].forEach((v,ci)=>{
-      const c = heatColor(heatMetric,v);
-      const disp = v==null? "" : heatMetric==="score"? v : heatMetric==="btc"? v.toFixed(1) : v.toFixed(1);
-      html += `<div class="hcell" style="background:${c.bg};color:${c.tx}" data-field="dmd.heat_${heatMetric}" data-source="DERIVED" data-freq="입찰일 T+0 16:00" title="${matLabel(m)} ${HEAT_LABELS[ci]}: ${disp}">${disp}</div>`;
-    });
-  });
-  g.innerHTML = html;
-}
-
-/* ---------- P5 계획 대비 실적 ---------- */
-function renderP5(){
-  const b = document.getElementById("p5body");
-  b.innerHTML = PLAN.map(p=>{
-    const pct = (p.act/p.plan*100);
-    return `<div style="margin-bottom:5px">
-      <div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:2px">
-        <span class="mut">${matLabel(p.mat)}</span>
-        <span class="mono" data-field="plan.progress_by_mat" data-source="DERIVED" data-freq="입찰일 T+0 16:00">${p.act.toFixed(1)} / ${p.plan}조 · ${pct.toFixed(0)}%</span>
-      </div>
-      <div class="pbar"><span style="width:${Math.min(100,pct)}%" data-field="plan.act_by_mat" data-source="MOEF_KTB" data-freq="입찰일 T+0 16:00"></span></div>
-    </div>`;
-  }).join("") + `<div class="dim" style="font-size:9px;margin-top:4px">채움=실적 / 트랙=연간계획 · 연간한도 진도율 평균 ${(PLAN.reduce((s,p)=>s+p.act,0)/PLAN.reduce((s,p)=>s+p.plan,0)*100).toFixed(0)}%</div>`;
-}
-
-/* ---------- P6 워터폴 ---------- */
-function renderWF(){
-  const w = document.getElementById("wfWrap");
-  const net = WF.reduce((s,x)=>s+x.v,0);
-  const all = [...WF, {k:"순공급", v:net, sign:2, src:"DERIVED"}];
-  const maxAbs = 16;
-  let cum = 0;
-  w.innerHTML = all.map(x=>{
-    const isNet = x.sign===2;
-    const h = Math.abs(x.v)/maxAbs*110;
-    const bottom = isNet? 0 : (x.v>=0? cum : cum+x.v);
-    if(!isNet) cum += x.v;
-    const color = isNet? "#e6e6e6" : x.sign>0? "var(--accent)" : x.sign<0? "var(--up)" : "var(--warn)";
-    return `<div class="col">
-      <span class="cap">${x.v>=0&&!isNet?"+":""}${x.v.toFixed(1)}</span>
-      <div class="bar" style="height:${Math.max(3,h)}px;background:${color};margin-bottom:${bottom/maxAbs*110}px"
-        data-field="sd.wf_${x.k}" data-source="${x.src}" data-freq="입찰일 T+0 16:00"></div>
-      <span class="cl">${x.k}</span></div>`;
-  }).join("");
 }
 
 /* ---------- sparkline / chart helpers ---------- */
@@ -2018,13 +1917,12 @@ function renderDict(){
 document.getElementById("tabbar").addEventListener("click",e=>{const t=e.target.closest(".tab");if(t)switchScreen(t.dataset.scr);});
 document.getElementById("typeFilter").addEventListener("click",e=>{const c=e.target.closest(".chip");if(!c)return;c.classList.toggle("on");c.classList.contains("on")?activeTypes.add(c.dataset.t):activeTypes.delete(c.dataset.t);renderBlotter(blotFilter);});
 document.getElementById("matFilter").addEventListener("click",e=>{const c=e.target.closest(".chip");if(!c)return;c.classList.toggle("on");c.classList.contains("on")?activeMats.add(c.dataset.m):activeMats.delete(c.dataset.m);renderBlotter(blotFilter);});
-document.getElementById("heatToggle").addEventListener("click",e=>{const c=e.target.closest(".chip");if(!c)return;document.querySelectorAll("#heatToggle .chip").forEach(x=>x.classList.remove("on"));c.classList.add("on");heatMetric=c.dataset.m;renderHeat();});
 document.getElementById("codeInput").addEventListener("keydown",e=>{if(e.key==="Enter"){const v=e.target.value.trim().toUpperCase().replace("KTB ","").replace("/","");const map={AUC:"auc",RES:"res",DMD:"dmd",PLAN:"plan","SD":"sd","S/D":"sd","S":"sd",PD:"pd"};if(map[v])switchScreen(map[v]);}});
 /* 월 네비게이터: P1·P2 어느 쪽 버튼을 눌러도 stepViewMonth()가 양쪽을 동시 재렌더 → 조회월 연동 */
 document.addEventListener("click",e=>{if(e.target.closest("#scr-auc .mnav-prev")){stepViewMonth(-1);}else if(e.target.closest("#scr-auc .mnav-next")){stepViewMonth(1);}});
 
 /* ---------- init ---------- */
-renderCal(); renderBlotter(); renderHeat(); renderP5(); renderWF();
+renderCal(); renderBlotter();
 renderP3(RESULTS.find(r=>r.code==="KR103501GD68")); renderDict();
 kpiSpark("spk1",[13.2,14.8,15.6,14.1,15.2],"#3b82f6");
 kpiSpark("spk2",[2.9,3.0,3.1,3.03,3.21],"#22c55e");
