@@ -90,6 +90,13 @@ a{color:var(--accent); text-decoration:none}
 .kpi .k-v small{font-size:11px; color:var(--tx-mut)}
 .kpi .k-d{font-size:10px; margin-top:1px}
 .kpi .k-spark{margin-top:3px; height:16px}
+/* scr-auc 전용: P3~P6 제거로 생긴 가로 여유를 활용해 KPI 칸을 시원하게 확대 (다른 탭 KPI엔 미적용) */
+#scr-auc .kpi{padding:11px 16px; display:flex; flex-direction:column}
+#scr-auc .kpi .k-l{font-size:10.5px}
+#scr-auc .kpi .k-v{font-size:22px; margin-top:4px}
+#scr-auc .kpi .k-v small{font-size:12px}
+#scr-auc .kpi .k-d{margin-top:2px}
+#scr-auc .kpi .k-spark{margin-top:auto; padding-top:6px; width:100%; height:22px}
 
 /* ---- Panels ---- */
 .grid3{display:grid; gap:1px; background:var(--bd)}
@@ -260,9 +267,11 @@ table.blot .stick-4{left:298px; min-width:62px; width:62px; box-shadow:1px 0 0 v
 .section-title{font-size:10px; color:var(--tx-dim); text-transform:uppercase; letter-spacing:0.06em; margin:0 0 5px}
 
 /* calendar */
-.cal{display:grid; grid-template-columns:repeat(7,1fr); gap:2px; font-size:9px}
-.cal .cah{color:var(--tx-dim); text-align:center; font-family:var(--sans); font-size:9px; padding-bottom:2px}
-.cal .cd{min-height:52px; border:1px solid var(--bd); border-radius:2px; padding:2px; background:var(--bg-1); position:relative}
+.cal-body{display:flex; flex-direction:column}
+.cal-head{display:grid; grid-template-columns:repeat(7,1fr); gap:2px; flex:0 0 auto}
+.cal-head .cah{color:var(--tx-dim); text-align:center; font-family:var(--sans); font-size:9px; padding-bottom:3px}
+.cal{display:grid; grid-template-columns:repeat(7,1fr); grid-auto-rows:1fr; gap:2px; font-size:9px; flex:1 1 auto; min-height:0}
+.cal .cd{min-height:52px; border:1px solid var(--bd); border-radius:2px; padding:2px; background:var(--bg-1); position:relative; display:flex; flex-direction:column}
 .cal .cd.oth{opacity:0.35}
 .cal .cd.today{border-color:var(--accent)}
 .cal .cd .dn{font-family:var(--mono); font-size:8px; color:var(--tx-dim)}
@@ -332,7 +341,7 @@ table.dict code{font-family:var(--mono); background:#000; padding:0 3px; border-
       <div class="k-l">월 발행계획액 <span class="en">Monthly Plan</span></div>
       <div class="k-v" data-field="plan.month_total" data-source="MOEF_KTB" data-freq="월간 전월말목 09:00">15.2<small> 조원</small></div>
       <div class="k-d mut">2026-09 계획 (경쟁입찰 기준)</div>
-      <canvas class="k-spark" id="spk1" width="220" height="16"></canvas>
+      <canvas class="k-spark" id="spk1" width="256" height="22"></canvas>
     </div>
     <div class="kpi" id="kpiSel">
       <div class="k-l">선택 입찰 <span class="en">Selected</span></div>
@@ -343,26 +352,26 @@ table.dict code{font-family:var(--mono); background:#000; padding:0 3px; border-
       <div class="k-l">평균 응찰률 <span class="en">Avg Bid-to-Cover</span></div>
       <div class="k-v" id="kpiBtcVal" data-field="auc.bid_to_cover" data-source="DERIVED" data-freq="입찰일 T+0 16:00">—<small> x</small></div>
       <div class="k-d mut" id="kpiBtcSub">선택 만기 기준</div>
-      <canvas class="k-spark" id="spk2" width="220" height="16"></canvas>
+      <canvas class="k-spark" id="spk2" width="256" height="22"></canvas>
     </div>
     <div class="kpi">
       <div class="k-l">평균 테일 <span class="en">Avg Tail</span></div>
       <div class="k-v" id="kpiTailVal" data-field="auc.tail" data-source="DERIVED" data-freq="입찰일 T+0 16:00">—<small> bp</small></div>
       <div class="k-d mut" id="kpiTailSub">선택 만기 기준</div>
-      <canvas class="k-spark" id="spk3" width="220" height="16"></canvas>
+      <canvas class="k-spark" id="spk3" width="256" height="22"></canvas>
     </div>
     <div class="kpi">
       <div class="k-l">낙찰금리 구조 <span class="en">Cut-off Structure</span></div>
-      <canvas id="ohlcChart" width="240" height="60" data-field="auc.high_rate" data-source="BOK_ECOS" data-freq="입찰일 T+0 16:00" style="margin-top:2px"></canvas>
+      <canvas id="ohlcChart" width="264" height="74" data-field="auc.high_rate" data-source="BOK_ECOS" data-freq="입찰일 T+0 16:00" style="margin-top:6px; width:100%; height:74px"></canvas>
     </div>
   </div>
 
-  <div class="grid3" style="grid-template-columns:38% 62%; height:398px">
+  <div class="grid3" style="grid-template-columns:37% 63%; height:calc(100vh - 190px); min-height:440px">
     <div class="panel">
       <div class="p-head"><span class="p-code">P1</span><h3>입찰 캘린더</h3>
         <span class="mnav"><button class="mnav-prev" title="이전 월">◀</button><span class="mnav-lbl">2026-09</span><button class="mnav-next" title="다음 월">▶</button></span>
       </div>
-      <div class="p-body">
+      <div class="p-body cal-body">
         <div class="legend" style="margin-bottom:6px">
           <span><i style="background:#93c5fd"></i>경쟁</span>
           <span><i style="background:#86efac"></i>비경쟁</span>
@@ -370,6 +379,7 @@ table.dict code{font-family:var(--mono); background:#000; padding:0 3px; border-
           <span><i style="background:#67e8f9"></i>교환</span>
           <span class="dim">칩폭 = 금액</span>
         </div>
+        <div class="cal-head"><div class="cah">일</div><div class="cah">월</div><div class="cah">화</div><div class="cah">수</div><div class="cah">목</div><div class="cah">금</div><div class="cah">토</div></div>
         <div class="cal" id="calGrid"></div>
         <div class="dim" style="margin-top:6px; font-size:9px">셀 클릭 → P2 블로터 필터 · 같은 셀 재클릭 시 해제 · <span class="badge plan">예정</span> <span class="badge conf">확정</span></div>
       </div>
@@ -851,7 +861,7 @@ function renderCal(){
   RESULTS.filter(r=>r.d.startsWith(ymPrefix)).forEach(r=>{
     const dd = parseInt(r.d.slice(8,10),10); (evByDay[dd]=evByDay[dd]||[]).push(r);
   });
-  let html = ["일","월","화","수","목","금","토"].map(w=>`<div class="cah">${w}</div>`).join("");
+  let html = "";
   /* 동적 계산: 해당 월 1일의 요일, 총 일수 */
   const firstDow = new Date(viewYear, viewMonth, 1).getDay();       /* 0=일 … 6=토 */
   const daysInMonth = new Date(viewYear, viewMonth+1, 0).getDate(); /* 말일 */
