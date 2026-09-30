@@ -80,14 +80,6 @@ a{color:var(--accent); text-decoration:none}
 .tab.on{background:var(--bg); color:#fff; border-bottom:2px solid var(--accent)}
 .tab.on .tcode{color:var(--accent)}
 
-/* ---- Screen question banner ---- */
-.qbanner{
-  padding:5px 12px; background:#0c1220; border-bottom:1px solid var(--bd);
-  font-size:11px; color:var(--tx-mut);
-}
-.qbanner b{color:var(--tx); font-weight:600}
-.qbanner .qtag{color:var(--accent); font-family:var(--mono); margin-right:8px}
-
 /* ---- KPI strip ---- */
 .kpis{display:grid; grid-template-columns:repeat(5,1fr); border-bottom:1px solid var(--bd)}
 .kpi{padding:8px 12px; border-right:1px solid var(--bd)}
@@ -350,8 +342,6 @@ table.dict code{font-family:var(--mono); background:#000; padding:0 3px; border-
 </div>
 
 <section class="screen on" id="scr-auc">
-  <div class="qbanner"><span class="qtag">KTB AUC</span><b>이 화면이 답하는 질문:</b> 이번 달 국고채는 언제·무엇이·얼마나 입찰되며, 방금 끝난 입찰의 수요는 강했는가?</div>
-
   <div class="kpis">
     <div class="kpi">
       <div class="k-l">월 발행계획액 <span class="en">Monthly Plan</span></div>
@@ -1187,7 +1177,6 @@ function renderRES(){
      범위(테일)가 큰 입찰일수록 캔들이 길게 보인다. 범위 = 공시 (최고−최저) 낙찰금리. */
   r2MaxRangeBp = Math.max(...allComp.map(x=>x.lo!=null?(x.hi-x.lo)*100:(x.hi-x.wavg)*1.5*100)) || 3;
   document.getElementById("scr-res").innerHTML = `
-  <div class="qbanner"><span class="qtag">KTB RES</span><b>이 화면이 답하는 질문:</b> 특정 종목·차수 입찰이 어떤 금리 구조로 낙찰됐고, 직전 회차 대비 수요가 어떻게 바뀌었는가?</div>
   <div class="grid3" style="grid-template-columns:38% 34% 28%; height:720px">
     <div class="panel">
       <div class="p-head"><span class="p-code">R1</span><h3>종목·차수 드릴다운</h3>
@@ -1447,7 +1436,6 @@ let sdChartRef = null;                     /* SD1 Chart 인스턴스(재렌더 �
 function renderDMD(){
   const opts = DMD_MONTH_LABELS.map((l,i)=>`<option value="${i}">${l}</option>`).join("");
   document.getElementById("scr-dmd").innerHTML = `
-  <div class="qbanner"><span class="qtag">KTB DMD</span><b>이 화면이 답하는 질문:</b> 어느 만기의 수요가 강해지고 약해지는가? (선택 기간의 만기별 수요강도 추이·히트맵)</div>
   <div class="grid3" style="grid-template-columns:60% 40%; height:720px">
     <div class="panel">
       <div class="p-head"><span class="p-code">D1</span><h3>수요강도 종합 트렌드</h3>
@@ -1537,7 +1525,6 @@ function renderPLAN(){
   const vPrevLbl = planViewMonth===0 ? "전년12월" : PLAN_MONTH_LABELS[planViewMonth-1];
 
   document.getElementById("scr-plan").innerHTML = `
-  <div class="qbanner"><span class="qtag">KTB PLAN</span><b>이 화면이 답하는 질문:</b> 국고채 발행 공급이 <b>작년 대비</b>, 그리고 <b>직전 달 대비</b> 만기별로 얼마나 늘고 줄었는가? <span class="dim" style="margin-left:8px">▲증가=공급확대(수급부담) · ▼감소=공급축소(수급완화)</span></div>
   <div class="kpis">
     <div class="kpi"><div class="k-l">당해 연간계획 총액 <span class="en">FY26 Plan</span></div>
       <div class="k-v" data-field="plan.annual_total" data-source="MOEF_KTB" data-freq="연간 전년말">${annCyT}<small> 조원</small></div>
@@ -1695,7 +1682,6 @@ function wirePlanNav(){
 function renderSD(){
   const opts = SD_SERIES.labels.map((l,i)=>`<option value="${i}">${l}</option>`).join("");
   document.getElementById("scr-sd").innerHTML = `
-  <div class="qbanner"><span class="qtag">KTB S/D</span><b>이 화면이 답하는 질문:</b> 발행에서 만기상환·바이백·교환을 뺀 실제 시장 순공급은 얼마이며 추세는 어떤가?</div>
   <div class="grid3" style="grid-template-columns:60% 40%; height:720px">
     <div class="panel"><div class="p-head"><span class="p-code">SD1</span><h3>월별 순공급 시계열</h3>
       <span class="rangesel">
@@ -1786,7 +1772,6 @@ function renderPD(){
   const totRatio = totNcomp/(totWon+totNcomp)*100;
   const typeTot = NCB_TYPES.reduce((s,t)=>s+t.amt,0);
   document.getElementById("scr-pd").innerHTML = `
-  <div class="qbanner"><span class="qtag">KTB NCB</span><b>이 화면이 답하는 질문:</b> 국고채 비경쟁 인수는 종목·만기·유형별로 얼마이며, 경쟁낙찰 대비 비중과 추세는 어떠한가?</div>
   <div class="grid3" style="grid-template-columns:58% 42%; height:720px">
     <div class="panel"><div class="p-head"><span class="p-code">NCB1</span><h3>종목별 비경쟁 인수 현황</h3><span class="p-sub">경쟁낙찰 대비 비경쟁 비중 (억원)</span></div>
       <div class="p-body" style="padding:0"><table class="blot"><thead><tr><th class="l">종목(만기)</th><th>차수</th><th>낙찰액<span class="en">억</span></th><th>비경쟁<span class="en">억</span></th><th>PD수</th><th>비경쟁비중</th><th class="l">인수구조</th></tr></thead><tbody>
