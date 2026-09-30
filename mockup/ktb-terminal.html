@@ -321,10 +321,10 @@ table.dict code{font-family:var(--mono); background:#000; padding:0 3px; border-
   </div>
   <span class="cmd-sep"></span>
   <div class="filtergrp" id="matFilter">
-    <span class="lbl">만기</span>
-    <span class="chip mat on">2Y</span><span class="chip mat on">3Y</span><span class="chip mat on">5Y</span>
-    <span class="chip mat on">10Y</span><span class="chip mat on">20Y</span><span class="chip mat on">30Y</span>
-    <span class="chip mat on">50Y</span><span class="chip mat on">KTBi</span>
+  <span class="lbl">만기</span>
+  <span class="chip mat on" data-m="2Y">2Y</span><span class="chip mat on" data-m="3Y">3Y</span><span class="chip mat on" data-m="5Y">5Y</span>
+  <span class="chip mat on" data-m="10Y">10Y</span><span class="chip mat on" data-m="20Y">20Y</span><span class="chip mat on" data-m="30Y">30Y</span>
+  <span class="chip mat on" data-m="50Y">50Y</span><span class="chip mat on" data-m="KTBi">물가</span>
   </div>
   <div class="live">
     <span class="dot"></span><span>AUTO 60s</span>
@@ -486,6 +486,9 @@ table.dict code{font-family:var(--mono); background:#000; padding:0 3px; border-
 "use strict";
 
 const MATS = ["2Y","3Y","5Y","10Y","20Y","30Y","50Y","KTBi"];
+/* 만기 표시 라벨: 데이터 키 "KTBi"는 로직에 그대로 유지하고, 화면 표시 시점에만 '물가'로 매핑 */
+const matLabel = m => m==="KTBi" ? "물가" : m;
+let activeMats = new Set(MATS);   /* 만기 필터 상태(초기값: 전체 선택) */
 const AT = {
   comp:{cls:"at-comp",ko:"경쟁입찰",short:"경쟁"},
   nc1:{cls:"at-nc1",ko:"비경쟁인수 I",short:"비경쟁I"},
@@ -879,7 +882,7 @@ function stepViewMonth(delta){ setViewMonth(viewYear, viewMonth+delta); }
    · 매입/교환 → 색상만이 아니라 한글 라벨 명시
    · 경쟁/개인투자용은 만기(mat)로 표기 */
 const CAL_LABEL = {
-  comp:r=>r.mat,
+  comp:r=>matLabel(r.mat),
   nc1:r=>"비경I",
   nc2:r=>"비경II",
   nc3:r=>"비경III",
@@ -916,7 +919,7 @@ function renderCal(){
       const bg = {comp:"#1d3a5f",nc1:"#14321f",nc2:"#1a2e14",nc3:"#2e2414",nc4:"#2a1a2e",bb:"#3a1414",ex:"#14323a"}[r.t];
       const fg = {comp:"#93c5fd",nc1:"#86efac",nc2:"#bef264",nc3:"#fcd34d",nc4:"#f0abfc",bb:"#fca5a5",ex:"#67e8f9"}[r.t];
       const label = CAL_LABEL[r.t](r);
-      cell += `<span class="ev" style="background:${bg}; color:${fg}; width:${(w*100)|0}%" data-code="${r.code}" data-field="auc.schedule_cell" data-source="MOEF_KTB" data-freq="발행공고 T-3일" title="${a.ko} ${r.mat} ${r.seq} · ${fmt(r.plan)}억">${r.planned?"◇":"◆"}${label}</span>`;
+      cell += `<span class="ev" style="background:${bg}; color:${fg}; width:${(w*100)|0}%" data-code="${r.code}" data-field="auc.schedule_cell" data-source="MOEF_KTB" data-freq="발행공고 T-3일" title="${a.ko} ${matLabel(r.mat)} ${r.seq} · ${fmt(r.plan)}억">${r.planned?"◇":"◆"}${label}</span>`;
     });
     cell += `</div>`; html += cell;
   }
@@ -950,7 +953,7 @@ function renderBlotter(codeFilter){
   const tb = document.getElementById("blotBody");
   tb.innerHTML = "";
   const ymPrefix = ymStr(viewYear,viewMonth) + "-";     /* 조회월 필터 (P1과 연동) */
-  RESULTS.filter(r=> r.d.startsWith(ymPrefix) && activeTypes.has(r.t) && (!codeFilter || r.code===codeFilter)).forEach(r=>{
+  RESULTS.filter(r=> r.d.startsWith(ymPrefix) && activeTypes.has(r.t) && activeMats.has(r.mat) && (!codeFilter || r.code===codeFilter)).forEach(r=>{
     const a=AT[r.t];
     const btc = r.bid&&r.plan? (r.bid/r.plan):null;
     const mmdd = r.d.slice(5);                           /* "MM-DD" 표시 (연도는 헤더 조회월에 표기) */
@@ -959,7 +962,7 @@ function renderBlotter(codeFilter){
       <td class="l stick stick-1" data-field="auc.bid_date" data-source="MOEF_KTB" data-freq="발행공고 T-3일">${mmdd}</td>
       <td class="l stick stick-2" data-field="bond.isin" data-source="MOEF_KTB" data-freq="발행공고 T-3일">${r.code}</td>
       <td class="l stick stick-3" data-field="bond.name" data-source="MOEF_KTB" data-freq="발행공고 T-3일">${r.nm}</td>
-      <td class="stick stick-4" data-field="bond.maturity" data-source="MOEF_KTB" data-freq="발행공고 T-3일">${r.mat}</td>
+      <td class="stick stick-4" data-field="bond.maturity" data-source="MOEF_KTB" data-freq="발행공고 T-3일">${matLabel(r.mat)}</td>
       <td data-field="auc.tranche" data-source="MOEF_KTB" data-freq="발행공고 T-3일">${r.seq}</td>
       <td class="l"><span class="at ${a.cls}" data-field="auc.type" data-source="MOEF_KTB" data-freq="발행공고 T-3일">${a.short}</span></td>
       <td data-field="auc.plan_amt" data-source="MOEF_KTB" data-freq="발행공고 T-3일">${fmt(r.plan)}</td>
@@ -981,7 +984,7 @@ function filterBlotter(code){ blotFilter = code; renderBlotter(code); markCalSel
 
 /* ---------- P3 낙찰 상세 ---------- */
 function renderP3(r){
-  document.getElementById("p3Sub").textContent = `${r.code} · ${r.mat} ${r.seq}`;
+  document.getElementById("p3Sub").textContent = `${r.code} · ${matLabel(r.mat)} ${r.seq}`;
   drawOHLC(r);
   drawMatTrend(r);
 }
@@ -1004,7 +1007,7 @@ function matTrendSeries(r){
 function drawMatTrend(r){
   const s = matTrendSeries(r);
   const sub = document.getElementById("sparkSub");
-  if(sub) sub.textContent = s.length ? `${r.mat} · 최근 ${s.length}회 (응찰률·테일)` : `${r.mat} · comp 이력 없음`;
+  if(sub) sub.textContent = s.length ? `${matLabel(r.mat)} · 최근 ${s.length}회 (응찰률·테일)` : `${matLabel(r.mat)} · comp 이력 없음`;
   drawSpark("sparkBTC", s.map(x=>x.btc), "응찰률", "#3b82f6", s);
   drawSpark("sparkTail", s.map(x=>x.tail), "테일bp", "#ef4444", s);
 }
@@ -1079,11 +1082,11 @@ function renderHeat(){
   g.style.gridTemplateColumns = `44px repeat(${HEAT_LABELS.length},1fr)`;
   let html = `<div class="hcol"></div>` + HEAT_LABELS.map(l=>`<div class="hcol">${l}</div>`).join("");
   MATS.forEach(m=>{
-    html += `<div class="hlbl">${m}</div>`;
+    html += `<div class="hlbl">${matLabel(m)}</div>`;
     HEAT[heatMetric][m].forEach((v,ci)=>{
       const c = heatColor(heatMetric,v);
       const disp = v==null? "" : heatMetric==="score"? v : heatMetric==="btc"? v.toFixed(1) : v.toFixed(1);
-      html += `<div class="hcell" style="background:${c.bg};color:${c.tx}" data-field="dmd.heat_${heatMetric}" data-source="DERIVED" data-freq="입찰일 T+0 16:00" title="${m} ${HEAT_LABELS[ci]}: ${disp}">${disp}</div>`;
+      html += `<div class="hcell" style="background:${c.bg};color:${c.tx}" data-field="dmd.heat_${heatMetric}" data-source="DERIVED" data-freq="입찰일 T+0 16:00" title="${matLabel(m)} ${HEAT_LABELS[ci]}: ${disp}">${disp}</div>`;
     });
   });
   g.innerHTML = html;
@@ -1096,7 +1099,7 @@ function renderP5(){
     const pct = (p.act/p.plan*100);
     return `<div style="margin-bottom:5px">
       <div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:2px">
-        <span class="mut">${p.mat}</span>
+        <span class="mut">${matLabel(p.mat)}</span>
         <span class="mono" data-field="plan.progress_by_mat" data-source="DERIVED" data-freq="입찰일 T+0 16:00">${p.act.toFixed(1)} / ${p.plan}조 · ${pct.toFixed(0)}%</span>
       </div>
       <div class="pbar"><span style="width:${Math.min(100,pct)}%" data-field="plan.act_by_mat" data-source="MOEF_KTB" data-freq="입찰일 T+0 16:00"></span></div>
@@ -1216,7 +1219,7 @@ function renderRES(){
   const colDefs = {
     d:    { num:false, val:x=>x.d,             cell:x=>`<td data-field="auc.auction_date" data-source="MOEF_KTB" data-freq="발행공고 T-3일" class="mono">${x.d}</td>` },
     nm:   { num:false, val:x=>x.nm,            cell:x=>`<td class="l" data-field="bond.name" data-source="MOEF_KTB" data-freq="발행공고 T-3일" style="max-width:150px;overflow:hidden;text-overflow:ellipsis">${x.nm}</td>` },
-    mat:  { num:false, val:x=>x.mat,           cell:x=>`<td data-field="bond.maturity" data-source="MOEF_KTB" data-freq="발행공고 T-3일">${x.mat}</td>` },
+    mat:  { num:false, val:x=>x.mat,           cell:x=>`<td data-field="bond.maturity" data-source="MOEF_KTB" data-freq="발행공고 T-3일">${matLabel(x.mat)}</td>` },
     seq:  { num:false, val:x=>x.seq,           cell:x=>`<td data-field="auc.tranche" data-source="MOEF_KTB" data-freq="발행공고 T-3일">${x.seq}</td>` },
     btc:  { num:true,  val:x=>x.bid/x.plan,    cell:x=>`<td data-field="auc.bid_to_cover" data-source="DERIVED" data-freq="입찰일 T+0 16:00" class="${x.bid/x.plan>=3?'down':''}">${(x.bid/x.plan).toFixed(2)}</td>` },
     tail: { num:true,  val:x=>(x.hi-x.wavg)*100, cell:x=>`<td data-field="auc.tail" data-source="DERIVED" data-freq="입찰일 T+0 16:00">${((x.hi-x.wavg)*100).toFixed(1)}</td>` },
@@ -1389,7 +1392,7 @@ function drawResSeries(r){
   const r3btcSub = document.getElementById("r3btcSub");
   if(!S){
     [resBTCRef,resTailRef,resSprRef]=[resBTCRef,resTailRef,resSprRef].map(ref=>{if(ref)ref.destroy();return null;});
-    if(r3Sub) r3Sub.textContent = `${r.mat} · 추이 데이터 없음`;
+    if(r3Sub) r3Sub.textContent = `${matLabel(r.mat)} · 추이 데이터 없음`;
     if(r3btcSub) r3btcSub.textContent = "";
     return;
   }
@@ -1402,8 +1405,8 @@ function drawResSeries(r){
   const sprArr = S.spr.slice(startIdx, endIdx+1);
   /* 선택 회차(마지막 = 현재월) 강조용 포인트 반경 */
   const ptR = labels.map((_,i)=> i===labels.length-1 ? 4 : 2);
-  if(r3Sub) r3Sub.textContent = `${r.mat} · ${labels[0]}~${labels[labels.length-1]} (${labels.length}개월)`;
-  if(r3btcSub) r3btcSub.textContent = `${r.mat} 지표물`;
+  if(r3Sub) r3Sub.textContent = `${matLabel(r.mat)} · ${labels[0]}~${labels[labels.length-1]} (${labels.length}개월)`;
+  if(r3btcSub) r3btcSub.textContent = `${matLabel(r.mat)} 지표물`;
   const opt={responsive:false,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:"#5c6675",font:{size:8}},grid:{color:"#1a2029"}},y:{ticks:{color:"#5c6675",font:{size:9}},grid:{color:"#1a2029"}}}};
   resBTCRef=mk("resBTC",resBTCRef,{type:"line",data:{labels,datasets:[{data:btcArr,borderColor:"#3b82f6",backgroundColor:"rgba(59,130,246,.1)",tension:.3,pointRadius:ptR,pointBackgroundColor:"#3b82f6",fill:true}]},options:opt});
   resTailRef=mk("resTail",resTailRef,{type:"line",data:{labels,datasets:[{data:tailArr,borderColor:"#ef4444",tension:.3,pointRadius:ptR,pointBackgroundColor:"#ef4444"}]},options:opt});
@@ -1638,8 +1641,8 @@ function renderPLAN(){
         <div class="speccard" style="margin-top:12px">
           <div class="section-title" style="margin:0 0 6px">⚑ 자동 포착된 스토리</div>
           <div style="font-size:11px;line-height:1.6">
-            <div>· <b>연간 YoY</b>: <b>${annUp.mat}</b> 발행계획 ${annUp.ann.py}→${annUp.ann.cy}조 (<b class="${dCls(annUp.ann.d)}">${fmtD(annUp.ann.d)}조 · ${fmtD(annUp.ann.p)}%</b>) 최대 확대, <b>${annDn.mat}</b> ${annDn.ann.py}→${annDn.ann.cy}조 (<b class="${dCls(annDn.ann.d)}">${fmtD(annDn.ann.d)}조</b>) 최대 축소.</div>
-            <div style="margin-top:4px">· <b>당월 MoM</b>: <b>${momUp.mat}</b> ${prevLbl}→${curLbl} <b class="${dCls(momUp.mom.d)}">${fmtD(momUp.mom.d)}조 (${fmtD(momUp.mom.p)}%)</b> 단기 공급 모멘텀 강화, <b>${momDn.mat}</b> <b class="${dCls(momDn.mom.d)}">${fmtD(momDn.mom.d)}조</b> 완화.</div>
+            <div>· <b>연간 YoY</b>: <b>${matLabel(annUp.mat)}</b> 발행계획 ${annUp.ann.py}→${annUp.ann.cy}조 (<b class="${dCls(annUp.ann.d)}">${fmtD(annUp.ann.d)}조 · ${fmtD(annUp.ann.p)}%</b>) 최대 확대, <b>${matLabel(annDn.mat)}</b> ${annDn.ann.py}→${annDn.ann.cy}조 (<b class="${dCls(annDn.ann.d)}">${fmtD(annDn.ann.d)}조</b>) 최대 축소.</div>
+            <div style="margin-top:4px">· <b>당월 MoM</b>: <b>${matLabel(momUp.mat)}</b> ${prevLbl}→${curLbl} <b class="${dCls(momUp.mom.d)}">${fmtD(momUp.mom.d)}조 (${fmtD(momUp.mom.p)}%)</b> 단기 공급 모멘텀 강화, <b>${matLabel(momDn.mat)}</b> <b class="${dCls(momDn.mom.d)}">${fmtD(momDn.mom.d)}조</b> 완화.</div>
             <div class="dim" style="margin-top:6px;font-size:9.5px">원천: MOEF_KTB (ktb.moef.go.kr/isuPlan.do) · 연간계획=전년말 공표 / 월간계획=전월 마지막주 목요일 09:00 공표 · 모두 더미데이터</div>
           </div>
         </div>
@@ -1659,12 +1662,12 @@ function drawPlanCharts(){
   const gopt=(extra={})=>({responsive:false,maintainAspectRatio:false,plugins:{legend:{display:extra.leg!==false,labels:{color:"#8a94a6",font:{size:9},boxWidth:8}}},
     scales:{x:{ticks:{color:"#5c6675",font:{size:9}},grid:{color:"#1a2029"}},y:{ticks:{color:"#5c6675",font:{size:9}},grid:{color:"#1a2029"}}}});
   /* 만기별 동월 YoY vs 당월 MoM — 증감액(조) 그룹 막대 */
-  planCharts.push(new Chart(elYm,{type:"bar",data:{labels:D.map(x=>x.mat),datasets:[
+  planCharts.push(new Chart(elYm,{type:"bar",data:{labels:D.map(x=>matLabel(x.mat)),datasets:[
     {label:`동월 YoY (vs 전년 ${curLbl})`, data:D.map(x=>x.momo.d), backgroundColor:"#3b82f6"},
     {label:`당월 MoM (vs ${prevLbl})`,     data:D.map(x=>x.mom.d),  backgroundColor:"#eab308"}
   ]},options:{...gopt(),scales:{x:{ticks:{color:"#5c6675",font:{size:9}},grid:{color:"#1a2029"}},y:{ticks:{color:"#5c6675",font:{size:9},callback:v=>(v>0?"+":"")+v},grid:{color:c=>c.tick.value===0?"#2d3644":"#1a2029"}}}}}));
   /* YTD 누적 발행계획 — 당해 vs 전년동기 (만기별 그룹 막대) */
-  planCharts.push(new Chart(elYtd,{type:"bar",data:{labels:D.map(x=>x.mat),datasets:[
+  planCharts.push(new Chart(elYtd,{type:"bar",data:{labels:D.map(x=>matLabel(x.mat)),datasets:[
     {label:`전년 1~${curLbl} 누적`, data:D.map(x=>x.ytd.py), backgroundColor:"#334155"},
     {label:`당해 1~${curLbl} 누적`, data:D.map(x=>x.ytd.cy), backgroundColor:"#60a5fa"}
   ]},options:gopt()}));
@@ -1776,7 +1779,7 @@ function renderPD(){
     <div class="panel"><div class="p-head"><span class="p-code">NCB1</span><h3>종목별 비경쟁 인수 현황</h3><span class="p-sub">경쟁낙찰 대비 비경쟁 비중 (억원)</span></div>
       <div class="p-body" style="padding:0"><table class="blot"><thead><tr><th class="l">종목(만기)</th><th>차수</th><th>낙찰액<span class="en">억</span></th><th>비경쟁<span class="en">억</span></th><th>PD수</th><th>비경쟁비중</th><th class="l">인수구조</th></tr></thead><tbody>
         ${NCB_ROWS.map(r=>{const ratio=r.ncomp/(r.won+r.ncomp)*100; const cw=r.won/(r.won+r.ncomp)*100; return `<tr>
-          <td class="l" data-field="ncb.bond_name" data-source="MOEF_KTB" data-freq="입찰일 T+0">${r.nm} <span class="badge">${r.mat}</span></td>
+          <td class="l" data-field="ncb.bond_name" data-source="MOEF_KTB" data-freq="입찰일 T+0">${r.nm} <span class="badge">${matLabel(r.mat)}</span></td>
           <td data-field="ncb.tranche" data-source="MOEF_KTB" data-freq="입찰일 T+0">${r.tr}</td>
           <td data-field="ncb.won_amt" data-source="MOEF_KTB" data-freq="입찰일 T+0">${fmt(r.won)}</td>
           <td data-field="ncb.noncomp_amt" data-source="MOEF_KTB" data-freq="입찰일 T+1">${fmt(r.ncomp)}</td>
@@ -1845,11 +1848,11 @@ function renderDMDHeat(){
   g.style.gridTemplateColumns=`44px repeat(${labels.length},1fr)`;
   let html=`<div class="hcol"></div>`+labels.map(l=>`<div class="hcol">${l}</div>`).join("");
   MATS.forEach(m=>{
-    html+=`<div class="hlbl">${m}</div>`;
+    html+=`<div class="hlbl">${matLabel(m)}</div>`;
     DMD_MONTHLY_SCORE[m].slice(s,e+1).forEach((v,ci)=>{
       const c=heatColor("score",v);
       const disp=v==null?"":v;
-      html+=`<div class="hcell" style="background:${c.bg};color:${c.tx}" data-field="dmd.heat_score" data-source="DERIVED" data-freq="입찰일 T+0 16:00" title="${m} ${labels[ci]}: ${disp}">${disp}</div>`;
+      html+=`<div class="hcell" style="background:${c.bg};color:${c.tx}" data-field="dmd.heat_score" data-source="DERIVED" data-freq="입찰일 T+0 16:00" title="${matLabel(m)} ${labels[ci]}: ${disp}">${disp}</div>`;
     });
   });
   g.innerHTML=html;
@@ -2013,7 +2016,8 @@ function renderDict(){
 
 /* ---------- 이벤트 바인딩 ---------- */
 document.getElementById("tabbar").addEventListener("click",e=>{const t=e.target.closest(".tab");if(t)switchScreen(t.dataset.scr);});
-document.getElementById("typeFilter").addEventListener("click",e=>{const c=e.target.closest(".chip");if(!c)return;c.classList.toggle("on");c.classList.contains("on")?activeTypes.add(c.dataset.t):activeTypes.delete(c.dataset.t);renderBlotter();});
+document.getElementById("typeFilter").addEventListener("click",e=>{const c=e.target.closest(".chip");if(!c)return;c.classList.toggle("on");c.classList.contains("on")?activeTypes.add(c.dataset.t):activeTypes.delete(c.dataset.t);renderBlotter(blotFilter);});
+document.getElementById("matFilter").addEventListener("click",e=>{const c=e.target.closest(".chip");if(!c)return;c.classList.toggle("on");c.classList.contains("on")?activeMats.add(c.dataset.m):activeMats.delete(c.dataset.m);renderBlotter(blotFilter);});
 document.getElementById("heatToggle").addEventListener("click",e=>{const c=e.target.closest(".chip");if(!c)return;document.querySelectorAll("#heatToggle .chip").forEach(x=>x.classList.remove("on"));c.classList.add("on");heatMetric=c.dataset.m;renderHeat();});
 document.getElementById("codeInput").addEventListener("keydown",e=>{if(e.key==="Enter"){const v=e.target.value.trim().toUpperCase().replace("KTB ","").replace("/","");const map={AUC:"auc",RES:"res",DMD:"dmd",PLAN:"plan","SD":"sd","S/D":"sd","S":"sd",PD:"pd"};if(map[v])switchScreen(map[v]);}});
 /* 월 네비게이터: P1·P2 어느 쪽 버튼을 눌러도 stepViewMonth()가 양쪽을 동시 재렌더 → 조회월 연동 */
