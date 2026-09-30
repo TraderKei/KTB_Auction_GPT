@@ -119,6 +119,9 @@ a{color:var(--accent); text-decoration:none}
 .rangesel select:hover{border-color:var(--accent)}
 .rangesel .rs-tilde{color:var(--tx-dim); font-size:10px}
 .p-body{padding:8px 10px; overflow:auto; flex:1}
+/* ---- P2 블로터 종속 필터 바 (입찰유형·만기) ---- */
+.blot-filters{display:flex; flex-wrap:wrap; align-items:center; gap:6px 14px;
+  padding:5px 10px; border-bottom:1px solid var(--bd); background:var(--bg-1); flex:0 0 auto}
 
 /* ---- Tables ---- */
 table.blot{width:100%; border-collapse:collapse; font-size:11px}
@@ -308,24 +311,6 @@ table.dict code{font-family:var(--mono); background:#000; padding:0 3px; border-
       <option>최근 12개월</option><option>최근 6개월</option><option>최근 3개월</option><option>2026년 YTD</option>
     </select>
   </div>
-  <span class="cmd-sep"></span>
-  <div class="filtergrp" id="typeFilter">
-    <span class="lbl">입찰유형</span>
-    <span class="chip on" data-t="comp">경쟁</span>
-    <span class="chip on" data-t="nc1">비경쟁I</span>
-    <span class="chip on" data-t="nc2">비경쟁II</span>
-    <span class="chip on" data-t="nc3">비경쟁III</span>
-    <span class="chip on" data-t="nc4">비경쟁IV</span>
-    <span class="chip on" data-t="bb">매입</span>
-    <span class="chip on" data-t="ex">교환</span>
-  </div>
-  <span class="cmd-sep"></span>
-  <div class="filtergrp" id="matFilter">
-  <span class="lbl">만기</span>
-  <span class="chip mat on" data-m="2Y">2Y</span><span class="chip mat on" data-m="3Y">3Y</span><span class="chip mat on" data-m="5Y">5Y</span>
-  <span class="chip mat on" data-m="10Y">10Y</span><span class="chip mat on" data-m="20Y">20Y</span><span class="chip mat on" data-m="30Y">30Y</span>
-  <span class="chip mat on" data-m="50Y">50Y</span><span class="chip mat on" data-m="KTBi">물가</span>
-  </div>
   <div class="live">
     <span class="dot"></span><span>AUTO 60s</span>
     <span class="clock" id="clock">2026-09-11 16:00:00 KST</span>
@@ -397,6 +382,24 @@ table.dict code{font-family:var(--mono); background:#000; padding:0 3px; border-
       <div class="p-head"><span class="p-code">P2</span><h3>입찰 결과 블로터</h3>
         <span class="mnav"><button class="mnav-prev" title="이전 월">◀</button><span class="mnav-lbl">2026-09</span><button class="mnav-next" title="다음 월">▶</button></span>
         <span class="p-sub" id="blotSub">전체 · 정렬: 입찰일 ▼</span></div>
+      <div class="blot-filters">
+        <div class="filtergrp" id="typeFilter">
+          <span class="lbl">입찰유형</span>
+          <span class="chip on" data-t="comp">경쟁</span>
+          <span class="chip on" data-t="nc1">비경쟁I</span>
+          <span class="chip on" data-t="nc2">비경쟁II</span>
+          <span class="chip on" data-t="nc3">비경쟁III</span>
+          <span class="chip on" data-t="nc4">비경쟁IV</span>
+          <span class="chip on" data-t="bb">매입</span>
+          <span class="chip on" data-t="ex">교환</span>
+        </div>
+        <div class="filtergrp" id="matFilter">
+          <span class="lbl">만기</span>
+          <span class="chip mat on" data-m="2Y">2Y</span><span class="chip mat on" data-m="3Y">3Y</span><span class="chip mat on" data-m="5Y">5Y</span>
+          <span class="chip mat on" data-m="10Y">10Y</span><span class="chip mat on" data-m="20Y">20Y</span><span class="chip mat on" data-m="30Y">30Y</span>
+          <span class="chip mat on" data-m="50Y">50Y</span><span class="chip mat on" data-m="KTBi">물가</span>
+        </div>
+      </div>
       <div class="p-body" style="padding:0">
         <table class="blot" id="blotter">
           <thead><tr>
