@@ -51,7 +51,7 @@ a{color:var(--accent); text-decoration:none}
 .tabbar{display:flex; gap:0; background:var(--bg-1); border-bottom:1px solid var(--bd); height:38px}
 .tab{
   padding:0 20px; height:38px; display:flex; align-items:center; gap:6px;
-  font-size:14px; color:var(--tx-mut); cursor:pointer; border-right:1px solid var(--bd);
+  font-size:13px; color:var(--tx-mut); cursor:pointer; border-right:1px solid var(--bd);
   letter-spacing:0.04em; user-select:none;
 }
 .tab .qmark{font-size:9px; color:var(--tx-dim)}
@@ -77,9 +77,12 @@ a{color:var(--accent); text-decoration:none}
 #scr-auc .kpi .k-v{font-size:22px; margin-top:2px; line-height:1.1}
 #scr-auc .kpi .k-v small{font-size:12px}
 #scr-auc .kpi .k-d{font-size:10.5px; margin-top:1px; line-height:1.25}
-/* 그래프를 flex 잔여공간 전체로 확장 → 칸의 대부분을 그래프가 채움 */
-#scr-auc .kpi .k-spark{margin-top:auto; padding-top:8px; width:100%; height:auto; flex:1 1 auto; min-height:52px}
-#scr-auc .kpi #ohlcChart{margin-top:auto!important; padding-top:8px; width:100%; height:auto!important; flex:1 1 auto; min-height:72px}
+/* 그래프를 하단에 고정 높이로 배치 → 칸의 대부분을 그래프가 채우되 높이는 불변.
+   주의: height를 auto/flex로 두면 렌더 함수(kpiSpark·drawOHLC)가 clientHeight를
+   drawing-buffer에 되쓰는 과정에서 레이아웃 높이가 단조 증가하는 되먹임 루프가 발생한다
+   (블로터 행 재클릭마다 차트가 커지는 버그). height를 고정값으로 못박아 루프를 차단한다. */
+#scr-auc .kpi .k-spark{margin-top:auto; padding-top:8px; width:100%; height:60px; flex:0 0 auto; box-sizing:border-box}
+#scr-auc .kpi #ohlcChart{margin-top:auto!important; padding-top:8px; width:100%; height:92px!important; flex:0 0 auto; box-sizing:border-box}
 
 /* ---- Panels ---- */
 .grid3{display:grid; gap:1px; background:var(--bd)}
@@ -276,7 +279,8 @@ table.blot .stick-4{left:298px; min-width:62px; width:62px; box-shadow:1px 0 0 v
 #scr-auc .p-head .p-sub{font-size:11px}
 /* 월 선택기(YYYY-MM) 가독성: 라벨·네비 버튼을 p-head 제목(13px) 수준으로 확대 */
 #scr-auc .mnav .mnav-lbl{font-size:13px; min-width:68px}
-#scr-auc .mnav button{font-size:12px; padding:3px 7px}
+/* 월 이동 화살표(◀▶) 버튼은 P-code 뱃지(10px / padding:0 4px) 수준으로 축소 */
+#scr-auc .mnav button{font-size:10px; padding:1px 4px}
 #scr-auc table.blot{font-size:12.5px}
 #scr-auc table.blot th{font-size:11px}
 #scr-auc table.blot th .en{font-size:10px}
