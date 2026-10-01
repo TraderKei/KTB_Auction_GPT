@@ -48,10 +48,10 @@ a{color:var(--accent); text-decoration:none}
 .filtergrp .lbl{font-size:10px; color:var(--tx-dim); margin-right:2px; text-transform:uppercase; letter-spacing:0.06em}
 
 /* ---- Tab bar ---- */
-.tabbar{display:flex; gap:0; background:var(--bg-1); border-bottom:1px solid var(--bd); height:30px}
+.tabbar{display:flex; gap:0; background:var(--bg-1); border-bottom:1px solid var(--bd); height:38px}
 .tab{
-  padding:0 16px; height:30px; display:flex; align-items:center; gap:6px;
-  font-size:11px; color:var(--tx-mut); cursor:pointer; border-right:1px solid var(--bd);
+  padding:0 20px; height:38px; display:flex; align-items:center; gap:6px;
+  font-size:14px; color:var(--tx-mut); cursor:pointer; border-right:1px solid var(--bd);
   letter-spacing:0.04em; user-select:none;
 }
 .tab .qmark{font-size:9px; color:var(--tx-dim)}
@@ -70,13 +70,16 @@ a{color:var(--accent); text-decoration:none}
 .kpi .k-v small{font-size:11px; color:var(--tx-mut)}
 .kpi .k-d{font-size:10px; margin-top:1px}
 .kpi .k-spark{margin-top:3px; height:16px}
-/* scr-auc 전용: P3~P6 제거로 생긴 가로 여유를 활용해 KPI 칸을 시원하게 확대 (다른 탭 KPI엔 미적용) */
-#scr-auc .kpi{padding:14px 16px; min-height:120px; display:flex; flex-direction:column}
-#scr-auc .kpi .k-l{font-size:12px}
-#scr-auc .kpi .k-v{font-size:25px; margin-top:4px}
-#scr-auc .kpi .k-v small{font-size:13px}
-#scr-auc .kpi .k-d{font-size:11px; margin-top:2px}
-#scr-auc .kpi .k-spark{margin-top:auto; padding-top:6px; width:100%; height:28px}
+/* scr-auc 전용: P3~P6 제거로 생긴 가로 여유를 활용해 KPI 칸을 확대 (다른 탭 KPI엔 미적용).
+   텍스트(라벨·값·설명)는 상단에 조밀하게 모으고, 그래프(스파크/OHLC)가 하단 잔여공간을 최대로 차지. */
+#scr-auc .kpi{padding:10px 16px 12px; min-height:150px; display:flex; flex-direction:column}
+#scr-auc .kpi .k-l{font-size:12px; line-height:1.2}
+#scr-auc .kpi .k-v{font-size:22px; margin-top:2px; line-height:1.1}
+#scr-auc .kpi .k-v small{font-size:12px}
+#scr-auc .kpi .k-d{font-size:10.5px; margin-top:1px; line-height:1.25}
+/* 그래프를 flex 잔여공간 전체로 확장 → 칸의 대부분을 그래프가 채움 */
+#scr-auc .kpi .k-spark{margin-top:auto; padding-top:8px; width:100%; height:auto; flex:1 1 auto; min-height:52px}
+#scr-auc .kpi #ohlcChart{margin-top:auto!important; padding-top:8px; width:100%; height:auto!important; flex:1 1 auto; min-height:72px}
 
 /* ---- Panels ---- */
 .grid3{display:grid; gap:1px; background:var(--bd)}
@@ -260,13 +263,20 @@ table.blot .stick-4{left:298px; min-width:62px; width:62px; box-shadow:1px 0 0 v
 
 /* P1 입찰캘린더는 P2 블로터 대비 0.66배 높이로 축소(블로터 표시영역은 stretch 유지).
    align-self:start로 grid stretch를 끊고 컨테이너 높이의 0.66배로 고정, 날짜셀 min-height도 비례 완화 */
-#scr-auc .grid3 > .panel:first-child{align-self:start; height:calc((100vh - 176px) * 0.66); min-height:290px}
+#scr-auc .grid3 > .panel:first-child{align-self:start; height:calc((100vh - 214px) * 0.66); min-height:290px}
 #scr-auc .grid3 > .panel:first-child .cal .cd{min-height:34px}
+/* P1이 축소되며 하단에 grid 컨테이너 배경(--bd)이 노출돼 주변 패널(--panel)과 색이 어긋나던 문제 수정:
+   grid 배경을 패널색과 일치시키고, 사라지는 P1↔P2 세로 경계선은 P2 좌측 border로 전체 높이에 복원 */
+#scr-auc .grid3{background:var(--panel)}
+#scr-auc .grid3 > .panel:nth-child(2){border-left:1px solid var(--bd)}
 
 /* 가시성 개선: 입찰캘린더·블로터 탭 텍스트를 탭 범위로 격리해 확대(타 탭 크기 불변) */
 #scr-auc .p-head h3{font-size:13px}
 #scr-auc .p-head .p-code{font-size:10px}
 #scr-auc .p-head .p-sub{font-size:11px}
+/* 월 선택기(YYYY-MM) 가독성: 라벨·네비 버튼을 p-head 제목(13px) 수준으로 확대 */
+#scr-auc .mnav .mnav-lbl{font-size:13px; min-width:68px}
+#scr-auc .mnav button{font-size:12px; padding:3px 7px}
 #scr-auc table.blot{font-size:12.5px}
 #scr-auc table.blot th{font-size:11px}
 #scr-auc table.blot th .en{font-size:10px}
@@ -315,46 +325,46 @@ table.dict code{font-family:var(--mono); background:#000; padding:0 3px; border-
 <body>
 
 <div class="tabbar" id="tabbar">
-  <div class="tab on" data-scr="auc"><span class="tcode">KTB AUC</span> 입찰 캘린더·블로터</div>
-  <div class="tab" data-scr="res"><span class="tcode">KTB RES</span> 입찰결과 상세</div>
-  <div class="tab" data-scr="dmd"><span class="tcode">KTB DMD</span> 수요강도 트래커</div>
-  <div class="tab" data-scr="plan"><span class="tcode">KTB PLAN</span> 발행계획 증감분석</div>
-  <div class="tab" data-scr="sd"><span class="tcode">KTB S/D</span> 수급(순공급) 분석</div>
-  <div class="tab" data-scr="pd"><span class="tcode">KTB NCB</span> 비경쟁 인수 분석</div>
+  <div class="tab on" data-scr="auc">입찰 캘린더·블로터</div>
+  <div class="tab" data-scr="res">입찰결과 상세</div>
+  <div class="tab" data-scr="dmd">수요강도 트래커</div>
+  <div class="tab" data-scr="plan">발행계획 증감분석</div>
+  <div class="tab" data-scr="sd">수급(순공급) 분석</div>
+  <div class="tab" data-scr="pd">비경쟁 인수 분석</div>
 </div>
 
 <section class="screen on" id="scr-auc">
   <div class="kpis">
     <div class="kpi">
-      <div class="k-l">월 발행계획액 <span class="en">Monthly Plan</span></div>
+      <div class="k-l">월 발행계획액</div>
       <div class="k-v" data-field="plan.month_total" data-source="MOEF_KTB" data-freq="월간 전월말목 09:00">15.2<small> 조원</small></div>
       <div class="k-d mut">2026-09 계획 (경쟁입찰 기준)</div>
       <canvas class="k-spark" id="spk1" width="256" height="22"></canvas>
     </div>
     <div class="kpi" id="kpiSel">
-      <div class="k-l">선택 입찰 <span class="en">Selected</span></div>
+      <div class="k-l">선택 입찰</div>
       <div class="k-v" id="kpiSelName" data-field="bond.name" data-source="MOEF_KTB" data-freq="발행공고 T-3일" style="font-size:13px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">입찰을 선택하세요</div>
       <div class="k-d mut" id="kpiSelMeta">P2 블로터에서 행을 클릭</div>
     </div>
     <div class="kpi">
-      <div class="k-l">평균 응찰률 <span class="en">Avg Bid-to-Cover</span></div>
+      <div class="k-l">평균 응찰률</div>
       <div class="k-v" id="kpiBtcVal" data-field="auc.bid_to_cover" data-source="DERIVED" data-freq="입찰일 T+0 16:00">—<small> x</small></div>
       <div class="k-d mut" id="kpiBtcSub">선택 만기 기준</div>
       <canvas class="k-spark" id="spk2" width="256" height="22"></canvas>
     </div>
     <div class="kpi">
-      <div class="k-l">평균 테일 <span class="en">Avg Tail</span></div>
+      <div class="k-l">평균 테일</div>
       <div class="k-v" id="kpiTailVal" data-field="auc.tail" data-source="DERIVED" data-freq="입찰일 T+0 16:00">—<small> bp</small></div>
       <div class="k-d mut" id="kpiTailSub">선택 만기 기준</div>
       <canvas class="k-spark" id="spk3" width="256" height="22"></canvas>
     </div>
     <div class="kpi">
-      <div class="k-l">낙찰금리 구조 <span class="en">Cut-off Structure</span></div>
-      <canvas id="ohlcChart" width="264" height="92" data-field="auc.high_rate" data-source="BOK_ECOS" data-freq="입찰일 T+0 16:00" style="margin-top:6px; width:100%; height:92px"></canvas>
+      <div class="k-l">낙찰금리 구조</div>
+      <canvas id="ohlcChart" width="264" height="92" data-field="auc.high_rate" data-source="BOK_ECOS" data-freq="입찰일 T+0 16:00"></canvas>
     </div>
   </div>
 
-  <div class="grid3" style="grid-template-columns:37% 63%; height:calc(100vh - 176px); min-height:440px">
+  <div class="grid3" style="grid-template-columns:37% 63%; height:calc(100vh - 214px); min-height:440px">
     <div class="panel">
       <div class="p-head"><span class="p-code">P1</span><h3>입찰 캘린더</h3>
         <span class="mnav"><button class="mnav-prev" title="이전 월">◀</button><span class="mnav-lbl">2026-09</span><button class="mnav-next" title="다음 월">▶</button></span>
@@ -1005,7 +1015,16 @@ function renderAucKPI(r){
 function drawOHLC(r){
   const c = document.getElementById("ohlcChart"); if(!c) return;
   const ctx = c.getContext("2d");
-  const W=c.width, H=c.height; ctx.clearRect(0,0,W,H);
+  /* drawing buffer를 실제 표시 크기에 동기화 → flex로 커진 KPI 칸 영역에 선명하게 렌더.
+     이후 좌표는 CSS 픽셀(W,H) 기준으로 계산(transform에 dpr 반영). */
+  const dpr=window.devicePixelRatio||1;
+  const cw=c.clientWidth||c.width, ch=c.clientHeight||c.height;
+  if(c.width!==Math.round(cw*dpr)||c.height!==Math.round(ch*dpr)){
+    c.width=Math.round(cw*dpr); c.height=Math.round(ch*dpr);
+  }
+  const W=c.width/dpr, H=c.height/dpr;
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,W,H);
   const stat = document.getElementById("ohlcStat");
   const compact = W<=280;                    /* KPI 칸용 컴팩트 모드 */
   if(r.hi==null || r.wavg==null){
@@ -1078,14 +1097,23 @@ function baseOpt(scales,extra){
    선택 만기 추이 스파크는 KPI 칸용 kpiSpark 로 일원화한다. */
 function kpiSpark(id,arr,color){
   const c=document.getElementById(id); if(!c)return; const ctx=c.getContext("2d");
-  ctx.clearRect(0,0,c.width,c.height);
+  /* drawing buffer를 실제 표시 크기에 동기화 → flex로 커진 영역에 선명하게 렌더.
+     (CSS가 width:100%/height:auto·flex:1 로 표시크기를 결정하므로 내부 해상도를 맞춘다) */
+  const dpr=window.devicePixelRatio||1;
+  const cw=c.clientWidth||c.width, ch=c.clientHeight||c.height;
+  if(c.width!==Math.round(cw*dpr)||c.height!==Math.round(ch*dpr)){
+    c.width=Math.round(cw*dpr); c.height=Math.round(ch*dpr);
+  }
+  const W=c.width/dpr, H=c.height/dpr;
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,W,H);
   if(!arr||arr.length===0) return;                       /* 데이터 없음 → 캔버스만 비움 */
   if(arr.length===1){ /* 단일 점: 중앙에 마커 */
-    ctx.fillStyle=color; ctx.beginPath(); ctx.arc(c.width/2,c.height/2,1.6,0,Math.PI*2); ctx.fill(); return;
+    ctx.fillStyle=color; ctx.beginPath(); ctx.arc(W/2,H/2,1.6,0,Math.PI*2); ctx.fill(); return;
   }
   const min=Math.min(...arr),max=Math.max(...arr),rng=(max-min)||1;
   ctx.strokeStyle=color; ctx.lineWidth=1.2; ctx.beginPath();
-  arr.forEach((v,i)=>{const x=i*c.width/(arr.length-1);const y=c.height-2-((v-min)/rng)*(c.height-4);i?ctx.lineTo(x,y):ctx.moveTo(x,y);});
+  arr.forEach((v,i)=>{const x=i*W/(arr.length-1);const y=H-2-((v-min)/rng)*(H-4);i?ctx.lineTo(x,y):ctx.moveTo(x,y);});
   ctx.stroke();
 }
 
@@ -1950,7 +1978,8 @@ selectedAuction =
   || RESULTS.find(r=>r.code==="KR103501GD68");
 renderCal(); renderBlotter();
 renderDict();
-kpiSpark("spk1",[13.2,14.8,15.6,14.1,15.2],"#3b82f6");   /* 월 발행계획액 스파크(고정) */
+/* 월 발행계획액 스파크 — 최근 12개월(2025-10~2026-09, 조원) 더미 시계열. 끝값 15.2 = 2026-09 현재값 */
+kpiSpark("spk1",[12.8,13.5,14.2,13.1,14.6,15.1,13.9,14.4,15.8,14.7,14.9,15.2],"#3b82f6");
 renderAucKPI(selectedAuction);                            /* 선택 입찰 KPI(2·3·4·5번 칸) 초기 표시 */
 </script>
 </body>
