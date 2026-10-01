@@ -1122,21 +1122,43 @@ function kpiSpark(id,arr,color){
 }
 
 /* ---------- 나머지 탭 렌더 ---------- */
-/* R1 조회월 상태 — RESULTS 에 존재하는 월 목록(오름차순) 중 현재 선택 인덱스.
-   ◀ ▶ 로 월 이동, 선택 월의 경쟁입찰(comp) 낙찰분만 드릴다운에 표시. */
+/* R1 조회기간 상태 — RESULTS 에 존재하는 월 목록(오름차순) 위에서 시작월(from)~종료월(to) 구간 선택.
+   선택 구간의 경쟁입찰(comp) 낙찰분을 '만기 필터(resActiveMats)'와 교집합하여 드릴다운에 표시. */
 const RES_MONTHS = [...new Set(RESULTS.map(r=>r.d.slice(0,7)))].sort();  /* ["2026-07","2026-08","2026-09"] */
-let resMonthIdx = RES_MONTHS.length-1;   /* 기본: 최신월(2026-09) */
+let resStartIdx = 0;                       /* 기간 시작월 인덱스 (기본: 최초월) */
+let resEndIdx = RES_MONTHS.length-1;       /* 기간 종료월 인덱스 (기본: 최신월) */
+let resActiveMats = new Set(MATS);         /* R1 만기 필터 상태(초기값: 전체 선택) · P2 activeMats 와 분리 */
 function renderRES(){
   const allComp = RESULTS.filter(x=>x.t==="comp"&&!x.planned&&x.hi!=null);
+  /* 최종 표시 행 = [기간 필터(resStartIdx~resEndIdx)] ∩ [만기 필터(resActiveMats)].
+     구간 월 집합은 RES_MONTHS 인덱스 범위로, 만기는 resActiveMats 멤버십으로 판정. */
+  function filteredComp(){
+    const lo = Math.min(resStartIdx, resEndIdx), hi = Math.max(resStartIdx, resEndIdx);
+    const months = new Set(RES_MONTHS.slice(lo, hi+1));
+    return allComp.filter(x=>months.has(x.d.slice(0,7)) && resActiveMats.has(x.mat));
+  }
   /* R2 OHLC 공통 스케일: comp 전체에서 가장 큰 (최고−최저) 범위를 기준으로 정규화 →
      범위(테일)가 큰 입찰일수록 캔들이 길게 보인다. 범위 = 공시 (최고−최저) 낙찰금리. */
   r2MaxRangeBp = Math.max(...allComp.map(x=>x.lo!=null?(x.hi-x.lo)*100:(x.hi-x.wavg)*1.5*100)) || 3;
   document.getElementById("scr-res").innerHTML = `
-  <div class="grid3" style="grid-template-columns:38% 34% 28%; height:720px">
+  <div class="grid3" style="grid-template-columns:38% 28% 34%; height:720px">
     <div class="panel">
       <div class="p-head"><span class="p-code">R1</span><h3>종목·차수 드릴다운</h3>
-        <span class="mnav"><button class="res-mnav-prev" title="이전 월">◀</button><span class="res-mnav-lbl mnav-lbl">2026-09</span><button class="res-mnav-next" title="다음 월">▶</button></span>
+        <span class="rangesel">
+          <span class="rs-lbl">기간</span>
+          <select id="resStart">${RES_MONTHS.map((m,i)=>`<option value="${i}">${m}</option>`).join("")}</select>
+          <span class="rs-tilde">~</span>
+          <select id="resEnd">${RES_MONTHS.map((m,i)=>`<option value="${i}">${m}</option>`).join("")}</select>
+        </span>
         <span class="p-sub" style="margin-left:8px" id="resDrillSub">행 클릭 → 상세 · 헤더 더블클릭 → 정렬</span></div>
+      <div class="blot-filters">
+        <div class="filtergrp" id="resMatFilter">
+          <span class="lbl">만기</span>
+          <span class="chip mat on" data-m="2Y">2Y</span><span class="chip mat on" data-m="3Y">3Y</span><span class="chip mat on" data-m="5Y">5Y</span>
+          <span class="chip mat on" data-m="10Y">10Y</span><span class="chip mat on" data-m="20Y">20Y</span><span class="chip mat on" data-m="30Y">30Y</span>
+          <span class="chip mat on" data-m="50Y">50Y</span><span class="chip mat on" data-m="KTBi">물가</span>
+        </div>
+      </div>
       <div class="p-body" style="padding:0">
         <table class="blot sortable" id="resDrill"><thead><tr>
           <th data-key="d">입찰일</th>
@@ -1157,15 +1179,15 @@ function renderRES(){
     <div class="panel">
       <div class="p-head"><span class="p-code">R3</span><h3>동일 만기 최근 6개월 추이</h3><span class="p-sub" id="r3Sub">최근 6개월</span></div>
       <div class="p-body">
-        <div class="section-title">응찰률 Bid-to-Cover <span class="dim" id="r3btcSub"></span></div><canvas id="resBTC" width="330" height="90"></canvas>
-        <div class="section-title" style="margin-top:10px">테일 Tail (bp)</div><canvas id="resTail" width="330" height="90"></canvas>
-        <div class="section-title" style="margin-top:10px">민평대비 스프레드 (bp)</div><canvas id="resSpr" width="330" height="90"></canvas>
+        <div class="section-title">응찰률 Bid-to-Cover <span class="dim" id="r3btcSub"></span></div><canvas id="resBTC" width="400" height="120"></canvas>
+        <div class="section-title" style="margin-top:10px">테일 Tail (bp)</div><canvas id="resTail" width="400" height="120"></canvas>
+        <div class="section-title" style="margin-top:10px">민평대비 스프레드 (bp)</div><canvas id="resSpr" width="400" height="120"></canvas>
         <div class="dim" style="font-size:9px;margin-top:8px"><span class="badge conf">확정</span> 응찰률·낙찰금리는 한은/기재부 공시 · 같은 만기 지표물 경쟁입찰 월별 추이(선택 종목 만기 기준)</div>
       </div>
     </div>
   </div>`;
-  /* 선택 월의 comp 낙찰분 (드릴다운 대상) */
-  let compRows = allComp.filter(x=>x.d.slice(0,7)===RES_MONTHS[resMonthIdx]);
+  /* 선택 구간·만기 필터를 교집합한 comp 낙찰분 (드릴다운 대상) */
+  let compRows = filteredComp();
   const tb = document.getElementById("resDrill");
   /* 열 정의: key → {정렬값 추출, 셀 HTML} · 문자열 열은 localeCompare, 숫자 열은 수치 비교 */
   const colDefs = {
@@ -1192,7 +1214,7 @@ function renderRES(){
   function renderBody(){
     const body = document.getElementById("resDrillBody");
     if(!compRows.length){
-      body.innerHTML = `<tr><td class="l" colspan="8" style="padding:14px;color:var(--tx-dim)">해당 월 경쟁입찰 낙찰 데이터 없음</td></tr>`;
+      body.innerHTML = `<tr><td class="l" colspan="8" style="padding:14px;color:var(--tx-dim)">선택 기간·만기 조건의 경쟁입찰 낙찰 데이터 없음</td></tr>`;
       return;
     }
     const rows = sortedRows();
@@ -1218,22 +1240,40 @@ function renderRES(){
     th.classList.add(sortState.dir>0?"sort-asc":"sort-desc");
     renderBody();
   }));
-  /* R1 월 네비게이터 상태 갱신 + 선택 월 데이터 재적용 */
-  function applyResMonth(){
-    compRows = allComp.filter(x=>x.d.slice(0,7)===RES_MONTHS[resMonthIdx]);
+  /* R1 필터(기간 ∩ 만기) 재적용 → 드릴다운/R2/R3 일관 갱신 */
+  function applyResFilter(){
+    compRows = filteredComp();
     selIdx = 0;
-    const lbl = document.querySelector(".res-mnav-lbl");
-    if(lbl) lbl.textContent = RES_MONTHS[resMonthIdx];
-    document.querySelector(".res-mnav-prev")?.classList.toggle("off", resMonthIdx<=0);
-    document.querySelector(".res-mnav-next")?.classList.toggle("off", resMonthIdx>=RES_MONTHS.length-1);
     renderBody();
     if(compRows.length) renderR2(compRows[0]);
-    else { document.getElementById("r2body").innerHTML = '<div class="dim" style="padding:14px">선택 월 데이터 없음</div>'; document.getElementById("r2Sub").textContent=""; }
+    else {
+      document.getElementById("r2body").innerHTML = '<div class="dim" style="padding:14px">선택 기간·만기 조건 데이터 없음</div>';
+      document.getElementById("r2Sub").textContent="";
+      /* R3 추이 차트도 함께 비움 */
+      [resBTCRef,resTailRef,resSprRef]=[resBTCRef,resTailRef,resSprRef].map(ref=>{if(ref)ref.destroy();return null;});
+      const r3Sub=document.getElementById("r3Sub"); if(r3Sub) r3Sub.textContent="데이터 없음";
+      const r3btcSub=document.getElementById("r3btcSub"); if(r3btcSub) r3btcSub.textContent="";
+    }
   }
-  /* R1 월 이동 버튼 바인딩 (P1/P2 글로벌 mnav 와 클래스 분리) */
-  document.querySelector(".res-mnav-prev")?.addEventListener("click",()=>{ if(resMonthIdx>0){resMonthIdx--; applyResMonth();} });
-  document.querySelector(".res-mnav-next")?.addEventListener("click",()=>{ if(resMonthIdx<RES_MONTHS.length-1){resMonthIdx++; applyResMonth();} });
-  applyResMonth();
+  /* R1 기간 선택(from/to) — RES_MONTHS 인덱스 구간. from>to 입력 시 자동 스왑 보정 */
+  const resSelS = document.getElementById("resStart"), resSelE = document.getElementById("resEnd");
+  resSelS.value = resStartIdx; resSelE.value = resEndIdx;
+  const onResRange = ()=>{
+    let s = +resSelS.value, e = +resSelE.value;
+    if(s>e){ [s,e]=[e,s]; resSelS.value=s; resSelE.value=e; }   /* 시작>종료면 스왑 */
+    resStartIdx = s; resEndIdx = e;
+    applyResFilter();
+  };
+  resSelS.addEventListener("change", onResRange);
+  resSelE.addEventListener("change", onResRange);
+  /* R1 만기 필터 — 칩 토글 → resActiveMats 갱신 → 재필터 (P2 activeMats 와 분리) */
+  document.getElementById("resMatFilter").addEventListener("click",e=>{
+    const c=e.target.closest(".chip"); if(!c)return;
+    c.classList.toggle("on");
+    c.classList.contains("on")?resActiveMats.add(c.dataset.m):resActiveMats.delete(c.dataset.m);
+    applyResFilter();
+  });
+  applyResFilter();
 }
 function renderR2(r){
   document.getElementById("r2Sub").textContent = `${r.code} ${r.seq}`;
@@ -1266,11 +1306,11 @@ function renderR2(r){
     <div class="speccard">
       <div class="row"><span class="k">발행예정 / 응찰 / 낙찰</span><span class="v" data-field="auc.won_amt" data-source="MOEF_KTB" data-freq="입찰일 T+0 16:00">${fmt(r.plan)} / ${fmt(r.bid)} / ${fmt(r.won)}억</span></div>
       <div class="row"><span class="k">응찰률 BTC / 낙찰률</span><span class="v" data-field="auc.bid_to_cover" data-source="DERIVED" data-freq="입찰일 T+0 16:00">${btc!=null?btc.toFixed(2)+"배":"—"} / ${wonRate!=null?wonRate.toFixed(1)+"%":"—"}</span></div>
-      <div class="row"><span class="k">최고 / 가중평균 낙찰금리</span><span class="v" data-field="auc.wavg_rate" data-source="BOK_ECOS" data-freq="입찰일 T+0 16:00">${r.hi.toFixed(3)} / ${r.wavg.toFixed(3)}%</span></div>
+      <div class="row"><span class="k">최고 / 가중평균 낙찰금리</span><span class="v" data-field="auc.wavg_rate" data-source="BOK_ECOS" data-freq="입찰일 T+0 16:00">${r.hi.toFixed(3)}% / ${r.wavg.toFixed(3)}%</span></div>
       <div class="row"><span class="k">최저 낙찰금리 / 부분낙찰률</span><span class="v" data-field="auc.low_rate" data-source="MOEF_KTB" data-freq="입찰일 T+0 16:00">${lo!=null?lo.toFixed(3)+"%":"—"} / ${par!=null?par.toFixed(1)+"%":"—"}</span></div>
       <div class="row"><span class="k">테일 Tail</span><span class="v" data-field="auc.tail" data-source="DERIVED" data-freq="입찰일 T+0 16:00">${(tail*100).toFixed(1)}bp</span></div>
       <div class="row"><span class="k">민평대비 스프레드</span><span class="v ${sprCls(r.spr)}" data-field="auc.spread_vs_mts" data-source="DERIVED" data-freq="입찰일 T+0 16:00">${r.spr!=null?(r.spr>0?"+":"")+r.spr.toFixed(1)+"bp":"—"}</span></div>
-      <div class="row"><span class="k">비경쟁인수액 / 참여 PD수</span><span class="v" data-field="auc.noncomp_amt" data-source="MOEF_KTB" data-freq="입찰일 T+1">${fmt(r.nc)}억 / ${r.pd}개</span></div>
+      <div class="row"><span class="k">비경쟁인수액</span><span class="v" data-field="auc.noncomp_amt" data-source="MOEF_KTB" data-freq="입찰일 T+1">${fmt(r.nc)}억</span></div>
     </div>
     <div class="dim" style="font-size:9px;margin-top:8px">
       <span class="badge conf">확정</span> 응찰·낙찰액·최고/가중평균/최저 낙찰금리·부분낙찰률은 한은/기재부 결과공시 ·
