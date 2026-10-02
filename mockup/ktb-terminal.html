@@ -112,6 +112,10 @@ a{color:var(--accent); text-decoration:none}
 .rangesel select:hover{border-color:var(--accent)}
 .rangesel .rs-tilde{color:var(--tx-dim); font-size:10px}
 .p-body{padding:8px 10px; overflow:auto; flex:1}
+/* R2 전용: 가로 스크롤바 억제(세로 스크롤만 허용). 전역 .p-body 를 건드리지 않음.
+   내부 캔버스/요소가 패널 폭을 넘겨도 가로 스크롤 대신 폭에 맞춰 축소되도록 한다. */
+.r2-body{overflow-x:hidden}
+.r2-body canvas, .r2-body .speccard{max-width:100%; box-sizing:border-box}
 /* ---- P2 블로터 종속 필터 바 (입찰유형·만기) ---- */
 .blot-filters{display:flex; flex-wrap:wrap; align-items:center; gap:6px 14px;
   padding:5px 10px; border-bottom:1px solid var(--bd); background:var(--bg-1); flex:0 0 auto}
@@ -1174,7 +1178,7 @@ function renderRES(){
     </div>
     <div class="panel">
       <div class="p-head"><span class="p-code">R2</span><h3>낙찰 금리 구조 (차등가격)</h3><span class="p-sub" id="r2Sub"></span></div>
-      <div class="p-body" id="r2body"></div>
+      <div class="p-body r2-body" id="r2body"></div>
     </div>
     <div class="panel">
       <div class="p-head"><span class="p-code">R3</span><h3>동일 만기 최근 6개월 추이</h3><span class="p-sub" id="r3Sub">최근 6개월</span></div>
@@ -1420,6 +1424,16 @@ let dmdStartIdx = 0;                  /* 기본: 전체 구간(25-10 ~ 26-09) */
 let dmdEndIdx = DMD_MONTH_LABELS.length-1;
 let dmdTrendRef = null;               /* D1 Chart 인스턴스(재렌더 시 destroy) */
 const DMD_TREND_MATS = ["2Y","3Y","5Y","10Y","20Y","30Y"];
+/* ── D2 히트맵 지표 토글 상태 ─────────────────────────────────────────
+   종합/응찰률/테일/민평대비 4개 지표를 HEAT(회차축, HEAT_LABELS) 원천으로 전환.
+   종합(score) 선택 시에만 z-score 종합스코어 산식 설명을 노출한다. */
+let dmdHeatMetric = "score";          /* "score"|"btc"|"tail"|"spr" (기본: 종합) */
+const DMD_HEAT_META = {               /* 토글 라벨·단위·표시포맷·data-field 매핑 */
+  score:{ lbl:"종합",     unit:"",    fmt:v=>`${v}`,          field:"dmd.score" },
+  btc:  { lbl:"응찰률",   unit:"배",  fmt:v=>v.toFixed(1),    field:"auc.bid_to_cover" },
+  tail: { lbl:"테일",     unit:"bp",  fmt:v=>v.toFixed(1),    field:"auc.tail" },
+  spr:  { lbl:"민평대비", unit:"bp",  fmt:v=>(v>0?"+":"")+v.toFixed(1), field:"auc.spread_vs_mts" }
+};
 /* ── SD1/SD2 기간·선택월 상태 ─────────────────────────────────────────
    SD_SERIES.labels(12개월) 위에서 시작월~종료월 인덱스로 SD1 시계열 구간 선택.
    SD2 워터폴은 SD1 구간 내 '선택월'(sdSelIdx)의 발행/상환/바이백/교환으로 동적 구성.
@@ -1444,15 +1458,18 @@ function renderDMD(){
       <div class="p-body"><canvas id="dmdTrend" width="820" height="360"></canvas>
         <div class="section-title" style="margin-top:12px">수요강도 스코어 산식</div>
         <div class="erd" style="font-size:10px">수요강도 = z(응찰률)×0.4 − z(테일)×0.3 − z(민평대비)×0.3  →  0~100 정규화
-                (응찰률↑, 테일↓, 민평대비↓  ⇒  수요 강함 = 청색)</div>
+                (응찰률↑, 테일↓, 민평대비↓  ⇒  수요 강함)</div>
       </div>
     </div>
     <div class="panel">
-      <div class="p-head"><span class="p-code">D2</span><h3>만기 × 월 히트맵</h3>
+      <div class="p-head"><span class="p-code">D2</span><h3>만기 × 회차 히트맵</h3>
+        <span class="toggles" id="dmdHeatToggles">${Object.keys(DMD_HEAT_META).map(k=>`<span class="chip${k===dmdHeatMetric?" on":""}" data-metric="${k}">${DMD_HEAT_META[k].lbl}</span>`).join("")}</span>
         <span class="p-sub" id="dmdHeatSub"></span>
       </div>
       <div class="p-body"><div class="heat" id="dmdHeat"></div>
         <div class="legend" style="margin-top:8px"><span><i style="background:var(--dmd-s2)"></i>강세</span><span><i style="background:var(--dmd-n)"></i>중립</span><span><i style="background:var(--dmd-w2)"></i>약세</span><span class="dim" id="dmdHeatCap"></span></div>
+        <div class="erd" id="dmdHeatScoreNote" style="font-size:10px;margin-top:8px">수요강도 = z(응찰률)×0.4 − z(테일)×0.3 − z(민평대비)×0.3  →  0~100 정규화
+                (응찰률↑, 테일↓, 민평대비↓  ⇒  수요 강함)</div>
       </div>
     </div>
   </div>`;
@@ -1467,6 +1484,14 @@ function renderDMD(){
   };
   selS.addEventListener("change", onChange);
   selE.addEventListener("change", onChange);
+  /* D2 지표 토글 — 종합/응찰률/테일/민평대비 전환(회차축 HEAT 기반, 기간 셀렉터와 독립) */
+  const togg = document.getElementById("dmdHeatToggles");
+  if(togg) togg.addEventListener("click", e=>{
+    const c = e.target.closest(".chip"); if(!c) return;
+    dmdHeatMetric = c.dataset.metric;
+    togg.querySelectorAll(".chip").forEach(x=>x.classList.toggle("on", x===c));
+    renderDMDHeat();
+  });
 }
 /* D1 라인차트 — 선택 구간(dmdStartIdx~dmdEndIdx)의 만기별 수요강도 스코어 */
 function drawDMDTrend(){
@@ -1832,26 +1857,30 @@ function initCharts(scr){
 }
 function renderDMDHeat(){
   const g=document.getElementById("dmdHeat"); if(!g)return;
-  /* D1과 동일 구간(dmdStartIdx~dmdEndIdx). 단 Max 열수(DMD_HEAT_MAX) 초과 시 최근 Max개월만 표시 */
-  let s = dmdStartIdx, e = dmdEndIdx;
-  const capped = (e - s + 1) > DMD_HEAT_MAX;
-  if(capped) s = e - DMD_HEAT_MAX + 1;      /* 최근 Max개월만 */
-  const labels = DMD_MONTH_LABELS.slice(s, e+1);
+  /* 회차축(HEAT_LABELS, 만기×8개 입찰회차) 기반. 선택 지표(dmdHeatMetric)에 따라 HEAT[metric] 전환.
+     기간 셀렉터(dmdStart/dmdEnd)는 D1 라인차트 전용 — D2 히트맵은 전체 회차를 표시한다. */
+  const meta = DMD_HEAT_META[dmdHeatMetric];
+  const grid = HEAT[dmdHeatMetric];
+  const labels = HEAT_LABELS;
   g.style.gridTemplateColumns=`44px repeat(${labels.length},1fr)`;
   let html=`<div class="hcol"></div>`+labels.map(l=>`<div class="hcol">${l}</div>`).join("");
   MATS.forEach(m=>{
     html+=`<div class="hlbl">${matLabel(m)}</div>`;
-    DMD_MONTHLY_SCORE[m].slice(s,e+1).forEach((v,ci)=>{
-      const c=heatColor("score",v);
-      const disp=v==null?"":v;
-      html+=`<div class="hcell" style="background:${c.bg};color:${c.tx}" data-field="dmd.heat_score" data-source="DERIVED" data-freq="입찰일 T+0 16:00" title="${matLabel(m)} ${labels[ci]}: ${disp}">${disp}</div>`;
+    grid[m].forEach((v,ci)=>{
+      const c=heatColor(dmdHeatMetric,v);
+      const disp=v==null?"":meta.fmt(v);              /* 지표별 표시포맷(종합:정수, 응찰률/테일/민평:소수1) */
+      const titleVal=v==null?"—":`${meta.fmt(v)}${meta.unit}`;
+      html+=`<div class="hcell" style="background:${c.bg};color:${c.tx}" data-field="${meta.field}" data-source="DERIVED" data-freq="입찰일 T+0 16:00" title="${matLabel(m)} ${labels[ci]}: ${titleVal}">${disp}</div>`;
     });
   });
   g.innerHTML=html;
   const sub=document.getElementById("dmdHeatSub");
-  if(sub) sub.textContent = `${labels[0]}~${labels[labels.length-1]} · 수요강도 스코어`;
+  if(sub) sub.textContent = `${meta.lbl}${meta.unit?`(${meta.unit})`:""} · ${labels[0]}~${labels[labels.length-1]}`;
   const cap=document.getElementById("dmdHeatCap");
-  if(cap) cap.textContent = capped ? `· 최대 ${DMD_HEAT_MAX}개월 표시(최근 기준)` : "· 열 = 월";
+  if(cap) cap.textContent = "· 열 = 입찰회차";
+  /* z-score 종합스코어 설명은 종합(score) 선택 시에만 노출 */
+  const note=document.getElementById("dmdHeatScoreNote");
+  if(note) note.style.display = dmdHeatMetric==="score" ? "" : "none";
 }
 /* 워터폴 렌더 (범용) — items:[{k,v,sign,src}], net=순공급. maxAbs=축 스케일 */
 function drawWF(id, items, net){
