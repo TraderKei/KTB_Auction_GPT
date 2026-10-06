@@ -44,6 +44,10 @@ a{color:var(--accent); text-decoration:none}
 .chip{color:var(--tx-mut)}
 .chip.on{background:var(--accent); border-color:var(--accent); color:#fff}
 .chip.mat{padding:2px 6px}
+/* 필터 그룹 '전체' 토글 버튼: 개별 칩과 구분되도록 우측에 얇은 구분선 + 점선 테두리로 역할 차별화.
+   on=모두 선택 상태(accent), off=전부 해제 상태(기존 chip off 색). 색 토큰은 기존 다크 터미널 변수 재사용. */
+.chip.chip-all{border-style:dashed; margin-right:5px; padding-right:7px; position:relative; letter-spacing:0.02em}
+.chip.chip-all::after{content:""; position:absolute; right:-5px; top:2px; bottom:2px; width:1px; background:var(--bd-2)}
 .filtergrp{display:flex; gap:4px; align-items:center; flex-wrap:wrap}
 .filtergrp .lbl{font-size:10px; color:var(--tx-dim); margin-right:2px; text-transform:uppercase; letter-spacing:0.06em}
 
@@ -149,10 +153,10 @@ table.blot th.stick{background:var(--bg-1)}
 /* hover/선택 시에도 고정칼럼 배경 유지 (뒤 칼럼이 비쳐 보이지 않도록) */
 table.blot tr:hover td.stick{background:#141b28}
 table.blot tr.sel td.stick{background:#16233b}
-table.blot .stick-1{left:0; min-width:46px; width:46px}
-table.blot .stick-2{left:46px; min-width:92px; width:92px}
-table.blot .stick-3{left:138px; min-width:160px; max-width:160px; overflow:hidden; text-overflow:ellipsis}
-table.blot .stick-4{left:298px; min-width:62px; width:62px; box-shadow:1px 0 0 var(--bd-2)}
+table.blot .stick-1{left:0; min-width:66px; width:66px}
+table.blot .stick-2{left:66px; min-width:92px; width:92px}
+table.blot .stick-3{left:158px; min-width:160px; max-width:160px; overflow:hidden; text-overflow:ellipsis}
+table.blot .stick-4{left:318px; min-width:62px; width:62px; box-shadow:1px 0 0 var(--bd-2)}
 
 /* auction-type color coding */
 .at{display:inline-block; padding:0 5px; border-radius:2px; font-size:10px; font-family:var(--sans); border:1px solid transparent}
@@ -285,6 +289,10 @@ table.blot .stick-4{left:298px; min-width:62px; width:62px; box-shadow:1px 0 0 v
 #scr-auc .mnav .mnav-lbl{font-size:13px; min-width:68px}
 /* 월 이동 화살표(◀▶) 버튼은 P-code 뱃지(10px / padding:0 4px) 수준으로 축소 */
 #scr-auc .mnav button{font-size:10px; padding:1px 4px}
+/* P2 기간 셀렉터(from/to) 가독성: 라벨·틸드·select 를 p-head 제목(13px) 수준으로 확대 (R1 .rangesel 과 동일 역할) */
+#scr-auc .rangesel .rs-lbl{font-size:11px}
+#scr-auc .rangesel .rs-tilde{font-size:12px}
+#scr-auc .rangesel select{font-size:12px; padding:2px 5px}
 #scr-auc table.blot{font-size:12.5px}
 #scr-auc table.blot th{font-size:11px}
 #scr-auc table.blot th .en{font-size:10px}
@@ -393,11 +401,17 @@ table.dict code{font-family:var(--mono); background:#000; padding:0 3px; border-
 
     <div class="panel">
       <div class="p-head"><span class="p-code">P2</span><h3>입찰 결과 블로터</h3>
-        <span class="mnav"><button class="mnav-prev" title="이전 월">◀</button><span class="mnav-lbl">2026-09</span><button class="mnav-next" title="다음 월">▶</button></span>
-        <span class="p-sub" id="blotSub">전체 · 정렬: 입찰일 ▼</span></div>
+        <span class="rangesel">
+          <span class="rs-lbl">기간</span>
+          <select id="blotStart"></select>
+          <span class="rs-tilde">~</span>
+          <select id="blotEnd"></select>
+        </span>
+        <span class="p-sub" style="margin-left:8px" id="blotSub">전체 · 정렬: 입찰일 ▼</span></div>
       <div class="blot-filters">
         <div class="filtergrp" id="typeFilter">
           <span class="lbl">입찰유형</span>
+          <span class="chip chip-all on" data-all="type">전체</span>
           <span class="chip on" data-t="comp">경쟁</span>
           <span class="chip on" data-t="nc1">비경쟁I</span>
           <span class="chip on" data-t="nc2">비경쟁II</span>
@@ -408,6 +422,7 @@ table.dict code{font-family:var(--mono); background:#000; padding:0 3px; border-
         </div>
         <div class="filtergrp" id="matFilter">
           <span class="lbl">만기</span>
+          <span class="chip chip-all on" data-all="mat">전체</span>
           <span class="chip mat on" data-m="2Y">2Y</span><span class="chip mat on" data-m="3Y">3Y</span><span class="chip mat on" data-m="5Y">5Y</span>
           <span class="chip mat on" data-m="10Y">10Y</span><span class="chip mat on" data-m="20Y">20Y</span><span class="chip mat on" data-m="30Y">30Y</span>
           <span class="chip mat on" data-m="50Y">50Y</span><span class="chip mat on" data-m="KTBi">물가</span>
@@ -821,22 +836,29 @@ function heatColor(metric, v){
 let activeTypes = new Set(Object.keys(AT));
 let blotFilter = null;   /* P1 캘린더 → P2 블로터 필터 대상 종목코드 (null=전체) */
 
-/* 조회월 상태 — P1 캘린더와 P2 블로터가 공유(연동). 기준시점 2026-09.
-   과거 월 조회 가능. viewYear/viewMonth(0-based) 변경 시 setViewMonth() 로 양쪽 동시 재렌더 */
+/* 조회월 상태 — P1 캘린더 전용. 기준시점 2026-09. (P2 블로터는 아래 별도 기간 상태로 분리 — P1↔P2 월 연동 제거됨)
+   과거 월 조회 가능. viewYear/viewMonth(0-based) 변경 시 setViewMonth() 로 P1 캘린더만 재렌더 */
 const TODAY = { y:2026, m:8, d:11 };            /* 오늘(2026-09-11) — 0-based month */
 const DATA_MIN = { y:2026, m:6 };               /* 보유 더미데이터 최소월(2026-07) */
 let viewYear = TODAY.y, viewMonth = TODAY.m;    /* 현재 조회중인 연/월(0-based) */
 const ymStr = (y,m)=> `${y}-${String(m+1).padStart(2,"0")}`;   /* "YYYY-MM" */
-/* 조회월 변경 진입점 — P1/P2 어디서 호출해도 양쪽이 함께 갱신된다(연동) */
+
+/* P2 블로터 조회기간 상태 — RESULTS 에 존재하는 월 목록(오름차순) 위에서 시작월~종료월 구간 선택.
+   R1(resStartIdx/resEndIdx) 패턴과 동일하게 from/to 인덱스로 관리한다. P1 조회월(viewYear/viewMonth)과 완전 분리 → 더 이상 연동되지 않는다. */
+const BLOT_MONTHS = [...new Set(RESULTS.map(r=>r.d.slice(0,7)))].sort();  /* ["2026-07","2026-08","2026-09"] */
+let blotStartIdx = 0;                        /* P2 기간 시작월 인덱스 (기본: 최초월) */
+let blotEndIdx = BLOT_MONTHS.length-1;       /* P2 기간 종료월 인덱스 (기본: 최신월) */
+
+/* 조회월 변경 진입점(P1 캘린더 전용) — P1 네비게이터(◀/▶)에서 호출. P2 블로터는 재렌더하지 않는다(연동 제거). */
 function setViewMonth(y,m){
   /* 데이터 범위 클램프: DATA_MIN ~ TODAY 월까지만 이동 허용 */
   const asIdx = yy => yy.y*12+yy.m;
   const target = y*12+m, min = asIdx(DATA_MIN), max = asIdx(TODAY);
   const clamped = Math.max(min, Math.min(max, target));
   viewYear = Math.floor(clamped/12); viewMonth = clamped%12;
-  blotFilter = null;                            /* 월 바뀌면 종목필터 해제 */
+  blotFilter = null;                            /* 월 바뀌면 P1→P2 종목필터 해제 */
   renderCal();
-  renderBlotter();
+  renderBlotter(blotFilter);                     /* P1 셀 종목필터 하이라이트 동기화를 위해 현재 종목필터 기준으로만 재렌더 */
 }
 function stepViewMonth(delta){ setViewMonth(viewYear, viewMonth+delta); }
 
@@ -915,11 +937,14 @@ function markCalSelection(){
 function renderBlotter(codeFilter){
   const tb = document.getElementById("blotBody");
   tb.innerHTML = "";
-  const ymPrefix = ymStr(viewYear,viewMonth) + "-";     /* 조회월 필터 (P1과 연동) */
-  RESULTS.filter(r=> r.d.startsWith(ymPrefix) && activeTypes.has(r.t) && activeMats.has(r.mat) && (!codeFilter || r.code===codeFilter)).forEach(r=>{
+  /* P2 조회기간 필터 (P1 조회월과 분리) — BLOT_MONTHS 인덱스 구간[blotStartIdx~blotEndIdx]에 속하는 월만 통과.
+     R1 filteredComp 의 구간 교집합 방식과 동일. from>to 는 호출 전 onBlotRange 에서 스왑 보정됨. */
+  const lo = Math.min(blotStartIdx, blotEndIdx), hi = Math.max(blotStartIdx, blotEndIdx);
+  const months = new Set(BLOT_MONTHS.slice(lo, hi+1));
+  RESULTS.filter(r=> months.has(r.d.slice(0,7)) && activeTypes.has(r.t) && activeMats.has(r.mat) && (!codeFilter || r.code===codeFilter)).forEach(r=>{
     const a=AT[r.t];
     const btc = r.bid&&r.plan? (r.bid/r.plan):null;
-    const mmdd = r.d.slice(5);                           /* "MM-DD" 표시 (연도는 헤더 조회월에 표기) */
+    const mmdd = r.d.slice(2);                            /* "YY-MM-DD" 표시 (기간 조회는 여러 월에 걸칠 수 있어 연·월 명시) */
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td class="l stick stick-1" data-field="auc.bid_date" data-source="MOEF_KTB" data-freq="발행공고 T-3일">${mmdd}</td>
@@ -943,7 +968,10 @@ function renderBlotter(codeFilter){
     if(!r.planned && selectedAuction && r.code===selectedAuction.code && r.d===selectedAuction.d && r.seq===selectedAuction.seq) tr.classList.add("sel");
     tb.appendChild(tr);
   });
-  document.getElementById("blotSub").textContent = codeFilter? `필터: ${codeFilter} · 해제하려면 캘린더 셀 재클릭` : "전체 · 정렬: 입찰일 ▼";
+  /* 서브텍스트: 종목필터 중이면 해제 안내, 아니면 현재 조회기간 표기 */
+  const loM = BLOT_MONTHS[Math.min(blotStartIdx, blotEndIdx)], hiM = BLOT_MONTHS[Math.max(blotStartIdx, blotEndIdx)];
+  const periodTxt = loM===hiM ? loM : `${loM} ~ ${hiM}`;
+  document.getElementById("blotSub").textContent = codeFilter? `필터: ${codeFilter} · 해제하려면 캘린더 셀 재클릭` : `${periodTxt} · 정렬: 입찰일 ▼`;
 }
 function filterBlotter(code){ blotFilter = code; renderBlotter(code); markCalSelection(); }
 
@@ -2036,20 +2064,66 @@ function renderDict(){
 
 /* ---------- 이벤트 바인딩 ---------- */
 document.getElementById("tabbar").addEventListener("click",e=>{const t=e.target.closest(".tab");if(t)switchScreen(t.dataset.scr);});
-document.getElementById("typeFilter").addEventListener("click",e=>{const c=e.target.closest(".chip");if(!c)return;c.classList.toggle("on");c.classList.contains("on")?activeTypes.add(c.dataset.t):activeTypes.delete(c.dataset.t);renderBlotter(blotFilter);});
-document.getElementById("matFilter").addEventListener("click",e=>{const c=e.target.closest(".chip");if(!c)return;c.classList.toggle("on");c.classList.contains("on")?activeMats.add(c.dataset.m):activeMats.delete(c.dataset.m);renderBlotter(blotFilter);});
-/* 월 네비게이터: P1·P2 어느 쪽 버튼을 눌러도 stepViewMonth()가 양쪽을 동시 재렌더 → 조회월 연동 */
+
+/* P2 필터 그룹 공용 로직 — 개별 칩 토글 / '전체' 버튼 토글 / '전체' 버튼 on·off 상태 동기화를 한 곳에서 처리.
+   grpEl: 필터 그룹 요소, dataAttr: 개별 칩 식별 속성("t" 또는 "m"), stateSet: 활성 Set(activeTypes/activeMats). */
+function wireFilterGroup(grpId, dataAttr, stateSet){
+  const grp = document.getElementById(grpId);
+  const itemChips = ()=> [...grp.querySelectorAll(".chip:not(.chip-all)")];           /* 개별(비-전체) 칩들 */
+  const allChip = grp.querySelector(".chip.chip-all");
+  /* '전체' 버튼 상태 동기화: 개별 칩이 모두 on이면 전체버튼도 on, 하나라도 off면 전체버튼 off */
+  const syncAll = ()=> allChip.classList.toggle("on", itemChips().every(c=>c.classList.contains("on")));
+  grp.addEventListener("click", e=>{
+    const c = e.target.closest(".chip"); if(!c) return;
+    if(c.classList.contains("chip-all")){
+      /* '전체' 토글: 하나라도 꺼져 있으면 전체 선택, 모두 켜져 있으면 전체 해제 */
+      const selectAll = !itemChips().every(x=>x.classList.contains("on"));
+      itemChips().forEach(x=>{
+        x.classList.toggle("on", selectAll);
+        selectAll ? stateSet.add(x.dataset[dataAttr]) : stateSet.delete(x.dataset[dataAttr]);
+      });
+      allChip.classList.toggle("on", selectAll);
+    } else {
+      /* 개별 칩 토글 → Set 갱신 → 전체버튼 상태 재동기화 */
+      c.classList.toggle("on");
+      c.classList.contains("on") ? stateSet.add(c.dataset[dataAttr]) : stateSet.delete(c.dataset[dataAttr]);
+      syncAll();
+    }
+    renderBlotter(blotFilter);
+  });
+}
+wireFilterGroup("typeFilter", "t", activeTypes);
+wireFilterGroup("matFilter",  "m", activeMats);
+
+/* P1 월 네비게이터(◀/▶): P1 캘린더 조회월만 이동. P2 블로터는 자체 기간 셀렉터로 분리되어 연동되지 않는다. */
 document.addEventListener("click",e=>{if(e.target.closest("#scr-auc .mnav-prev")){stepViewMonth(-1);}else if(e.target.closest("#scr-auc .mnav-next")){stepViewMonth(1);}});
 
+/* P2 조회기간 셀렉터(from/to) — BLOT_MONTHS 인덱스 구간 선택. R1 onResRange 와 동일하게 from>to 시 자동 스왑. */
+function initBlotRange(){
+  const selS = document.getElementById("blotStart"), selE = document.getElementById("blotEnd");
+  selS.innerHTML = BLOT_MONTHS.map((m,i)=>`<option value="${i}">${m}</option>`).join("");
+  selE.innerHTML = BLOT_MONTHS.map((m,i)=>`<option value="${i}">${m}</option>`).join("");
+  selS.value = blotStartIdx; selE.value = blotEndIdx;
+  const onBlotRange = ()=>{
+    let s = +selS.value, e = +selE.value;
+    if(s>e){ [s,e]=[e,s]; selS.value=s; selE.value=e; }   /* 시작>종료면 스왑 */
+    blotStartIdx = s; blotEndIdx = e;
+    renderBlotter(blotFilter);
+  };
+  selS.addEventListener("change", onBlotRange);
+  selE.addEventListener("change", onBlotRange);
+}
+initBlotRange();
+
 /* ---------- init ---------- */
-/* 기본 선택 입찰: 초기 조회월(2026-09) 안의 KR103501GD68(10Y) 낙찰분을 우선 선택 →
-   초기 로드 시 블로터에 선택행이 보이고 KPI가 채워진다. 없으면 해당 종목 첫 레코드로 폴백. */
+/* 기본 선택 입찰: P1 초기 조회월(2026-09) 안의 KR103501GD68(10Y) 낙찰분을 우선 선택 →
+   초기 로드 시 P2 블로터(기본 기간=전체)에 선택행이 보이고 KPI가 채워진다. 없으면 해당 종목 첫 레코드로 폴백. */
 const initYmPrefix = ymStr(viewYear,viewMonth) + "-";
 selectedAuction =
   RESULTS.find(r=>r.code==="KR103501GD68" && !r.planned && r.hi!=null && r.d.startsWith(initYmPrefix))
   || RESULTS.find(r=>r.code==="KR103501GD68" && !r.planned && r.hi!=null)
   || RESULTS.find(r=>r.code==="KR103501GD68");
-renderCal(); renderBlotter();
+renderCal(); renderBlotter(blotFilter);
 renderDict();
 /* 월 발행계획액 스파크 — 최근 12개월(2025-10~2026-09, 조원) 더미 시계열. 끝값 15.2 = 2026-09 현재값 */
 kpiSpark("spk1",[12.8,13.5,14.2,13.1,14.6,15.1,13.9,14.4,15.8,14.7,14.9,15.2],"#3b82f6");
