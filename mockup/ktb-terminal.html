@@ -283,7 +283,6 @@ table.blot .stick-4{left:318px; min-width:62px; width:62px; box-shadow:1px 0 0 v
 .cal .cd.today{border-color:var(--accent)}
 .cal .cd .dn{font-family:var(--mono); font-size:8px; color:var(--tx-dim)}
 .cal .cd .ev{display:block; font-size:8px; border-radius:1px; padding:0 2px; margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer; min-width:38px; box-sizing:border-box}
-.cal .cd .ev.sel{outline:1px solid var(--accent); outline-offset:-1px; box-shadow:0 0 0 1px var(--accent) inset; font-weight:600}
 
 /* P1 입찰캘린더는 P2 블로터 대비 0.66배 높이로 축소(블로터 표시영역은 stretch 유지).
    align-self:start로 grid stretch를 끊고 컨테이너 높이의 0.66배로 고정, 날짜셀 min-height도 비례 완화 */
@@ -408,7 +407,7 @@ table.dict code{font-family:var(--mono); background:#000; padding:0 3px; border-
         </div>
         <div class="cal-head"><div class="cah">일</div><div class="cah">월</div><div class="cah">화</div><div class="cah">수</div><div class="cah">목</div><div class="cah">금</div><div class="cah">토</div></div>
         <div class="cal" id="calGrid"></div>
-        <div class="dim" style="margin-top:6px; font-size:9px">셀 클릭 → P2 블로터 필터 · 같은 셀 재클릭 시 해제 · <span class="badge plan">예정</span> <span class="badge conf">확정</span></div>
+        <div class="dim" style="margin-top:6px; font-size:9px">셀 클릭 → 상단 KPI 갱신 · <span class="badge plan">예정</span> <span class="badge conf">확정</span></div>
       </div>
     </div>
 
@@ -847,7 +846,6 @@ function heatColor(metric, v){
 
 /* ---------- 상태 ---------- */
 let activeTypes = new Set(Object.keys(AT));
-let blotFilter = null;   /* P1 캘린더 → P2 블로터 필터 대상 종목코드 (null=전체) */
 
 /* 조회월 상태 — P1 캘린더 전용. 기준시점 2026-09. (P2 블로터는 아래 별도 기간 상태로 분리 — P1↔P2 월 연동 제거됨)
    과거 월 조회 가능. viewYear/viewMonth(0-based) 변경 시 setViewMonth() 로 P1 캘린더만 재렌더 */
@@ -869,9 +867,7 @@ function setViewMonth(y,m){
   const target = y*12+m, min = asIdx(DATA_MIN), max = asIdx(TODAY);
   const clamped = Math.max(min, Math.min(max, target));
   viewYear = Math.floor(clamped/12); viewMonth = clamped%12;
-  blotFilter = null;                            /* 월 바뀌면 P1→P2 종목필터 해제 */
   renderCal();
-  renderBlotter(blotFilter);                     /* P1 셀 종목필터 하이라이트 동기화를 위해 현재 종목필터 기준으로만 재렌더 */
 }
 function stepViewMonth(delta){ setViewMonth(viewYear, viewMonth+delta); }
 
@@ -926,19 +922,13 @@ function renderCal(){
   }
   g.innerHTML = html;
   g.querySelectorAll(".ev").forEach(e=> e.addEventListener("click",()=>{
-    const code = e.dataset.code;
     /* 클릭한 칩이 가리키는 바로 그 RESULTS 레코드를 전역 인덱스로 특정(KPI 동기화 대상) */
     const ridx = parseInt(e.dataset.ridx,10);
     const rec = Number.isInteger(ridx) ? RESULTS[ridx] : null;
-    /* 같은 종목 재클릭 → 필터 해제(토글), 다른 종목 → 해당 종목으로 필터 */
-    blotFilter = (blotFilter===code) ? null : code;
-    /* 상단 KPI 카드(2·3·4·5번 칸)를 클릭한 입찰 기준으로 갱신(selectedAuction 선반영) →
-       이후 renderBlotter 가 selectedAuction 기준으로 해당 행 sel 하이라이트까지 복원 */
+    /* 상단 KPI 카드(2·3·4·5번 칸)를 클릭한 입찰 기준으로 갱신.
+       P1↔P2 연동 제거됨: 캘린더 클릭은 더 이상 P2 블로터를 필터링하지 않는다. */
     if(rec) renderAucKPI(rec);
-    renderBlotter(blotFilter);
-    markCalSelection();
   }));
-  markCalSelection();
 }
 /* 월 네비게이터(◀ ▶) 활성/비활성 — 데이터 범위 경계에서 disabled */
 function updateMonthNav(){
@@ -948,22 +938,16 @@ function updateMonthNav(){
   document.querySelectorAll("#scr-auc .mnav-next").forEach(b=>b.classList.toggle("off", idx>=max));
   document.querySelectorAll("#scr-auc .mnav-lbl").forEach(l=>l.textContent = ymStr(viewYear,viewMonth));
 }
-/* 현재 blotFilter 에 해당하는 캘린더 칩 하이라이트 (재렌더/토글 후 동기화) */
-function markCalSelection(){
-  document.querySelectorAll("#calGrid .ev").forEach(el=>{
-    el.classList.toggle("sel", blotFilter!=null && el.dataset.code===blotFilter);
-  });
-}
 
 /* ---------- P2 블로터 ---------- */
-function renderBlotter(codeFilter){
+function renderBlotter(){
   const tb = document.getElementById("blotBody");
   tb.innerHTML = "";
   /* P2 조회기간 필터 (P1 조회월과 분리) — BLOT_MONTHS 인덱스 구간[blotStartIdx~blotEndIdx]에 속하는 월만 통과.
      R1 filteredComp 의 구간 교집합 방식과 동일. from>to 는 호출 전 onBlotRange 에서 스왑 보정됨. */
   const lo = Math.min(blotStartIdx, blotEndIdx), hi = Math.max(blotStartIdx, blotEndIdx);
   const months = new Set(BLOT_MONTHS.slice(lo, hi+1));
-  RESULTS.filter(r=> months.has(r.d.slice(0,7)) && activeTypes.has(r.t) && activeMats.has(r.mat) && (!codeFilter || r.code===codeFilter)).forEach(r=>{
+  RESULTS.filter(r=> months.has(r.d.slice(0,7)) && activeTypes.has(r.t) && activeMats.has(r.mat)).forEach(r=>{
     const a=AT[r.t];
     const btc = r.bid&&r.plan? (r.bid/r.plan):null;
     const mmdd = r.d.slice(2);                            /* "YY-MM-DD" 표시 (기간 조회는 여러 월에 걸칠 수 있어 연·월 명시) */
@@ -990,12 +974,11 @@ function renderBlotter(codeFilter){
     if(!r.planned && selectedAuction && r.code===selectedAuction.code && r.d===selectedAuction.d && r.seq===selectedAuction.seq) tr.classList.add("sel");
     tb.appendChild(tr);
   });
-  /* 서브텍스트: 종목필터 중이면 해제 안내, 아니면 현재 조회기간 표기 */
+  /* 서브텍스트: 현재 조회기간 표기 */
   const loM = BLOT_MONTHS[Math.min(blotStartIdx, blotEndIdx)], hiM = BLOT_MONTHS[Math.max(blotStartIdx, blotEndIdx)];
   const periodTxt = loM===hiM ? loM : `${loM} ~ ${hiM}`;
-  document.getElementById("blotSub").textContent = codeFilter? `필터: ${codeFilter} · 해제하려면 캘린더 셀 재클릭` : `${periodTxt} · 정렬: 입찰일 ▼`;
+  document.getElementById("blotSub").textContent = `${periodTxt} · 정렬: 입찰일 ▼`;
 }
-function filterBlotter(code){ blotFilter = code; renderBlotter(code); markCalSelection(); }
 
 /* 동일 만기 과거 입찰 추이 — 선택 종목과 같은 만기(mat)의 경쟁입찰(comp) 낙찰 완료분을
    입찰일 순으로 모아 응찰률(응찰액/발행예정액)·테일((최고−가중평균)*bp) 시계열을 그린다.
@@ -2152,7 +2135,7 @@ function wireFilterGroup(grpId, dataAttr, stateSet){
       c.classList.contains("on") ? stateSet.add(c.dataset[dataAttr]) : stateSet.delete(c.dataset[dataAttr]);
       syncAll();
     }
-    renderBlotter(blotFilter);
+    renderBlotter();
   });
 }
 wireFilterGroup("typeFilter", "t", activeTypes);
@@ -2171,7 +2154,7 @@ function initBlotRange(){
     let s = +selS.value, e = +selE.value;
     if(s>e){ [s,e]=[e,s]; selS.value=s; selE.value=e; }   /* 시작>종료면 스왑 */
     blotStartIdx = s; blotEndIdx = e;
-    renderBlotter(blotFilter);
+    renderBlotter();
   };
   selS.addEventListener("change", onBlotRange);
   selE.addEventListener("change", onBlotRange);
@@ -2186,7 +2169,7 @@ selectedAuction =
   RESULTS.find(r=>r.code==="KR103501GD68" && !r.planned && r.hi!=null && r.d.startsWith(initYmPrefix))
   || RESULTS.find(r=>r.code==="KR103501GD68" && !r.planned && r.hi!=null)
   || RESULTS.find(r=>r.code==="KR103501GD68");
-renderCal(); renderBlotter(blotFilter);
+renderCal(); renderBlotter();
 renderDict();
 /* 월 발행계획액 스파크 — 최근 12개월(2025-10~2026-09, 조원) 더미 시계열. 끝값 15.2 = 2026-09 현재값 */
 kpiSpark("spk1",[12.8,13.5,14.2,13.1,14.6,15.1,13.9,14.4,15.8,14.7,14.9,15.2],"#3b82f6");
