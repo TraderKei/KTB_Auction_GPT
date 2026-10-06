@@ -76,7 +76,7 @@ a{color:var(--accent); text-decoration:none}
 .kpi .k-spark{margin-top:3px; height:16px}
 /* scr-auc 전용: P3~P6 제거로 생긴 가로 여유를 활용해 KPI 칸을 확대 (다른 탭 KPI엔 미적용).
    텍스트(라벨·값·설명)는 상단에 조밀하게 모으고, 그래프(스파크/OHLC)가 하단 잔여공간을 최대로 차지. */
-#scr-auc .kpi{padding:10px 16px 12px; min-height:150px; display:flex; flex-direction:column}
+#scr-auc .kpi{padding:10px 16px 12px; min-height:188px; display:flex; flex-direction:column}
 #scr-auc .kpi .k-l{font-size:12px; line-height:1.2}
 #scr-auc .kpi .k-v{font-size:22px; margin-top:2px; line-height:1.1}
 #scr-auc .kpi .k-v small{font-size:12px}
@@ -84,9 +84,12 @@ a{color:var(--accent); text-decoration:none}
 /* 그래프를 하단에 고정 높이로 배치 → 칸의 대부분을 그래프가 채우되 높이는 불변.
    주의: height를 auto/flex로 두면 렌더 함수(kpiSpark·drawOHLC)가 clientHeight를
    drawing-buffer에 되쓰는 과정에서 레이아웃 높이가 단조 증가하는 되먹임 루프가 발생한다
-   (블로터 행 재클릭마다 차트가 커지는 버그). height를 고정값으로 못박아 루프를 차단한다. */
-#scr-auc .kpi .k-spark{margin-top:auto; padding-top:8px; width:100%; height:60px; flex:0 0 auto; box-sizing:border-box}
-#scr-auc .kpi #ohlcChart{margin-top:auto!important; padding-top:8px; width:100%; height:92px!important; flex:0 0 auto; box-sizing:border-box}
+   (블로터 행 재클릭마다 차트가 커지는 버그). height를 고정값으로 못박아 루프를 차단한다.
+   spk2·spk3 는 축 있는 Chart.js 라인차트(kpiTrendChart)로 전환되어 x/y축 눈금 공간이
+   필요하므로 높이를 확대(96px). Chart.js responsive:false 이므로 캔버스 width/height
+   속성(마크업)과 이 CSS 고정 높이가 일치해야 눈금이 선명하게 렌더된다. */
+#scr-auc .kpi .k-spark{margin-top:auto; padding-top:8px; width:100%; height:96px; flex:0 0 auto; box-sizing:border-box}
+#scr-auc .kpi #ohlcChart{margin-top:auto!important; padding-top:8px; width:100%; height:104px!important; flex:0 0 auto; box-sizing:border-box}
 
 /* ---- Panels ---- */
 .grid3{display:grid; gap:1px; background:var(--bd)}
@@ -274,7 +277,7 @@ table.blot .stick-4{left:318px; min-width:62px; width:62px; box-shadow:1px 0 0 v
 
 /* P1 입찰캘린더는 P2 블로터 대비 0.66배 높이로 축소(블로터 표시영역은 stretch 유지).
    align-self:start로 grid stretch를 끊고 컨테이너 높이의 0.66배로 고정, 날짜셀 min-height도 비례 완화 */
-#scr-auc .grid3 > .panel:first-child{align-self:start; height:calc((100vh - 214px) * 0.66); min-height:290px}
+#scr-auc .grid3 > .panel:first-child{align-self:start; height:calc((100vh - 252px) * 0.66); min-height:290px}
 #scr-auc .grid3 > .panel:first-child .cal .cd{min-height:34px}
 /* P1이 축소되며 하단에 grid 컨테이너 배경(--bd)이 노출돼 주변 패널(--panel)과 색이 어긋나던 문제 수정:
    grid 배경을 패널색과 일치시키고, 사라지는 P1↔P2 세로 경계선은 P2 좌측 border로 전체 높이에 복원 */
@@ -366,21 +369,21 @@ table.dict code{font-family:var(--mono); background:#000; padding:0 3px; border-
       <div class="k-l">평균 응찰률</div>
       <div class="k-v" id="kpiBtcVal" data-field="auc.bid_to_cover" data-source="DERIVED" data-freq="입찰일 T+0 16:00">—<small> x</small></div>
       <div class="k-d mut" id="kpiBtcSub">선택 만기 기준</div>
-      <canvas class="k-spark" id="spk2" width="256" height="22"></canvas>
+      <canvas class="k-spark" id="spk2" width="288" height="96"></canvas>
     </div>
     <div class="kpi">
       <div class="k-l">평균 테일</div>
       <div class="k-v" id="kpiTailVal" data-field="auc.tail" data-source="DERIVED" data-freq="입찰일 T+0 16:00">—<small> bp</small></div>
       <div class="k-d mut" id="kpiTailSub">선택 만기 기준</div>
-      <canvas class="k-spark" id="spk3" width="256" height="22"></canvas>
+      <canvas class="k-spark" id="spk3" width="288" height="96"></canvas>
     </div>
     <div class="kpi">
       <div class="k-l">낙찰금리 구조</div>
-      <canvas id="ohlcChart" width="264" height="92" data-field="auc.high_rate" data-source="BOK_ECOS" data-freq="입찰일 T+0 16:00"></canvas>
+      <canvas id="ohlcChart" width="288" height="104" data-field="auc.high_rate" data-source="BOK_ECOS" data-freq="입찰일 T+0 16:00"></canvas>
     </div>
   </div>
 
-  <div class="grid3" style="grid-template-columns:37% 63%; height:calc(100vh - 214px); min-height:440px">
+  <div class="grid3" style="grid-template-columns:37% 63%; height:calc(100vh - 252px); min-height:440px">
     <div class="panel">
       <div class="p-head"><span class="p-code">P1</span><h3>입찰 캘린더</h3>
         <span class="mnav"><button class="mnav-prev" title="이전 월">◀</button><span class="mnav-lbl">2026-09</span><button class="mnav-next" title="다음 월">▶</button></span>
@@ -904,15 +907,24 @@ function renderCal(){
       const bg = {comp:"#1d3a5f",nc1:"#14321f",nc2:"#1a2e14",nc3:"#2e2414",nc4:"#2a1a2e",bb:"#3a1414",ex:"#14323a"}[r.t];
       const fg = {comp:"#93c5fd",nc1:"#86efac",nc2:"#bef264",nc3:"#fcd34d",nc4:"#f0abfc",bb:"#fca5a5",ex:"#67e8f9"}[r.t];
       const label = CAL_LABEL[r.t](r);
-      cell += `<span class="ev" style="background:${bg}; color:${fg}; width:${(w*100)|0}%" data-code="${r.code}" data-field="auc.schedule_cell" data-source="MOEF_KTB" data-freq="발행공고 T-3일" title="${a.ko} ${matLabel(r.mat)} ${r.seq} · ${fmt(r.plan)}억">${r.planned?"◇":"◆"}${label}</span>`;
+      /* data-ridx: RESULTS 전역 인덱스. 같은 code가 여러 차수/비경쟁II로 중복될 수 있어
+         클릭한 칩이 가리키는 바로 그 레코드를 정확히 특정하기 위함(KPI 동기화용). */
+      const ridx = RESULTS.indexOf(r);
+      cell += `<span class="ev" style="background:${bg}; color:${fg}; width:${(w*100)|0}%" data-code="${r.code}" data-ridx="${ridx}" data-field="auc.schedule_cell" data-source="MOEF_KTB" data-freq="발행공고 T-3일" title="${a.ko} ${matLabel(r.mat)} ${r.seq} · ${fmt(r.plan)}억">${r.planned?"◇":"◆"}${label}</span>`;
     });
     cell += `</div>`; html += cell;
   }
   g.innerHTML = html;
   g.querySelectorAll(".ev").forEach(e=> e.addEventListener("click",()=>{
     const code = e.dataset.code;
+    /* 클릭한 칩이 가리키는 바로 그 RESULTS 레코드를 전역 인덱스로 특정(KPI 동기화 대상) */
+    const ridx = parseInt(e.dataset.ridx,10);
+    const rec = Number.isInteger(ridx) ? RESULTS[ridx] : null;
     /* 같은 종목 재클릭 → 필터 해제(토글), 다른 종목 → 해당 종목으로 필터 */
     blotFilter = (blotFilter===code) ? null : code;
+    /* 상단 KPI 카드(2·3·4·5번 칸)를 클릭한 입찰 기준으로 갱신(selectedAuction 선반영) →
+       이후 renderBlotter 가 selectedAuction 기준으로 해당 행 sel 하이라이트까지 복원 */
+    if(rec) renderAucKPI(rec);
     renderBlotter(blotFilter);
     markCalSelection();
   }));
@@ -1019,8 +1031,8 @@ function renderAucKPI(r){
     if(tailVal) tailVal.innerHTML = "—<small> bp</small>";
     if(btcSub) btcSub.textContent = "선택 만기 기준";
     if(tailSub) tailSub.textContent = "선택 만기 기준";
-    kpiSpark("spk2", [], "#22c55e");
-    kpiSpark("spk3", [], "#ef4444");
+    kpiTrendChart("spk2", [], "#22c55e", "배");
+    kpiTrendChart("spk3", [], "#ef4444", "bp");
     drawOHLC({hi:null, wavg:null});
     return;
   }
@@ -1037,8 +1049,12 @@ function renderAucKPI(r){
   if(tailVal) tailVal.innerHTML = tailArr.length ? `${tailArr[tailArr.length-1].toFixed(1)}<small> bp</small>` : "—<small> bp</small>";
   if(btcSub) btcSub.textContent = btcArr.length ? `${matLbl} · 최근 ${btcArr.length}회 (동일 만기)` : `${matLbl} · comp 이력 없음`;
   if(tailSub) tailSub.textContent = tailArr.length ? `${matLbl} · 최근 ${tailArr.length}회 (동일 만기)` : `${matLbl} · comp 이력 없음`;
-  kpiSpark("spk2", btcArr, "#22c55e");
-  kpiSpark("spk3", tailArr, "#ef4444");
+  /* 가로축=입찰일(MM-DD), 세로축=값(응찰률 배/테일 bp)인 축 있는 라인차트.
+     선택 회차(cur=true)는 포인트를 크게 강조. */
+  const labels = s.map(x=>x.d);
+  const curFlags = s.map(x=>x.cur);
+  kpiTrendChart("spk2", btcArr, "#22c55e", "배", labels, curFlags);
+  kpiTrendChart("spk3", tailArr, "#ef4444", "bp", labels, curFlags);
   /* 5번 칸: 낙찰금리 OHLC 구조 (선택 입찰 기준, 컴팩트 렌더) */
   drawOHLC(r);
 }
@@ -1151,6 +1167,43 @@ function kpiSpark(id,arr,color){
   ctx.strokeStyle=color; ctx.lineWidth=1.2; ctx.beginPath();
   arr.forEach((v,i)=>{const x=i*W/(arr.length-1);const y=H-2-((v-min)/rng)*(H-4);i?ctx.lineTo(x,y):ctx.moveTo(x,y);});
   ctx.stroke();
+}
+
+/* KPI 3·4번 칸 추이 그래프 — 가로축=입찰일(MM-DD), 세로축=값(응찰률 배/테일 bp)인
+   축 있는 Chart.js 라인차트. 기존 kpiSpark(축 없는 스파크라인)를 대체한다.
+   · R3(drawResSeries)·D1(drawDMDTrend) 과 동일한 다크 테마 축 옵션을 공유.
+   · 되먹임 버그(캔버스 clientHeight→buffer 되쓰기로 재클릭마다 커지는 루프) 방지를 위해
+     responsive:false + maintainAspectRatio:false + 고정 캔버스 크기를 사용하고,
+     재렌더마다 이전 인스턴스를 destroy 한다.
+   · curFlags[i]=true(선택 회차)면 해당 포인트 반경을 크게 강조.
+   id: 캔버스 요소 id / arr: y값 배열 / color: 선·포인트 색 / unit: 축 단위 라벨
+   labels: x축 라벨(MM-DD) 배열 / curFlags: 선택 회차 강조 플래그 배열 */
+const kpiTrendRefs = {};                 /* 캔버스 id → Chart 인스턴스 (재렌더 시 destroy) */
+function kpiTrendChart(id, arr, color, unit, labels, curFlags){
+  if(typeof Chart==="undefined") return;
+  const el = document.getElementById(id); if(!el) return;
+  if(kpiTrendRefs[id]){ kpiTrendRefs[id].destroy(); kpiTrendRefs[id]=null; }
+  if(!arr || arr.length===0) return;     /* 데이터 없음 → 이전 차트만 비우고 종료 */
+  const rgba = (hex,a)=>{ const n=parseInt(hex.slice(1),16); return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},${a})`; };
+  const ptR = (curFlags||[]).map(c=> c ? 4 : 2);
+  const ptBorder = (curFlags||[]).map(c=> c ? "#fff" : color);
+  const opt = {
+    responsive:false, maintainAspectRatio:false,
+    plugins:{ legend:{display:false}, tooltip:{enabled:true, callbacks:{ label:ctx=>`${ctx.parsed.y}${unit}` }} },
+    scales:{
+      x:{ ticks:{color:"#5c6675",font:{size:8},maxRotation:0,autoSkip:true,maxTicksLimit:6}, grid:{color:"#1a2029"} },
+      y:{ ticks:{color:"#5c6675",font:{size:8}}, grid:{color:"#1a2029"} }
+    }
+  };
+  kpiTrendRefs[id] = new Chart(el,{
+    type:"line",
+    data:{ labels:labels||arr.map((_,i)=>i+1), datasets:[{
+      data:arr, borderColor:color, backgroundColor:rgba(color,0.10),
+      tension:.3, fill:true, borderWidth:1.5,
+      pointRadius:ptR, pointBackgroundColor:color, pointBorderColor:ptBorder, pointBorderWidth:1
+    }]},
+    options:opt
+  });
 }
 
 /* ---------- 나머지 탭 렌더 ---------- */
