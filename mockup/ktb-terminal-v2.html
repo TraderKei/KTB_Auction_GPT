@@ -171,6 +171,23 @@ table.blot .stick-2{left:66px; min-width:92px; width:92px}
 table.blot .stick-3{left:158px; min-width:160px; max-width:160px; overflow:hidden; text-overflow:ellipsis}
 table.blot .stick-4{left:318px; min-width:62px; width:62px; box-shadow:1px 0 0 var(--bd-2)}
 
+/* ---- 우측 틀고정: '합계(Σ기간)' 칼럼 우측 sticky (좌측 stick 패턴 대칭) ----
+   긴 기간(최대 24개월) 선택 시 .p-body overflow:auto 로 하단 가로 스크롤이 생기며,
+   스크롤해도 좌측 '만기'(stick-1)·우측 '합계'(stick-r) 열은 고정된다. 경계선은 좌측 그림자. */
+table.blot th.stick-r, table.blot td.stick-r{right:0; min-width:62px; width:62px; box-shadow:-1px 0 0 var(--bd-2)}
+table.blot td.stick-r{background:var(--bg); z-index:3}
+table.blot th.stick-r{background:var(--bg-1); z-index:4}
+table.blot tr:hover td.stick-r{background:#141b28}
+table.blot tr.sel td.stick-r{background:#16233b}
+
+/* ---- PL1 월 헤더 클릭(작업3): 클릭 가능 표시 + 선택월(sel-col) 하이라이트 ---- */
+table.blot th.plan-mhead{cursor:pointer}
+table.blot th.plan-mhead:hover{color:var(--tx); background:#1b2433}
+/* planViewMonth 와 일치하는 2026 열 강조(헤더: 언더라인+강조색 / 본문: 옅은 배경) */
+table.blot th.sel-col{color:var(--accent); box-shadow:inset 0 -2px 0 var(--accent)}
+table.blot td.sel-col{background:#16233b}
+table.blot tr:hover td.sel-col{background:#1b2c47}
+
 /* auction-type color coding */
 .at{display:inline-block; padding:0 5px; border-radius:2px; font-size:10px; font-family:var(--sans); border:1px solid transparent}
 .at-comp{background:#132a4a; color:#93c5fd; border-color:#1e3a5f}   /* 경쟁입찰 */
@@ -673,11 +690,38 @@ let planCurYear = 2026;              /* PL1 선택연도(당해). py=선택연�
 let planViewMonth = PLAN_CUR_MONTH;  /* PL2 조회월(0-based). 기본 2026-09 */
 let planCharts = [];                 /* PL2 차트 인스턴스(재렌더 시 destroy) */
 
+/* ── PL1 절대 월 인덱스 모델 (연도 선택 가능) ──────────────────────────────────
+   데이터 제약(AGENTS.md "없는 값 생성 금지"): PLAN_MONTHLY[mat] 에는 py(2025)/cy(2026)
+   두 해 배열만 실재한다(약 600~609행). 따라서 보유 데이터 범위인 2025-01~2026-12
+   24개월(구현 방침 A)만 옵션으로 제공한다. 임의 연도를 추가하지 않는다.
+   · 절대 월 인덱스 abs: 0 = PLAN_YEAR_MIN-01 … 2025-01=0 … 2025-12=11 … 2026-01=12 … 2026-12=23.
+   · {year, month(0-based)} ↔ abs 변환은 planAbsToYM / planYMToAbs 헬퍼를 통해서만 수행. */
+const PLAN_RAW_YEAR_MIN = 2025;   /* 보유 데이터 최소 연도(py 배열 = 2025) */
+const PLAN_RAW_YEAR_MAX = 2026;   /* 보유 데이터 최대 연도(cy 배열 = 2026) */
+const PLAN_RAW_MONTHS = (PLAN_RAW_YEAR_MAX - PLAN_RAW_YEAR_MIN + 1) * 12;   /* = 24 */
+/* 절대 월 인덱스 → {year, month(0-based)} */
+function planAbsToYM(abs){ return { year: PLAN_RAW_YEAR_MIN + Math.floor(abs/12), month: abs % 12 }; }
+/* {year, month(0-based)} → 절대 월 인덱스 */
+function planYMToAbs(year, month){ return (year - PLAN_RAW_YEAR_MIN) * 12 + month; }
+/* 절대 월 인덱스 → "YYYY-MM" 라벨 */
+function planAbsLabel(abs){ const {year,month}=planAbsToYM(abs); return `${year}-${String(month+1).padStart(2,"0")}`; }
+/* 절대 월 인덱스 → 해당 만기의 월별 발행계획 값(조원). 연도에 따라 py(2025)/cy(2026) 분기.
+   보유하지 않은 연도 요청 시 null 반환(지어내지 않음). */
+function planRawValue(mat, abs){
+  const {year,month}=planAbsToYM(abs);
+  const s = PLAN_MONTHLY[mat];
+  if(!s) return null;
+  if(year===2025) return s.py[month];
+  if(year===2026) return s.cy[month];
+  return null;   /* 보유 데이터 밖 연도 → 값 없음 */
+}
+
 /* ── PL1 월별 발행계획 Raw Data 테이블 상태 (P2 블로터 기간/만기 필터와 동일 UX, 상태만 분리) ──
-   · planRawStartIdx~planRawEndIdx : 표시 월 구간(0-based, PLAN_MONTH_LABELS 인덱스). from>to 시 스왑.
-   · planRawActiveMats             : 표시 만기 Set(PLAN_MATS 부분집합). 20Y 포함 전체를 기본 표시. */
-let planRawStartIdx = 0;                     /* 기본 시작: 1월 */
-let planRawEndIdx = PLAN_CUR_MONTH;          /* 기본 종료: 기준월(2026-09 → 인덱스 8=9월) */
+   · planRawStartAbs~planRawEndAbs : 표시 월 구간(절대 월 인덱스 0~23). from>to 시 스왑.
+   · planRawActiveMats             : 표시 만기 Set(PLAN_MATS 부분집합). 20Y 포함 전체를 기본 표시.
+   기본 구간: 당해(2026) 1월 ~ 기준월(2026-09). 절대 인덱스로는 2026-01=12 … 2026-09=12+PLAN_CUR_MONTH. */
+let planRawStartAbs = planYMToAbs(2026, 0);                 /* 기본 시작: 2026-01 */
+let planRawEndAbs   = planYMToAbs(2026, PLAN_CUR_MONTH);    /* 기본 종료: 기준월(2026-09) */
 let planRawActiveMats = new Set(PLAN_MATS);  /* 기본: 전체 만기(20Y 포함) 표시 */
 
 /* 전년(py=선택연도-1) 그룹 실적 비중 vs 당해(cy=선택연도) 그룹 비중을 그룹 레벨에서 비교.
@@ -1644,14 +1688,14 @@ function renderPLAN(){
       <div class="k-d ${dCls(ytdDT)}">${arrow(ytdDT)} ${fmtD(ytdDP)}% · 1~${curLbl} 누적 vs 전년동기</div></div>
   </div>
   <div class="grid3" style="grid-template-columns:46% 54%; height:660px">
-    <div class="panel"><div class="p-head"><span class="p-code">PL1</span><h3>월별 발행계획 비교 (Raw Data)</h3>
+    <div class="panel"><div class="p-head"><span class="p-code">PL1</span><h3>월별 발행계획 비교</h3>
       <span class="rangesel">
         <span class="rs-lbl">기간</span>
         <select id="planRawStart"></select>
         <span class="rs-tilde">~</span>
         <select id="planRawEnd"></select>
       </span>
-      <span class="p-sub" style="margin-left:8px" id="planRawSub">당해(2026) 월별 발행계획 · 단위 조원</span></div>
+      <span class="p-sub" style="margin-left:8px" id="planRawSub">월별 발행계획 · 단위 조원</span></div>
       <div class="blot-filters">
         <div class="filtergrp" id="planRawMatFilter">
           <span class="lbl">만기</span>
@@ -1666,7 +1710,7 @@ function renderPLAN(){
           <thead id="planRawHead"></thead>
           <tbody id="planRawBody"></tbody>
         </table>
-        <div class="dim" style="font-size:9.5px;padding:10px 12px;line-height:1.5">원천: MOEF_KTB (ktb.moef.go.kr/isuPlan.do) · 당해(2026) 월별 발행계획 raw · 월간계획=전월 마지막주 목요일 09:00 공표 · 단위 조원 · 20Y 포함 전체 만기 표시(만기 필터로 토글) · 합계 열=선택기간 Σ, 합계 행=만기 Σ · 모두 더미데이터</div>
+        <div class="dim" style="font-size:9.5px;padding:10px 12px;line-height:1.5">원천: MOEF_KTB (ktb.moef.go.kr/isuPlan.do) · 월별 발행계획 raw(보유 2025-01~2026-12) · 월간계획=전월 마지막주 목요일 09:00 공표 · 단위 조원 · 20Y 포함 전체 만기 표시(만기 필터로 토글) · 월 헤더 클릭 시 상단 KPI·PL2 해당 월 조회 · 합계 열=선택기간 Σ, 합계 행=만기 Σ · 모두 더미데이터</div>
       </div></div>
     <div class="panel"><div class="p-head"><span class="p-code">PL2</span><h3>월간 증감 (동월 YoY · 당월 MoM) & YTD 누적</h3>
       <span class="mnav"><button class="pl2-mnav-prev${planViewMonth<=0?" off":""}" title="이전 월">◀</button><span class="pl2-mnav-lbl mnav-lbl">2026-${String(planViewMonth+1).padStart(2,"0")}</span><button class="pl2-mnav-next${planViewMonth>=PLAN_CUR_MONTH?" off":""}" title="다음 월">▶</button></span>
@@ -1726,64 +1770,98 @@ function wirePlanNav(){
 function wirePlanRaw(){
   const selS = document.getElementById("planRawStart"), selE = document.getElementById("planRawEnd");
   if(selS && selE){
-    const opts = PLAN_MONTH_LABELS.map((m,i)=>`<option value="${i}">${m}</option>`).join("");
+    /* 옵션: 보유 데이터 범위(2025-01~2026-12) 24개월을 "YYYY-MM" 라벨·절대 월 인덱스 값으로 생성.
+       연도가 바뀌는 것을 포함 → 연도 선택 가능. 없는 연도는 생성하지 않는다. */
+    let opts = "";
+    for(let a=0; a<PLAN_RAW_MONTHS; a++) opts += `<option value="${a}">${planAbsLabel(a)}</option>`;
     selS.innerHTML = opts; selE.innerHTML = opts;
-    selS.value = planRawStartIdx; selE.value = planRawEndIdx;
+    selS.value = planRawStartAbs; selE.value = planRawEndAbs;
     const onPlanRawRange = ()=>{
       let s = +selS.value, e = +selE.value;
       if(s>e){ [s,e]=[e,s]; selS.value=s; selE.value=e; }   /* 시작>종료면 스왑 (P2 onBlotRange 동일) */
-      planRawStartIdx = s; planRawEndIdx = e;
+      planRawStartAbs = s; planRawEndAbs = e;
       renderPlanRawTable();
     };
     selS.addEventListener("change", onPlanRawRange);
     selE.addEventListener("change", onPlanRawRange);
   }
   wireFilterGroup("planRawMatFilter", "m", planRawActiveMats, renderPlanRawTable);
+  wirePlanRawHeadClick();
   renderPlanRawTable();
 }
-/* PL1 Raw 테이블 본체 렌더 — 기간(planRawStartIdx~EndIdx) × 만기(planRawActiveMats) 교집합 적용.
-   행=만기(필터 통과·PLAN_MATS 순서), 열=선택 구간 각 월 + "합계(Σ기간)". 하단에 "합계(Σ만기)" 행.
-   값은 PLAN_MONTHLY[mat].cy (당해 2026, 단위 조원)을 그대로 사용 — 지어내지 않음. 소수 1자리. */
+/* PL1 월 헤더 클릭(작업3) → 상단 KPI 5카드 + PL2 연동.
+   #scr-plan 은 innerHTML 재작성 후에도 요소 자체는 유지되므로, 여기에 '위임(delegation)'으로
+   리스너를 1회만 바인딩한다(dataset 플래그 가드 → 재배선 때 중복 추가 없음). 내부 월 <th>는 매번
+   새로 그려지지만 위임이라 재바인딩 불필요.
+   연도 분기 설계 의도:
+    · KPI 5카드·PL2(planDeltas)는 cm=planViewMonth 를 '2026(cy)' 월 인덱스로만 해석한다.
+      2025(py) 전용 KPI 계산식은 존재하지 않는다(동월YoY·YTD·MoM 모두 cy 기준).
+    · 따라서 2026 월 헤더 클릭만 planViewMonth 로 반영하고 renderPLANAll() 로 전체를 재조회한다.
+    · 2025 월 헤더 클릭은 2026 전용 KPI/PL2 로직과 정합하지 않으므로 '무시'(no-op)한다.
+      없는 2025 KPI 를 임의 추정·생성하지 않기 위함(AGENTS.md 규칙). 열 하이라이트도 2026만 적용된다. */
+function wirePlanRawHeadClick(){
+  const scr = document.getElementById("scr-plan");
+  if(!scr || scr.dataset.planHeadWired==="1") return;   /* 1회만 위임 바인딩 */
+  scr.dataset.planHeadWired = "1";
+  scr.addEventListener("click", (ev)=>{
+    const th = ev.target.closest("th.plan-mhead");
+    if(!th || !scr.contains(th)) return;
+    const abs = +th.dataset.month;
+    if(Number.isNaN(abs)) return;
+    const {year, month} = planAbsToYM(abs);
+    if(year!==2026) return;   /* 2025 등 2026 외 연도 클릭 → KPI/PL2 비대응 → 무시(no-op) */
+    planViewMonth = month;    /* 2026 월 인덱스로 반영 → KPI·PL2·PL1 일괄 재조회 */
+    renderPLANAll();          /* renderPLAN()+drawPlanCharts(): KPI 5카드 + PL2 + PL1(필터상태 전역 유지) 재렌더 */
+  });
+}
+/* PL1 Raw 테이블 본체 렌더 — 기간(planRawStartAbs~EndAbs, 절대 월 인덱스) × 만기(planRawActiveMats) 교집합 적용.
+   행=만기(필터 통과·PLAN_MATS 순서), 열=선택 구간 각 월(YYYY-MM) + "합계(Σ기간)". 하단에 "합계(Σ만기)" 행.
+   값은 planRawValue(mat, abs) 로 연도별 py(2025)/cy(2026) 배열에서 읽는다 — 지어내지 않음. 소수 1자리.
+   · 월 헤더는 클릭 가능(작업3): data-month 에 절대 월 인덱스를 담아 #scr-plan 위임 리스너가 처리.
+   · 선택월(planViewMonth, 2026 월 인덱스) 과 일치하는 2026 열은 활성 하이라이트(th.sel-col)한다. */
 function renderPlanRawTable(){
   const head = document.getElementById("planRawHead"), body = document.getElementById("planRawBody");
   const sub = document.getElementById("planRawSub");
   if(!head||!body) return;
-  const lo = Math.min(planRawStartIdx, planRawEndIdx), hi = Math.max(planRawStartIdx, planRawEndIdx);
-  const monthIdx = [];                                   /* 표시 월 인덱스 구간 [lo..hi] */
-  for(let i=lo;i<=hi;i++) monthIdx.push(i);
+  const lo = Math.min(planRawStartAbs, planRawEndAbs), hi = Math.max(planRawStartAbs, planRawEndAbs);
+  const monthIdx = [];                                   /* 표시 구간 절대 월 인덱스 [lo..hi] */
+  for(let a=lo;a<=hi;a++) monthIdx.push(a);
   const mats = PLAN_MATS.filter(m=>planRawActiveMats.has(m));   /* 필터 통과 만기(원래 순서 유지) */
+  /* 현재 PL2/KPI 선택월(planViewMonth)의 절대 인덱스 — 2026 기준이므로 2026-(planViewMonth)로 변환 */
+  const selAbs = planYMToAbs(2026, planViewMonth);
 
-  /* 헤더: 만기 | 월1 … 월N | 합계(Σ기간) */
+  /* 헤더: 만기(좌고정) | 월1 … 월N(클릭가능) | 합계(Σ기간, 우고정) */
   head.innerHTML = `<tr><th class="l stick stick-1">만기</th>${
-    monthIdx.map(i=>`<th>${PLAN_MONTH_LABELS[i]}</th>`).join("")
-  }<th>합계<span class="en">Σ기간</span></th></tr>`;
+    monthIdx.map(a=>`<th class="plan-mhead${a===selAbs?" sel-col":""}" data-month="${a}" title="${planAbsLabel(a)} 기준으로 KPI·PL2 조회">${planAbsLabel(a)}</th>`).join("")
+  }<th class="stick stick-r">합계<span class="en">Σ기간</span></th></tr>`;
 
   if(mats.length===0 || monthIdx.length===0){
     const span = monthIdx.length + 2;
     body.innerHTML = `<tr><td class="l" colspan="${span}" style="color:var(--tx-dim);padding:16px;text-align:center">표시할 ${mats.length===0?"만기":"기간"}가 없습니다 — 필터를 확인하세요.</td></tr>`;
-    if(sub) sub.textContent = `당해(2026) ${PLAN_MONTH_LABELS[lo]}~${PLAN_MONTH_LABELS[hi]} 월별 발행계획 · 단위 조원 · 만기 0`;
+    if(sub) sub.textContent = `${planAbsLabel(lo)}~${planAbsLabel(hi)} 월별 발행계획 · 단위 조원 · 만기 0`;
     return;
   }
 
   const colSum = monthIdx.map(()=>0);                    /* 각 월 열의 만기 합계 누적 */
   const rows = mats.map(mat=>{
-    const cy = PLAN_MONTHLY[mat].cy;                     /* 당해(2026) 월별 계획 배열(조원) */
     let rowSum = 0;
-    const cells = monthIdx.map((mi,ci)=>{
-      const v = cy[mi];
+    const cells = monthIdx.map((abs,ci)=>{
+      const v = planRawValue(mat, abs);                  /* 연도별 py/cy 분기 조회(조원) */
+      if(v==null) return `<td class="mono dim" style="font-variant-numeric:tabular-nums">—</td>`;
       rowSum += v; colSum[ci] += v;
-      return `<td class="mono" style="font-variant-numeric:tabular-nums" data-field="plan.monthly" data-source="MOEF_KTB" data-freq="월간 전월말목 09:00">${v.toFixed(1)}</td>`;
+      const sel = abs===selAbs ? " sel-col" : "";
+      return `<td class="mono${sel}" style="font-variant-numeric:tabular-nums" data-field="plan.monthly" data-source="MOEF_KTB" data-freq="월간 전월말목 09:00">${v.toFixed(1)}</td>`;
     }).join("");
-    return `<tr><td class="l stick stick-1">${matLabel(mat)}</td>${cells}<td class="mono" style="font-variant-numeric:tabular-nums;color:var(--tx)">${rowSum.toFixed(1)}</td></tr>`;
+    return `<tr><td class="l stick stick-1">${matLabel(mat)}</td>${cells}<td class="mono stick stick-r" style="font-variant-numeric:tabular-nums;color:var(--tx)">${rowSum.toFixed(1)}</td></tr>`;
   }).join("");
 
   const grand = colSum.reduce((s,v)=>s+v,0);
-  const totalRow = `<tr style="border-top:1px solid var(--bd-2)"><td class="l stick stick-1" style="color:var(--tx)">합계<span class="dim" style="font-size:8.5px;text-transform:none"> Σ만기</span></td>${
-    colSum.map(v=>`<td class="mono" style="font-variant-numeric:tabular-nums;color:var(--tx)">${v.toFixed(1)}</td>`).join("")
-  }<td class="mono" style="font-variant-numeric:tabular-nums;color:var(--tx)">${grand.toFixed(1)}</td></tr>`;
+  const totalRow = `<tr class="plan-sumrow" style="border-top:1px solid var(--bd-2)"><td class="l stick stick-1" style="color:var(--tx)">합계<span class="dim" style="font-size:8.5px;text-transform:none"> Σ만기</span></td>${
+    colSum.map((v,ci)=>`<td class="mono${monthIdx[ci]===selAbs?" sel-col":""}" style="font-variant-numeric:tabular-nums;color:var(--tx)">${v.toFixed(1)}</td>`).join("")
+  }<td class="mono stick stick-r" style="font-variant-numeric:tabular-nums;color:var(--tx)">${grand.toFixed(1)}</td></tr>`;
 
   body.innerHTML = rows + totalRow;
-  if(sub) sub.textContent = `당해(2026) ${PLAN_MONTH_LABELS[lo]}~${PLAN_MONTH_LABELS[hi]} 월별 발행계획 · 단위 조원 · 만기 ${mats.length} · 총 ${grand.toFixed(1)}조`;
+  if(sub) sub.textContent = `${planAbsLabel(lo)}~${planAbsLabel(hi)} 월별 발행계획 · 단위 조원 · 만기 ${mats.length} · 총 ${grand.toFixed(1)}조`;
 }
 function renderSD(){
   const opts = SD_SERIES.labels.map((l,i)=>`<option value="${i}">${l}</option>`).join("");
