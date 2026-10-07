@@ -107,7 +107,10 @@ a{color:var(--accent); text-decoration:none}
    필요하므로 높이를 확대(96px). Chart.js responsive:false 이므로 캔버스 width/height
    속성(마크업)과 이 CSS 고정 높이가 일치해야 눈금이 선명하게 렌더된다. */
 #scr-auc .kpi .k-spark{margin-top:auto; padding-top:8px; width:100%; height:96px; flex:0 0 auto; box-sizing:border-box}
-#scr-auc .kpi #ohlcChart{margin-top:auto!important; padding-top:8px; width:100%; height:104px!important; flex:0 0 auto; box-sizing:border-box}
+/* '낙찰금리 구조' 칸은 라벨만 있고 값/설명 줄이 없어 캔버스 위 빈 공간이 컸다 →
+   캔버스 고정 높이를 칸(min-height 188px) 대부분을 채우도록 확대. height는 여전히 고정값
+   (auto/flex 금지: 렌더 함수가 clientHeight를 buffer에 되쓰는 단조증가 루프 차단) */
+#scr-auc .kpi #ohlcChart{margin-top:4px; padding-top:2px; width:100%; height:162px!important; flex:0 0 auto; box-sizing:border-box}
 
 /* ---- Panels ---- */
 .grid3{display:grid; gap:1px; background:var(--bd)}
@@ -407,15 +410,15 @@ table.dict code{font-family:var(--mono); background:#000; padding:0 3px; border-
   <div class="brand">
     <span class="brand-logo" aria-hidden="true">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M5 3.2h9.2L19 8v12.8H5z"/>
-        <path d="M14 3.2V8h5"/>
-        <path d="M8 13.8l2.4-2.6 2 1.9 3.2-3.6"/>
-        <path d="M15.6 9.5h2.2v2.2"/>
+        <!-- 경매 낙찰봉(gavel): 입찰 상징 -->
+        <path d="M4.5 13.5l5-5"/>
+        <rect x="7.4" y="5.1" width="5.6" height="4.2" rx="0.7" transform="rotate(45 10.2 7.2)"/>
+        <path d="M11.3 10.9l7.2 7.2"/>
+        <path d="M6.2 19.8h7.2"/>
       </svg>
     </span>
     <span class="brand-txt">
-      <span class="brand-name">KTB <b>TERMINAL</b></span>
-      <span class="brand-sub">국고채 발행·입찰 정보단말</span>
+      <span class="brand-name">KTB <b>AUCTION</b></span>
     </span>
   </div>
   <div class="tab on" data-scr="auc">입찰 캘린더·블로터</div>
@@ -451,7 +454,7 @@ table.dict code{font-family:var(--mono); background:#000; padding:0 3px; border-
     </div>
     <div class="kpi">
       <div class="k-l">낙찰금리 구조</div>
-      <canvas id="ohlcChart" width="288" height="104" data-field="auc.high_rate" data-source="BOK_ECOS" data-freq="입찰일 T+0 16:00"></canvas>
+      <canvas id="ohlcChart" width="288" height="162" data-field="auc.high_rate" data-source="BOK_ECOS" data-freq="입찰일 T+0 16:00"></canvas>
     </div>
   </div>
 
@@ -1145,7 +1148,7 @@ function drawOHLC(r){
   const hi = r.hi, wavg = r.wavg;
   /* 컴팩트: 라벨 짧게(예 "2.941"), 패딩 축소. 일반: 기존 넓은 라벨 유지 */
   const padT = compact?8:14, padB = compact?8:22, padL = compact?6:8;
-  const padR = compact?58:96;                /* 우측 금리 라벨 영역 */
+  const padR = compact?70:96;                /* 우측 금리 라벨 영역 */
   const plotH=H-padT-padB;
   /* 고정 스케일: 세로 전체를 FULL_BP(comp 전체 최대범위×1.15 헤드룸)에 매핑 →
      bp/px 비율이 모든 입찰에서 동일. 실제 범위(hi−lo)가 큰 입찰일수록 캔들이 길다. */
@@ -1159,29 +1162,29 @@ function drawOHLC(r){
   const yW=yHi+wFrac*candleH;
   const cx=(W-padR+padL)/2;
   /* 후행 gridline (최저/평균/최고) */
-  const gridR = compact ? W-padR+34 : W-padR+56;
+  const gridR = compact ? W-padR+44 : W-padR+56;
   [yHi,yW,yLo].forEach(yy=>{
     ctx.strokeStyle="#1a2029"; ctx.lineWidth=1; ctx.beginPath();
     ctx.moveTo(padL,yy); ctx.lineTo(gridR,yy); ctx.stroke();
   });
   /* 캔들 몸통: 최저~최고 범위 */
-  const bw = compact?26:46;
+  const bw = compact?42:46;
   ctx.fillStyle="rgba(59,130,246,0.18)";
   ctx.strokeStyle="#3b82f6"; ctx.lineWidth=1.5;
   ctx.fillRect(cx-bw/2, yHi, bw, candleH);
   ctx.strokeRect(cx-bw/2, yHi, bw, candleH);
   /* 가중평균 낙찰금리 — 굵은 가로 마커 */
-  ctx.strokeStyle="#e6e6e6"; ctx.lineWidth=compact?2:2.5; ctx.beginPath();
-  ctx.moveTo(cx-bw/2-(compact?5:8),yW); ctx.lineTo(cx+bw/2+(compact?5:8),yW); ctx.stroke();
+  ctx.strokeStyle="#e6e6e6"; ctx.lineWidth=compact?2.5:2.5; ctx.beginPath();
+  ctx.moveTo(cx-bw/2-(compact?7:8),yW); ctx.lineTo(cx+bw/2+(compact?7:8),yW); ctx.stroke();
   /* 라벨 — 컴팩트면 금리값만(3자리), 일반이면 "최고/가중평균/최저 X%" */
-  ctx.font=(compact?"8px":"9px")+" monospace"; ctx.textBaseline="middle";
-  const labR = cx+bw/2+(compact?7:12);
+  ctx.font=(compact?"11px":"9px")+" monospace"; ctx.textBaseline="middle";
+  const labR = cx+bw/2+(compact?9:12);
   ctx.fillStyle="#ef4444"; ctx.textAlign="left"; ctx.fillText(compact?hi.toFixed(3):`최고 ${hi.toFixed(3)}%`, labR, yHi);
   ctx.fillStyle="#e6e6e6"; ctx.fillText(compact?wavg.toFixed(3):`가중평균 ${wavg.toFixed(3)}%`, labR, yW);
   ctx.fillStyle="#22c55e"; ctx.fillText(compact?lo.toFixed(3):`최저 ${lo.toFixed(3)}%`, labR, yLo);
   /* 테일 표기 (좌측) */
   ctx.fillStyle="#8a94a6"; ctx.textAlign="right";
-  ctx.fillText((compact?"":"테일 ")+`${(tail*100).toFixed(1)}bp`, cx-bw/2-(compact?5:12), (yHi+yW)/2);
+  ctx.fillText((compact?"":"테일 ")+`${(tail*100).toFixed(1)}bp`, cx-bw/2-(compact?7:12), (yHi+yW)/2);
   ctx.textAlign="left"; ctx.textBaseline="alphabetic";
   /* 하단 통계 스트립 (있을 때만 — KPI 칸에는 없음) */
   if(stat){
