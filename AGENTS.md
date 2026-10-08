@@ -75,3 +75,9 @@ issuance_plan (월간·연간 발행계획)
 2. DB 관련 작업이면 `design/schema/schema.sql`을 함께 참조.
 3. 크롤러 구현이면 `docs/crawler-prompt.md`의 산출물 구조·구현 순서·완료 기준(DoD)을 따른다.
 4. UI 작업이면 `mockup/ktb-terminal.html`의 디자인 시스템(CSS 변수)과 `data-*` 규약을 유지한다.
+
+## GitHub 푸시 대상 (2026-10-08 사용자 지정)
+
+- 최종 푸시 대상: `https://github.com/TraderKei/KTB_Auction_GPT.git`.
+- 작업 시작 시 `git remote -v`로 대상이 위 저장소인지 확인한다. 기존 원격 `https://github.com/TraderKei/KTB_Auction.git`은 이전 저장소다.
+- 2026-10-08 사용자가 원격 설정을 새 저장소로 변경하고 바로 푸시하도록 명시적으로 요청했다.
