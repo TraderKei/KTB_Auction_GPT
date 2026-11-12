@@ -583,9 +583,9 @@ table.blot .stick-2{max-width:none;overflow:visible;white-space:normal;min-width
           <thead><tr>
             <th class="l stick stick-1">입찰일</th><th class="l stick stick-2">종목명</th><th class="stick stick-3">만기</th>
             <th class="l">유형</th>
-            <th>발행<br>예정액</th><th>응찰액</th><th>응찰률</th><th>낙찰액</th><th>예정액<br>충족률</th>
-            <th>응찰최저<br>금리</th><th>응찰최고<br>금리</th><th>가중평균<br>낙찰금리</th>
-            <th>테일</th><th>민평대비</th>
+            <th>발행<br>예정액</th><th>응찰액</th><th>응찰률</th><th>낙찰액</th>
+            <th>가중평균<br>낙찰금리</th><th>민평대비</th><th>부분낙찰률</th>
+            <th>예정액<br>충족률</th><th>응찰최저<br>금리</th><th>응찰최고<br>금리</th><th>테일</th>
           </tr></thead>
           <tbody id="blotBody"></tbody>
         </table>
@@ -1100,12 +1100,13 @@ function renderBlotter(){
        <td data-field="auc.bid_amt" data-source="${r.demoFields?.includes('bid')?'DEMO':'MOEF_KTB'}" data-freq="입찰일 T+0 16:00">${r.bid!=null?fmt(r.bid):"-"}</td>
        <td data-field="auc.bid_to_cover" data-source="DERIVED" data-freq="입찰일 T+0 16:00" class="${btc!=null&&btc>=300?'down':''}">${btc!=null?btc.toFixed(1):"-"}</td>
        <td data-field="auc.won_amt" data-source="${r.demoFields?.includes('won')?'DEMO':'MOEF_KTB'}" data-freq="입찰일 T+0 16:00">${r.won!=null?fmt(r.won):"-"}</td>
+       <td data-field="auc.wavg_rate" data-source="${r.demoFields?.includes('wavg')?'DEMO':'MOEF_KTB'}" data-freq="입찰일 T+0 16:00">${r.wavg!=null?r.wavg.toFixed(3):"-"}</td>
+       <td data-field="auc.spread_vs_mts" data-source="DEMO" data-freq="입찰일 T+0 16:00" class="${sprCls(r.spr)}">${r.spr!=null?(r.spr>0?"+":"")+r.spr.toFixed(1):"-"}</td>
+       <td data-field="auc.partial_alloc_rate" data-source="${r.demoFields?.includes('par')?'DEMO':'MOEF_KTB'}" data-freq="입찰일 T+0 16:00">${r.par!=null?r.par.toFixed(1):"-"}</td>
        <td data-field="auc.plan_fill_rate" data-source="DERIVED" data-freq="입찰일 T+0 16:00" class="${fillRate!=null?(fillRate>100?'up':fillRate<100?'fill-below':''):''}">${fillRate!=null?fillRate.toFixed(1):"-"}</td>
        <td data-field="auc.bid_rate_min" data-source="MOEF_KTB" data-freq="입찰일 T+0 16:00">${bidRange?bidRange[0].toFixed(3):"-"}</td>
        <td data-field="auc.bid_rate_max" data-source="MOEF_KTB" data-freq="입찰일 T+0 16:00">${bidRange?bidRange[1].toFixed(3):"-"}</td>
-       <td data-field="auc.wavg_rate" data-source="${r.demoFields?.includes('wavg')?'DEMO':'MOEF_KTB'}" data-freq="입찰일 T+0 16:00">${r.wavg!=null?r.wavg.toFixed(3):"-"}</td>
-       <td data-field="auc.tail" data-source="DERIVED" data-freq="입찰일 T+0 16:00">${tail!=null&&Math.abs(tail)>=0.05?tail.toFixed(1):"-"}</td>
-       <td data-field="auc.spread_vs_mts" data-source="DEMO" data-freq="입찰일 T+0 16:00" class="${sprCls(r.spr)}">${r.spr!=null?(r.spr>0?"+":"")+r.spr.toFixed(1):"-"}</td>`;
+       <td data-field="auc.tail" data-source="DERIVED" data-freq="입찰일 T+0 16:00">${tail!=null&&Math.abs(tail)>=0.05?tail.toFixed(1):"-"}</td>`;
     if(!r.planned) tr.style.cursor="pointer", tr.addEventListener("click",()=>renderAucKPI(r));
     /* 재렌더(월/필터 변경) 후에도 현재 선택 입찰이 계속 보이면 sel 하이라이트 복원 */
     if(r===selectedAuction) tr.classList.add("sel");
