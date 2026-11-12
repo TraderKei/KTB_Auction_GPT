@@ -380,8 +380,8 @@ table.blot .stick-3{left:226px; min-width:62px; width:62px; box-shadow:1px 0 0 v
 #scr-auc .legend{font-size:11px}
 /* sticky 좌측고정 칼럼: 공시 ID 제거 후 위치 재정렬 */
 #scr-auc table.blot .stick-1{min-width:88px; width:88px}
-#scr-auc table.blot .stick-2{left:88px; min-width:210px; width:210px; max-width:210px}
-#scr-auc table.blot .stick-3{left:298px; min-width:68px; width:68px}
+#scr-auc table.blot .stick-2{left:88px; min-width:var(--blot-name-width, 165px); width:var(--blot-name-width, 165px); max-width:var(--blot-name-width, 165px)}
+#scr-auc table.blot .stick-3{left:253px; min-width:68px; width:68px}
 
 /* screen visibility */
 .screen{display:none}
@@ -456,11 +456,11 @@ body{padding:4px;min-width:0}
 .dictwrap{padding:8px;overflow:auto}
 .footnote{padding:6px;overflow-wrap:anywhere}
 table.blot .stick-2{max-width:none;overflow:visible;white-space:normal;min-width:172px}
-#scr-auc table.blot .stick-2{max-width:210px; min-width:210px; width:210px; overflow:visible; white-space:nowrap; text-overflow:clip}
+#scr-auc table.blot .stick-2{max-width:var(--blot-name-width, 165px); min-width:var(--blot-name-width, 165px); width:var(--blot-name-width, 165px); overflow:visible; white-space:nowrap; text-overflow:clip}
 #resDrill td[data-field="bond.name"]{white-space:normal;overflow:visible!important;min-width:150px}
 #scr-auc table.blot .stick-1{left:var(--sticky-left-1,0px)}
 #scr-auc table.blot .stick-2{left:var(--sticky-left-2,88px)}
-#scr-auc table.blot .stick-3{left:var(--sticky-left-3,298px)}
+#scr-auc table.blot .stick-3{left:var(--sticky-left-3,253px)}
 .speccard .row{gap:8px;flex-wrap:wrap}
 .heat{min-width:440px}
 .wf{min-width:360px}
@@ -583,9 +583,9 @@ table.blot .stick-2{max-width:none;overflow:visible;white-space:normal;min-width
           <thead><tr>
             <th class="l stick stick-1">입찰일</th><th class="l stick stick-2">종목명</th><th class="stick stick-3">만기</th>
             <th class="l">유형</th>
-            <th>발행예정액</th><th>응찰액</th><th>낙찰액</th>
-            <th>응찰률<span class="en">%</span></th><th>응찰최저금리</th><th>응찰최고금리</th><th>가중평균낙찰금리</th>
-            <th>테일</th><th>민평대비</th><th>예정액 충족률<span class="en">%</span></th>
+            <th>발행<br>예정액</th><th>응찰액</th><th>응찰률</th><th>낙찰액</th><th>예정액<br>충족률</th>
+            <th>응찰최저<br>금리</th><th>응찰최고<br>금리</th><th>가중평균<br>낙찰금리</th>
+            <th>테일</th><th>민평대비</th>
           </tr></thead>
           <tbody id="blotBody"></tbody>
         </table>
@@ -1098,14 +1098,14 @@ function renderBlotter(){
       <td class="l"><span class="at ${a.cls}" data-field="auc.type" data-source="MOEF_KTB" data-freq="발행공고 T-3일">${a.short}</span></td>
        <td data-field="auc.plan_amt" data-source="MOEF_KTB" data-freq="발행공고 T-3일">${r.plan!=null?fmt(r.plan):"-"}</td>
        <td data-field="auc.bid_amt" data-source="${r.demoFields?.includes('bid')?'DEMO':'MOEF_KTB'}" data-freq="입찰일 T+0 16:00">${r.bid!=null?fmt(r.bid):"-"}</td>
-       <td data-field="auc.won_amt" data-source="${r.demoFields?.includes('won')?'DEMO':'MOEF_KTB'}" data-freq="입찰일 T+0 16:00">${r.won!=null?fmt(r.won):"-"}</td>
        <td data-field="auc.bid_to_cover" data-source="DERIVED" data-freq="입찰일 T+0 16:00" class="${btc!=null&&btc>=300?'down':''}">${btc!=null?btc.toFixed(1):"-"}</td>
+       <td data-field="auc.won_amt" data-source="${r.demoFields?.includes('won')?'DEMO':'MOEF_KTB'}" data-freq="입찰일 T+0 16:00">${r.won!=null?fmt(r.won):"-"}</td>
+       <td data-field="auc.plan_fill_rate" data-source="DERIVED" data-freq="입찰일 T+0 16:00" class="${fillRate!=null?(fillRate>100?'up':fillRate<100?'fill-below':''):''}">${fillRate!=null?fillRate.toFixed(1):"-"}</td>
        <td data-field="auc.bid_rate_min" data-source="MOEF_KTB" data-freq="입찰일 T+0 16:00">${bidRange?bidRange[0].toFixed(3):"-"}</td>
        <td data-field="auc.bid_rate_max" data-source="MOEF_KTB" data-freq="입찰일 T+0 16:00">${bidRange?bidRange[1].toFixed(3):"-"}</td>
        <td data-field="auc.wavg_rate" data-source="${r.demoFields?.includes('wavg')?'DEMO':'MOEF_KTB'}" data-freq="입찰일 T+0 16:00">${r.wavg!=null?r.wavg.toFixed(3):"-"}</td>
        <td data-field="auc.tail" data-source="DERIVED" data-freq="입찰일 T+0 16:00">${tail!=null&&Math.abs(tail)>=0.05?tail.toFixed(1):"-"}</td>
-       <td data-field="auc.spread_vs_mts" data-source="DEMO" data-freq="입찰일 T+0 16:00" class="${sprCls(r.spr)}">${r.spr!=null?(r.spr>0?"+":"")+r.spr.toFixed(1):"-"}</td>
-       <td data-field="auc.plan_fill_rate" data-source="DERIVED" data-freq="입찰일 T+0 16:00" class="${fillRate!=null?(fillRate>100?'up':fillRate<100?'fill-below':''):''}">${fillRate!=null?fillRate.toFixed(1):"-"}</td>`;
+       <td data-field="auc.spread_vs_mts" data-source="DEMO" data-freq="입찰일 T+0 16:00" class="${sprCls(r.spr)}">${r.spr!=null?(r.spr>0?"+":"")+r.spr.toFixed(1):"-"}</td>`;
     if(!r.planned) tr.style.cursor="pointer", tr.addEventListener("click",()=>renderAucKPI(r));
     /* 재렌더(월/필터 변경) 후에도 현재 선택 입찰이 계속 보이면 sel 하이라이트 복원 */
     if(r===selectedAuction) tr.classList.add("sel");
@@ -2377,6 +2377,17 @@ window.refreshTerminalCharts = function(){
   if(selectedAuction) renderAucKPI(selectedAuction);
   requestAnimationFrame(fitTerminalCharts);
 };
+/* Size the name column to the widest bond name after removing whitespace. */
+function syncBlotterNameWidth(){
+  const table=document.getElementById('blotter');
+  const cell=table.querySelector('tbody td.stick-2');
+  if(!cell) return;
+  const style=getComputedStyle(cell);
+  const context=document.createElement('canvas').getContext('2d');
+  context.font=`${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+  const widest=Math.max(...RESULTS.map(r=>context.measureText(String(r.nm||'').replace(/\s+/g,'')).width));
+  table.style.setProperty('--blot-name-width',`${Math.ceil(widest)+14}px`);
+}
 /* Column widths change with wrapping, filters and font loading. */
 function syncBlotterSticky(){
   const table=document.getElementById('blotter');
@@ -2388,7 +2399,7 @@ function syncBlotterSticky(){
   });
 }
 new ResizeObserver(syncBlotterSticky).observe(document.getElementById('blotter'));
-document.fonts.ready.then(syncBlotterSticky);
+document.fonts.ready.then(()=>{syncBlotterNameWidth();syncBlotterSticky();});
 /* Keep the blotter panel at one and a half times the rendered calendar height. */
 function syncAucBlotterHeight(){
   const calendar=document.getElementById('aucCalendarPanel');
@@ -2407,7 +2418,12 @@ window.KTB_UI_TEXT.push(
   ["응찰최저금리", "Lowest bid yield"],
   ["응찰최고금리", "Highest bid yield"],
   ["가중평균낙찰금리", "Weighted average award yield"],
-  ["예정액 충족률", "Planned amount filled"]
+  ["예정액 충족률", "Planned amount filled"],
+  ["응찰최저", "Lowest bid"],
+  ["응찰최고", "Highest bid"],
+  ["낙찰금리", "Award yield"],
+  ["예정액", "Planned amount"],
+  ["충족률", "Fill rate"]
 );
 </script>
 <script src="mockup/ktb-terminal-v5-ui.js"></script>
