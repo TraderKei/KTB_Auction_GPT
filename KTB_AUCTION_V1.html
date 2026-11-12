@@ -407,7 +407,8 @@ body{padding:4px;min-width:0}
 .kpi,#scr-auc .kpi{padding:6px 8px}
 #scr-auc .kpi{min-height:170px}
 .screen .grid3{grid-template-columns:repeat(auto-fit,minmax(min(100%,430px),1fr))!important;height:auto!important;min-height:0!important;align-items:start}
-#scr-auc .grid3 > .panel:first-child{height:auto;min-height:0;align-self:stretch}
+#scr-auc .grid3 > .panel:first-child{height:auto;min-height:0;align-self:start}
+#scr-auc #spk2,#scr-auc #spk3{padding-top:0;height:96px!important}
 .panel{overflow:visible}
 .p-head{flex-wrap:wrap;padding:4px 6px}
 .p-head .p-sub{white-space:normal;overflow-wrap:anywhere}
@@ -420,6 +421,10 @@ body{padding:4px;min-width:0}
 #kpiSelName{white-space:normal!important;overflow:visible!important}
 table.blot .stick-3,#scr-auc table.blot .stick-3{max-width:none;overflow:visible;white-space:normal;min-width:172px}
 #resDrill td[data-field="bond.name"]{white-space:normal;overflow:visible!important;min-width:150px}
+#scr-auc table.blot .stick-1{left:var(--sticky-left-1,0px)}
+#scr-auc table.blot .stick-2{left:var(--sticky-left-2,52px)}
+#scr-auc table.blot .stick-3{left:var(--sticky-left-3,152px)}
+#scr-auc table.blot .stick-4{left:var(--sticky-left-4,324px)}
 .cal .cd .ev{white-space:normal;overflow:visible;overflow-wrap:anywhere;min-width:0;width:100%!important}
 .cal .cd{min-width:0}
 #scr-auc .cal .cd{min-height:54px}
@@ -2096,7 +2101,8 @@ function fitTerminalCharts(){
     if(!canvas || !canvas.closest('.screen.on')) return;
     const parent=canvas.parentElement, css=getComputedStyle(parent);
     const width=Math.floor(parent.clientWidth-parseFloat(css.paddingLeft)-parseFloat(css.paddingRight));
-    if(width>0 && Math.abs(chart.width-width)>1) chart.resize(width,chart.height);
+    const height=canvas.matches('#spk2,#spk3') ? 96 : chart.height;
+    if(width>0 && (Math.abs(chart.width-width)>1 || chart.height!==height)) chart.resize(width,height);
   });
 }
 let chartResizeFrame;
@@ -2314,6 +2320,18 @@ window.refreshTerminalCharts = function(){
   if(selectedAuction) renderAucKPI(selectedAuction);
   requestAnimationFrame(fitTerminalCharts);
 };
+/* Column widths change with wrapping, filters and font loading. */
+function syncBlotterSticky(){
+  const table=document.getElementById('blotter');
+  if(!table.getClientRects().length) return;
+  let left=0;
+  table.querySelectorAll('thead th.stick').forEach((cell,index)=>{
+    table.style.setProperty('--sticky-left-'+(index+1),left+'px');
+    left+=cell.getBoundingClientRect().width;
+  });
+}
+new ResizeObserver(syncBlotterSticky).observe(document.getElementById('blotter'));
+document.fonts.ready.then(syncBlotterSticky);
 </script>
 <script src="mockup/ktb-terminal-v5-i18n.js"></script>
 <script src="mockup/ktb-terminal-v5-ui.js"></script>
