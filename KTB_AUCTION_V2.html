@@ -127,14 +127,16 @@ a{color:var(--accent); text-decoration:none}
 .p-head h3{font-size:11.5px; font-weight:600}
 .p-head .p-sub{font-size:10px; color:var(--tx-dim); margin-left:auto}
 .p-head .toggles{margin-left:auto; display:flex; gap:3px}
-/* ---- 월 네비게이터 (P1↔P2 조회월 연동) ---- */
+/* ---- P1 월 네비게이터 ---- */
 .p-head .mnav{margin-left:auto; display:flex; align-items:center; gap:4px}
 .p-head .mnav+.p-sub{margin-left:8px}
 .mnav button{background:var(--bg-2); border:1px solid var(--bd-2); color:var(--tx-dim);
   font-size:9px; line-height:1; padding:2px 5px; border-radius:2px; cursor:pointer; font-family:var(--mono)}
 .mnav button:hover{color:var(--tx); border-color:var(--accent)}
+.mnav button:disabled{opacity:0.35; cursor:default}
 .mnav button.off{opacity:0.3; cursor:default; pointer-events:none}
-.mnav .mnav-lbl{font-family:var(--mono); font-size:10px; color:var(--tx); min-width:52px; text-align:center}
+.mnav select{background:var(--bg-2); border:1px solid var(--bd-2); color:var(--tx); font-family:var(--mono); font-size:11px; height:24px; padding:0 3px; border-radius:2px; cursor:pointer}
+.mnav select:hover{border-color:var(--accent)}
 /* ---- 기간 범위 선택기 (D1·SD1 시작월/종료월) ---- */
 .p-head .rangesel{margin-left:auto; display:flex; align-items:center; gap:4px}
 .p-head .rangesel+.p-sub{margin-left:8px}
@@ -182,7 +184,7 @@ table.blot td.l{font-family:var(--sans); text-align:left}
 table.blot tr:hover td{background:var(--ce-hover)}
 table.blot tr.sel td{background:var(--ce-selected)}
 
-/* ---- Excel식 틀고정: '만기' 칼럼까지(4개) 좌측 sticky ---- */
+/* ---- Excel식 틀고정: '만기' 칼럼까지(3개) 좌측 sticky ---- */
 table.blot th.stick, table.blot td.stick{position:sticky; z-index:3}
 /* 헤더 sticky 칼럼은 세로(top)+가로(left) 동시 고정이라 우선순위를 높인다 */
 table.blot th.stick{z-index:4}
@@ -192,9 +194,8 @@ table.blot th.stick{background:var(--bg-1)}
 table.blot tr:hover td.stick{background:var(--ce-hover)}
 table.blot tr.sel td.stick{background:var(--ce-selected)}
 table.blot .stick-1{left:0; min-width:66px; width:66px}
-table.blot .stick-2{left:66px; min-width:92px; width:92px}
-table.blot .stick-3{left:158px; min-width:160px; max-width:160px; overflow:hidden; text-overflow:ellipsis}
-table.blot .stick-4{left:318px; min-width:62px; width:62px; box-shadow:1px 0 0 var(--bd-2)}
+table.blot .stick-2{left:66px; min-width:160px; max-width:160px; overflow:hidden; text-overflow:ellipsis}
+table.blot .stick-3{left:226px; min-width:62px; width:62px; box-shadow:1px 0 0 var(--bd-2)}
 
 /* auction-type color coding */
 .at{display:inline-block; padding:0 5px; border-radius:2px; font-size:10px; font-family:var(--sans); border:1px solid transparent}
@@ -309,10 +310,10 @@ table.blot .stick-4{left:318px; min-width:62px; width:62px; box-shadow:1px 0 0 v
 .cal .cd .dn{font-family:var(--mono); font-size:8px; color:var(--tx-dim)}
 .cal .cd .ev{display:block; font-size:8px; border-radius:1px; padding:0 2px; margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer; min-width:38px; box-sizing:border-box}
 
-/* P1 입찰캘린더는 P2 블로터 대비 0.66배 높이로 축소(블로터 표시영역은 stretch 유지).
-   align-self:start로 grid stretch를 끊고 컨테이너 높이의 0.66배로 고정, 날짜셀 min-height도 비례 완화 */
-#scr-auc .grid3 > .panel:first-child{align-self:start; height:calc((100vh - 252px) * 0.66); min-height:290px}
-#scr-auc .grid3 > .panel:first-child .cal .cd{min-height:34px}
+/* P1은 내용 높이만 사용하고, P2는 첫 화면의 남은 높이를 채운다. */
+#scr-auc .grid3 > .panel:first-child{align-self:start; height:auto; min-height:0}
+#scr-auc .cal{flex:none; grid-auto-rows:minmax(40px,auto)}
+#scr-auc .cal .cd{min-height:40px}
 /* P1이 축소되며 하단에 grid 컨테이너 배경(--bd)이 노출돼 주변 패널(--panel)과 색이 어긋나던 문제 수정:
    grid 배경을 패널색과 일치시키고, 사라지는 P1↔P2 세로 경계선은 P2 좌측 border로 전체 높이에 복원 */
 #scr-auc .grid3{background:var(--panel)}
@@ -322,10 +323,10 @@ table.blot .stick-4{left:318px; min-width:62px; width:62px; box-shadow:1px 0 0 v
 #scr-auc .p-head h3{font-size:13px}
 #scr-auc .p-head .p-code{font-size:10px}
 #scr-auc .p-head .p-sub{font-size:11px}
-/* 월 선택기(YYYY-MM) 가독성: 라벨·네비 버튼을 p-head 제목(13px) 수준으로 확대 */
-#scr-auc .mnav .mnav-lbl{font-size:13px; min-width:68px}
-/* 월 이동 화살표(◀▶) 버튼은 P-code 뱃지(10px / padding:0 4px) 수준으로 축소 */
-#scr-auc .mnav button{font-size:10px; padding:1px 4px}
+#scr-auc .mnav select{font-size:11px}
+#scr-auc .mnav .calendar-year{width:76px}
+#scr-auc .mnav .calendar-month{width:58px}
+#scr-auc .mnav button{font-size:16px; width:24px; height:24px; padding:0}
 /* P2 기간 셀렉터(from/to) 가독성: 라벨·틸드·select 를 p-head 제목(13px) 수준으로 확대 (R1 .rangesel 과 동일 역할) */
 #scr-auc .rangesel .rs-lbl{font-size:11px}
 #scr-auc .rangesel .rs-tilde{font-size:12px}
@@ -342,11 +343,10 @@ table.blot .stick-4{left:318px; min-width:62px; width:62px; box-shadow:1px 0 0 v
 #scr-auc .blot-filters .lbl{font-size:11px}
 #scr-auc .blot-filters .chip{font-size:12px}
 #scr-auc .legend{font-size:11px}
-/* sticky 좌측고정 칼럼: 폰트 확대에 맞춰 폭을 소폭 상향해 종목명 잘림 방지 */
+/* sticky 좌측고정 칼럼: 공시 ID 제거 후 위치 재정렬 */
 #scr-auc table.blot .stick-1{min-width:52px; width:52px}
-#scr-auc table.blot .stick-2{left:52px; min-width:100px; width:100px}
-#scr-auc table.blot .stick-3{left:152px; min-width:172px; max-width:172px}
-#scr-auc table.blot .stick-4{left:324px; min-width:68px; width:68px}
+#scr-auc table.blot .stick-2{left:52px; min-width:172px; max-width:172px}
+#scr-auc table.blot .stick-3{left:224px; min-width:68px; width:68px}
 
 /* screen visibility */
 .screen{display:none}
@@ -407,6 +407,7 @@ body{padding:4px;min-width:0}
 .kpi,#scr-auc .kpi{padding:6px 8px}
 #scr-auc .kpi{min-height:170px}
 .screen .grid3{grid-template-columns:repeat(auto-fit,minmax(min(100%,430px),1fr))!important;height:auto!important;min-height:0!important;align-items:start}
+#scr-auc .grid3{grid-template-columns:minmax(0,31%) minmax(0,69%)!important; height:calc(100dvh - var(--auc-grid-top, 280px) - 4px)!important; min-height:300px!important; align-items:stretch}
 #scr-auc .grid3 > .panel:first-child{height:auto;min-height:0;align-self:start}
 #scr-auc #spk2,#scr-auc #spk3{padding-top:0;height:96px!important}
 .panel{overflow:visible}
@@ -419,20 +420,19 @@ body{padding:4px;min-width:0}
 .dictwrap{padding:8px;overflow:auto}
 .footnote{padding:6px;overflow-wrap:anywhere}
 #kpiSelName{white-space:normal!important;overflow:visible!important}
-table.blot .stick-3,#scr-auc table.blot .stick-3{max-width:none;overflow:visible;white-space:normal;min-width:172px}
+table.blot .stick-2,#scr-auc table.blot .stick-2{max-width:none;overflow:visible;white-space:normal;min-width:172px}
 #resDrill td[data-field="bond.name"]{white-space:normal;overflow:visible!important;min-width:150px}
 #scr-auc table.blot .stick-1{left:var(--sticky-left-1,0px)}
 #scr-auc table.blot .stick-2{left:var(--sticky-left-2,52px)}
-#scr-auc table.blot .stick-3{left:var(--sticky-left-3,152px)}
-#scr-auc table.blot .stick-4{left:var(--sticky-left-4,324px)}
+#scr-auc table.blot .stick-3{left:var(--sticky-left-3,224px)}
 .cal .cd .ev{white-space:normal;overflow:visible;overflow-wrap:anywhere;min-width:0;width:100%!important}
 .cal .cd{min-width:0}
-#scr-auc .cal .cd{min-height:54px}
+#scr-auc .cal .cd{min-height:40px}
 .speccard .row{gap:8px;flex-wrap:wrap}
 .heat{min-width:440px}
 .wf{min-width:360px}
 @media(max-width:900px){
-  .screen .grid3{grid-template-columns:minmax(0,1fr)!important}
+  .screen .grid3,#scr-auc .grid3{grid-template-columns:minmax(0,1fr)!important;height:auto!important;min-height:0!important}
   table.blot th.stick,table.blot td.stick{position:static}
   .ui-controls{margin-left:0}
 }
@@ -500,10 +500,10 @@ table.blot .stick-3,#scr-auc table.blot .stick-3{max-width:none;overflow:visible
     </div>
   </div>
 
-  <div class="grid3" style="grid-template-columns:37% 63%; height:calc(100vh - 252px); min-height:440px">
+  <div class="grid3">
     <div class="panel">
       <div class="p-head"><span class="p-code">P1</span><h3>입찰 캘린더</h3>
-        <span class="mnav"><button class="mnav-prev" title="이전 월">◀</button><span class="mnav-lbl">2026-09</span><button class="mnav-next" title="다음 월">▶</button></span>
+        <span class="mnav"><button type="button" class="mnav-prev" title="이전 월" aria-label="이전 월">‹</button><select class="calendar-year" aria-label="연도 선택"></select><select class="calendar-month" aria-label="월 선택"></select><button type="button" class="mnav-next" title="다음 월" aria-label="다음 월">›</button></span>
       </div>
       <div class="p-body cal-body">
         <div class="legend" style="margin-bottom:6px">
@@ -511,7 +511,6 @@ table.blot .stick-3,#scr-auc table.blot .stick-3{max-width:none;overflow:visible
           <span><i style="background:#86efac"></i>비경쟁</span>
           <span><i style="background:#fca5a5"></i>매입</span>
           <span><i style="background:#67e8f9"></i>교환</span>
-          <span class="dim">칩폭 = 금액</span>
         </div>
         <div class="cal-head"><div class="cah">일</div><div class="cah">월</div><div class="cah">화</div><div class="cah">수</div><div class="cah">목</div><div class="cah">금</div><div class="cah">토</div></div>
         <div class="cal" id="calGrid"></div>
@@ -551,7 +550,7 @@ table.blot .stick-3,#scr-auc table.blot .stick-3{max-width:none;overflow:visible
       <div class="p-body" style="padding:0">
         <table class="blot" id="blotter">
           <thead><tr>
-            <th class="l stick stick-1">입찰일</th><th class="l stick stick-2">공시 ID</th><th class="l stick stick-3">종목명</th><th class="stick stick-4">만기</th><th>차수</th>
+            <th class="l stick stick-1">입찰일</th><th class="l stick stick-2">종목명</th><th class="stick stick-3">만기</th><th>차수</th>
             <th class="l">유형</th>
             <th>발행예정<span class="en">억</span></th><th>응찰<span class="en">억</span></th><th>낙찰<span class="en">억</span></th>
             <th>응찰률<span class="en">BTC</span></th><th>최고금리<span class="en">%</span></th><th>가중평균<span class="en">%</span></th>
@@ -897,14 +896,14 @@ function renderCal(){
     const today = (isThisMonth && day===TODAY.d)? " today":"";
     let cell = `<div class="cd${today}"><span class="dn">${day}</span>`;
     evs.forEach(r=>{
-      const a=AT[r.t]; const w = Math.max(0.4, Math.min(1,(r.plan/24000)));
+      const a=AT[r.t];
       const bg = {comp:"var(--ce-selected)",nc1:"var(--bg-2)",nc2:"var(--bg-2)",nc3:"var(--bg-2)",nc4:"var(--bg-2)",bb:"var(--bg-2)",ex:"var(--bg-2)"}[r.t];
       const fg = {comp:"var(--accent)",nc1:"var(--down)",nc2:"var(--warn)",nc3:"var(--warn)",nc4:"var(--ce-blue)",bb:"var(--up)",ex:"var(--down)"}[r.t];
       const label = CAL_LABEL[r.t](r);
       /* data-ridx: RESULTS 전역 인덱스. 같은 code가 여러 차수/비경쟁II로 중복될 수 있어
          클릭한 칩이 가리키는 바로 그 레코드를 정확히 특정하기 위함(KPI 동기화용). */
       const ridx = RESULTS.indexOf(r);
-      cell += `<span class="ev" style="background:${bg}; color:${fg}; width:${(w*100)|0}%" data-code="${r.code}" data-ridx="${ridx}" data-field="auc.schedule_cell" data-source="MOEF_KTB" data-freq="발행공고 T-3일" title="${a.ko} ${matLabel(r.mat)} ${r.seq} · ${fmt(r.plan)}억">${r.synthetic?"◇":"◆"}${label}</span>`;
+      cell += `<span class="ev" style="background:${bg}; color:${fg}" data-code="${r.code}" data-ridx="${ridx}" data-field="auc.schedule_cell" data-source="MOEF_KTB" data-freq="발행공고 T-3일" title="${a.ko} ${matLabel(r.mat)} ${r.seq} · ${fmt(r.plan)}억">${r.synthetic?"◇":"◆"}${label}</span>`;
     });
     cell += `</div>`; html += cell;
   }
@@ -922,9 +921,15 @@ function renderCal(){
 function updateMonthNav(){
   const idx = viewYear*12+viewMonth;
   const min = DATA_MIN.y*12+DATA_MIN.m, max = TODAY.y*12+TODAY.m;
-  document.querySelectorAll("#scr-auc .mnav-prev").forEach(b=>b.classList.toggle("off", idx<=min));
-  document.querySelectorAll("#scr-auc .mnav-next").forEach(b=>b.classList.toggle("off", idx>=max));
-  document.querySelectorAll("#scr-auc .mnav-lbl").forEach(l=>l.textContent = ymStr(viewYear,viewMonth));
+  document.querySelectorAll("#scr-auc .mnav-prev").forEach(b=>b.disabled = idx<=min);
+  document.querySelectorAll("#scr-auc .mnav-next").forEach(b=>b.disabled = idx>=max);
+  const year = document.querySelector("#scr-auc .calendar-year");
+  const month = document.querySelector("#scr-auc .calendar-month");
+  year.innerHTML = Array.from({length:TODAY.y-DATA_MIN.y+1},(_,i)=>`<option value="${DATA_MIN.y+i}">${DATA_MIN.y+i}년</option>`).join("");
+  year.value = viewYear;
+  month.innerHTML = Array.from({length:12},(_,i)=>`<option value="${i}">${i+1}월</option>`).join("");
+  month.value = viewMonth;
+  Array.from(month.options).forEach(o=>o.disabled = viewYear*12+Number(o.value)<min || viewYear*12+Number(o.value)>max);
 }
 
 /* ---------- P2 블로터 ---------- */
@@ -942,9 +947,8 @@ function renderBlotter(){
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td class="l stick stick-1" data-field="auc.bid_date" data-source="MOEF_KTB" data-freq="발행공고 T-3일">${mmdd}</td>
-      <td class="l stick stick-2" data-field="auc.source_ref" data-source="MOEF_KTB" data-freq="발행공고 T-3일">${r.code}</td>
-      <td class="l stick stick-3" data-field="bond.name" data-source="MOEF_KTB" data-freq="발행공고 T-3일">${r.nm}${r.synthetic?' <span class="badge est">모형 결과</span>':''}</td>
-      <td class="stick stick-4" data-field="bond.maturity" data-source="MOEF_KTB" data-freq="발행공고 T-3일">${matLabel(r.mat)}</td>
+      <td class="l stick stick-2" data-field="bond.name" data-source="MOEF_KTB" data-freq="발행공고 T-3일">${r.nm}</td>
+      <td class="stick stick-3" data-field="bond.maturity" data-source="MOEF_KTB" data-freq="발행공고 T-3일">${matLabel(r.mat)}</td>
       <td data-field="auc.tranche" data-source="MOEF_KTB" data-freq="발행공고 T-3일">${r.seq}</td>
       <td class="l"><span class="at ${a.cls}" data-field="auc.type" data-source="MOEF_KTB" data-freq="발행공고 T-3일">${a.short}</span></td>
       <td data-field="auc.plan_amt" data-source="MOEF_KTB" data-freq="발행공고 T-3일">${fmt(r.plan)}</td>
@@ -2160,8 +2164,10 @@ function wireFilterGroup(grpId, dataAttr, stateSet){
 wireFilterGroup("typeFilter", "t", activeTypes);
 wireFilterGroup("matFilter",  "m", activeMats);
 
-/* P1 월 네비게이터(◀/▶): P1 캘린더 조회월만 이동. P2 블로터는 자체 기간 셀렉터로 분리되어 연동되지 않는다. */
+/* P1 월 네비게이터: P2 블로터의 기간 필터와 독립적으로 이동한다. */
 document.addEventListener("click",e=>{if(e.target.closest("#scr-auc .mnav-prev")){stepViewMonth(-1);}else if(e.target.closest("#scr-auc .mnav-next")){stepViewMonth(1);}});
+document.querySelector("#scr-auc .calendar-year").addEventListener("change",e=>setViewMonth(+e.target.value,viewMonth));
+document.querySelector("#scr-auc .calendar-month").addEventListener("change",e=>setViewMonth(viewYear,+e.target.value));
 
 /* P2 조회기간 셀렉터(from/to) — BLOT_MONTHS 인덱스 구간 선택. R1 onResRange 와 동일하게 from>to 시 자동 스왑. */
 function initBlotRange(){
@@ -2216,6 +2222,14 @@ function syncBlotterSticky(){
 }
 new ResizeObserver(syncBlotterSticky).observe(document.getElementById('blotter'));
 document.fonts.ready.then(syncBlotterSticky);
+/* P2 fills the initial viewport beneath the tab, banner and KPI strip. */
+function syncAucGridHeight(){
+  const grid=document.querySelector('#scr-auc .grid3');
+  grid.style.setProperty('--auc-grid-top',grid.getBoundingClientRect().top+window.scrollY+'px');
+}
+window.addEventListener('resize',syncAucGridHeight);
+new ResizeObserver(syncAucGridHeight).observe(document.querySelector('#scr-auc .kpis'));
+syncAucGridHeight();
 </script>
 <script src="mockup/ktb-terminal-v5-i18n.js"></script>
 <script src="mockup/ktb-terminal-v5-ui.js"></script>
