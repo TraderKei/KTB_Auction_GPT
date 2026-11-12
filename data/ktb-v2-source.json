@@ -1,0 +1,3098 @@
+{
+  "schemaVersion": "v2-official-snapshot",
+  "origin": "preserved MOFE disclosure parser and BOK ECOS response",
+  "plans": [
+    {
+      "month": "2026-01-01",
+      "competitive_total_amt": 160000,
+      "source_ref": "MOEF:MOSF_000000000076307:ATCH_000000000030654:2",
+      "rows": [
+        {
+          "maturity_code": "2Y",
+          "source_name": "국고02250-2709",
+          "tranche": "25-6",
+          "auction_date": "2026-01-05",
+          "pay_date": "2026-01-06",
+          "plan_amt": 28000
+        },
+        {
+          "maturity_code": "3Y",
+          "source_name": "국고02750-2812",
+          "tranche": "25-10",
+          "auction_date": "2026-01-12",
+          "pay_date": "2026-01-13",
+          "plan_amt": 29000
+        },
+        {
+          "maturity_code": "5Y",
+          "source_name": "국고02500-3009",
+          "tranche": "25-8",
+          "auction_date": "2026-01-26",
+          "pay_date": "2026-01-27",
+          "plan_amt": 25000
+        },
+        {
+          "maturity_code": "10Y",
+          "source_name": "국고03250-3512",
+          "tranche": "25-11",
+          "auction_date": "2026-01-19",
+          "pay_date": "2026-01-20",
+          "plan_amt": 22000
+        },
+        {
+          "maturity_code": "20Y",
+          "source_name": "국고02625-4509",
+          "tranche": "25-9",
+          "auction_date": "2026-01-27",
+          "pay_date": "2026-01-28",
+          "plan_amt": 5000
+        },
+        {
+          "maturity_code": "30Y",
+          "source_name": "국고02625-5509",
+          "tranche": "25-8",
+          "auction_date": "2026-01-06",
+          "pay_date": "2026-01-08",
+          "plan_amt": 43000
+        },
+        {
+          "maturity_code": "50Y",
+          "source_name": "국고02750-7409",
+          "tranche": "24-11",
+          "auction_date": "2026-01-16",
+          "pay_date": "2026-01-19",
+          "plan_amt": 8000
+        }
+      ]
+    },
+    {
+      "month": "2026-02-01",
+      "competitive_total_amt": 180000,
+      "source_ref": "MOEF:MOSF_000000000076664:ATCH_000000000030906:2",
+      "rows": [
+        {
+          "maturity_code": "2Y",
+          "source_name": "국고02250-2709",
+          "tranche": "25-6",
+          "auction_date": "2026-02-02",
+          "pay_date": "2026-02-03",
+          "plan_amt": 15500
+        },
+        {
+          "maturity_code": "2Y",
+          "source_name": "국고00000-2803",
+          "tranche": "26-1",
+          "auction_date": "2026-02-02",
+          "pay_date": "2026-02-03",
+          "plan_amt": 15500
+        },
+        {
+          "maturity_code": "3Y",
+          "source_name": "국고02750-2812",
+          "tranche": "25-10",
+          "auction_date": "2026-02-09",
+          "pay_date": "2026-02-10",
+          "plan_amt": 31000
+        },
+        {
+          "maturity_code": "5Y",
+          "source_name": "국고02500-3009",
+          "tranche": "25-8",
+          "auction_date": "2026-02-23",
+          "pay_date": "2026-02-24",
+          "plan_amt": 15000
+        },
+        {
+          "maturity_code": "5Y",
+          "source_name": "국고00000-3103",
+          "tranche": "26-3",
+          "auction_date": "2026-02-23",
+          "pay_date": "2026-02-24",
+          "plan_amt": 15000
+        },
+        {
+          "maturity_code": "10Y",
+          "source_name": "국고03250-3512",
+          "tranche": "25-11",
+          "auction_date": "2026-02-10",
+          "pay_date": "2026-02-12",
+          "plan_amt": 26000
+        },
+        {
+          "maturity_code": "KTBi",
+          "source_name": "물가00750-3406",
+          "tranche": "24-6",
+          "auction_date": "2026-02-06",
+          "pay_date": "2026-02-09",
+          "plan_amt": 1000
+        },
+        {
+          "maturity_code": "20Y",
+          "source_name": "국고02750-4509",
+          "tranche": "25-9",
+          "auction_date": "2026-02-24",
+          "pay_date": "2026-02-25",
+          "plan_amt": 5000
+        },
+        {
+          "maturity_code": "30Y",
+          "source_name": "국고02625-5509",
+          "tranche": "25-7",
+          "auction_date": "2026-02-03",
+          "pay_date": "2026-02-04",
+          "plan_amt": 23500
+        },
+        {
+          "maturity_code": "30Y",
+          "source_name": "국고00000-5603",
+          "tranche": "26-2",
+          "auction_date": "2026-02-03",
+          "pay_date": "2026-02-04",
+          "plan_amt": 23500
+        },
+        {
+          "maturity_code": "50Y",
+          "source_name": "국고02750-7409",
+          "tranche": "24-11",
+          "auction_date": "2026-02-13",
+          "pay_date": "2026-02-19",
+          "plan_amt": 9000
+        }
+      ]
+    },
+    {
+      "month": "2026-03-01",
+      "competitive_total_amt": 190000,
+      "source_ref": "MOEF:MOSF_000000000076940:ATCH_000000000031092:2",
+      "rows": [
+        {
+          "maturity_code": "2Y",
+          "source_name": "국고03000-2803",
+          "tranche": "26-1",
+          "auction_date": "2026-03-03",
+          "pay_date": "2026-03-04",
+          "plan_amt": 32000
+        },
+        {
+          "maturity_code": "3Y",
+          "source_name": "국고02750-2812",
+          "tranche": "25-10",
+          "auction_date": "2026-03-09",
+          "pay_date": "2026-03-10",
+          "plan_amt": 33000
+        },
+        {
+          "maturity_code": "5Y",
+          "source_name": "국고03375-3103",
+          "tranche": "26-3",
+          "auction_date": "2026-03-23",
+          "pay_date": "2026-03-24",
+          "plan_amt": 31000
+        },
+        {
+          "maturity_code": "10Y",
+          "source_name": "국고03250-3512",
+          "tranche": "25-11",
+          "auction_date": "2026-03-16",
+          "pay_date": "2026-03-17",
+          "plan_amt": 30000
+        },
+        {
+          "maturity_code": "20Y",
+          "source_name": "국고02750-4509",
+          "tranche": "25-9",
+          "auction_date": "2026-03-24",
+          "pay_date": "2026-03-25",
+          "plan_amt": 6000
+        },
+        {
+          "maturity_code": "30Y",
+          "source_name": "국고03500-5603",
+          "tranche": "26-2",
+          "auction_date": "2026-03-04",
+          "pay_date": "2026-03-05",
+          "plan_amt": 50000
+        },
+        {
+          "maturity_code": "50Y",
+          "source_name": "국고02750-7409",
+          "tranche": "24-11",
+          "auction_date": "2026-03-13",
+          "pay_date": "2026-03-16",
+          "plan_amt": 8000
+        }
+      ]
+    },
+    {
+      "month": "2026-04-01",
+      "competitive_total_amt": 180000,
+      "source_ref": "MOEF:MOSF_000000000077246:ATCH_000000000031331:2",
+      "rows": [
+        {
+          "maturity_code": "2Y",
+          "source_name": "국고03000-2803",
+          "tranche": "26-1",
+          "auction_date": "2026-03-30",
+          "pay_date": "2026-03-31",
+          "plan_amt": 30000
+        },
+        {
+          "maturity_code": "3Y",
+          "source_name": "국고02750-2812",
+          "tranche": "25-10",
+          "auction_date": "2026-04-06",
+          "pay_date": "2026-04-07",
+          "plan_amt": 31000
+        },
+        {
+          "maturity_code": "5Y",
+          "source_name": "국고03375-3103",
+          "tranche": "26-3",
+          "auction_date": "2026-04-20",
+          "pay_date": "2026-04-21",
+          "plan_amt": 29000
+        },
+        {
+          "maturity_code": "10Y",
+          "source_name": "국고03250-3512",
+          "tranche": "25-11",
+          "auction_date": "2026-04-13",
+          "pay_date": "2026-04-14",
+          "plan_amt": 29000
+        },
+        {
+          "maturity_code": "KTBi",
+          "source_name": "물가00750-3406",
+          "tranche": "24-6",
+          "auction_date": "2026-04-03",
+          "pay_date": "2026-04-06",
+          "plan_amt": 1000
+        },
+        {
+          "maturity_code": "20Y",
+          "source_name": "국고02750-4509",
+          "tranche": "25-9",
+          "auction_date": "2026-04-21",
+          "pay_date": "2026-04-22",
+          "plan_amt": 5000
+        },
+        {
+          "maturity_code": "30Y",
+          "source_name": "국고03500-5603",
+          "tranche": "26-2",
+          "auction_date": "2026-03-31",
+          "pay_date": "2026-04-01",
+          "plan_amt": 48000
+        },
+        {
+          "maturity_code": "50Y",
+          "source_name": "국고02750-7409",
+          "tranche": "24-11",
+          "auction_date": "2026-04-10",
+          "pay_date": "2026-04-13",
+          "plan_amt": 7000
+        }
+      ]
+    },
+    {
+      "month": "2026-05-01",
+      "competitive_total_amt": 190000,
+      "source_ref": "MOEF:MOSF_000000000077621:ATCH_000000000031570:2",
+      "rows": [
+        {
+          "maturity_code": "2Y",
+          "source_name": "국고03000-2803",
+          "tranche": "26-1",
+          "auction_date": "2026-05-04",
+          "pay_date": "2026-05-07",
+          "plan_amt": 30000
+        },
+        {
+          "maturity_code": "3Y",
+          "source_name": "국고02750-2812",
+          "tranche": "25-10",
+          "auction_date": "2026-05-11",
+          "pay_date": "2026-05-12",
+          "plan_amt": 15500
+        },
+        {
+          "maturity_code": "3Y",
+          "source_name": "국고00000-2906",
+          "tranche": "26-5",
+          "auction_date": "2026-05-11",
+          "pay_date": "2026-05-12",
+          "plan_amt": 15500
+        },
+        {
+          "maturity_code": "5Y",
+          "source_name": "국고03375-3103",
+          "tranche": "26-3",
+          "auction_date": "2026-05-21",
+          "pay_date": "2026-05-22",
+          "plan_amt": 32000
+        },
+        {
+          "maturity_code": "10Y",
+          "source_name": "국고03250-3512",
+          "tranche": "25-11",
+          "auction_date": "2026-05-18",
+          "pay_date": "2026-05-19",
+          "plan_amt": 16000
+        },
+        {
+          "maturity_code": "10Y",
+          "source_name": "국고00000-3606",
+          "tranche": "26-6",
+          "auction_date": "2026-05-18",
+          "pay_date": "2026-05-19",
+          "plan_amt": 16000
+        },
+        {
+          "maturity_code": "KTBi",
+          "source_name": "물가00750-3406",
+          "tranche": "24-6",
+          "auction_date": "2026-05-08",
+          "pay_date": "2026-05-11",
+          "plan_amt": 500
+        },
+        {
+          "maturity_code": "KTBi",
+          "source_name": "물가00000-3606",
+          "tranche": "26-4",
+          "auction_date": "2026-05-08",
+          "pay_date": "2026-05-11",
+          "plan_amt": 500
+        },
+        {
+          "maturity_code": "20Y",
+          "source_name": "국고02750-4509",
+          "tranche": "25-9",
+          "auction_date": "2026-05-26",
+          "pay_date": "2026-05-27",
+          "plan_amt": 6000
+        },
+        {
+          "maturity_code": "30Y",
+          "source_name": "국고03500-5603",
+          "tranche": "26-2",
+          "auction_date": "2026-05-06",
+          "pay_date": "2026-05-07",
+          "plan_amt": 50000
+        },
+        {
+          "maturity_code": "50Y",
+          "source_name": "국고02750-7409",
+          "tranche": "24-11",
+          "auction_date": "2026-05-15",
+          "pay_date": "2026-05-18",
+          "plan_amt": 8000
+        }
+      ]
+    },
+    {
+      "month": "2026-06-01",
+      "competitive_total_amt": 150000,
+      "source_ref": "MOEF:MOSF_000000000078010:ATCH_000000000031815:2",
+      "rows": [
+        {
+          "maturity_code": "2Y",
+          "source_name": "국고03000-2803",
+          "tranche": "26-1",
+          "auction_date": "2026-06-01",
+          "pay_date": "2026-06-02",
+          "plan_amt": 27000
+        },
+        {
+          "maturity_code": "3Y",
+          "source_name": "국고03500-2906",
+          "tranche": "26-5",
+          "auction_date": "2026-06-08",
+          "pay_date": "2026-06-09",
+          "plan_amt": 28000
+        },
+        {
+          "maturity_code": "5Y",
+          "source_name": "국고03375-3103",
+          "tranche": "26-3",
+          "auction_date": "2026-06-22",
+          "pay_date": "2026-06-23",
+          "plan_amt": 27000
+        },
+        {
+          "maturity_code": "10Y",
+          "source_name": "국고04250-3606",
+          "tranche": "26-6",
+          "auction_date": "2026-06-15",
+          "pay_date": "2026-06-16",
+          "plan_amt": 27000
+        },
+        {
+          "maturity_code": "KTBi",
+          "source_name": "물가01125-3606",
+          "tranche": "26-4",
+          "auction_date": "2026-06-05",
+          "pay_date": "2026-06-08",
+          "plan_amt": 1000
+        },
+        {
+          "maturity_code": "20Y",
+          "source_name": "국고02750-4509",
+          "tranche": "25-9",
+          "auction_date": "2026-06-23",
+          "pay_date": "2026-06-24",
+          "plan_amt": 3000
+        },
+        {
+          "maturity_code": "30Y",
+          "source_name": "국고03500-5603",
+          "tranche": "26-2",
+          "auction_date": "2026-06-02",
+          "pay_date": "2026-06-04",
+          "plan_amt": 30000
+        },
+        {
+          "maturity_code": "50Y",
+          "source_name": "국고02750-7409",
+          "tranche": "24-11",
+          "auction_date": "2026-06-12",
+          "pay_date": "2026-06-15",
+          "plan_amt": 7000
+        }
+      ]
+    },
+    {
+      "month": "2026-07-01",
+      "competitive_total_amt": 160000,
+      "source_ref": "MOEF:MOSF_000000000078353:ATCH_000000000032061:2",
+      "rows": [
+        {
+          "maturity_code": "2Y",
+          "source_name": "국고03000-2803",
+          "tranche": "26-1",
+          "auction_date": "2026-06-29",
+          "pay_date": "2026-06-30",
+          "plan_amt": 28000
+        },
+        {
+          "maturity_code": "3Y",
+          "source_name": "국고03500-2906",
+          "tranche": "26-5",
+          "auction_date": "2026-07-06",
+          "pay_date": "2026-07-07",
+          "plan_amt": 33000
+        },
+        {
+          "maturity_code": "5Y",
+          "source_name": "국고03375-3103",
+          "tranche": "26-3",
+          "auction_date": "2026-07-20",
+          "pay_date": "2026-07-21",
+          "plan_amt": 28000
+        },
+        {
+          "maturity_code": "10Y",
+          "source_name": "국고04250-3606",
+          "tranche": "26-6",
+          "auction_date": "2026-07-13",
+          "pay_date": "2026-07-14",
+          "plan_amt": 28000
+        },
+        {
+          "maturity_code": "20Y",
+          "source_name": "국고02750-4509",
+          "tranche": "25-9",
+          "auction_date": "2026-07-21",
+          "pay_date": "2026-07-22",
+          "plan_amt": 4000
+        },
+        {
+          "maturity_code": "30Y",
+          "source_name": "국고03500-5603",
+          "tranche": "26-2",
+          "auction_date": "2026-06-30",
+          "pay_date": "2026-07-01",
+          "plan_amt": 31000
+        },
+        {
+          "maturity_code": "50Y",
+          "source_name": "국고02750-7409",
+          "tranche": "24-11",
+          "auction_date": "2026-07-10",
+          "pay_date": "2026-07-13",
+          "plan_amt": 8000
+        }
+      ]
+    },
+    {
+      "month": "2026-08-01",
+      "competitive_total_amt": 170000,
+      "source_ref": "MOEF:MOSF_000000000078773:ATCH_000000000032286:2",
+      "rows": [
+        {
+          "maturity_code": "2Y",
+          "source_name": "국고03000-2803",
+          "tranche": "26-1",
+          "auction_date": "2026-08-03",
+          "pay_date": "2026-08-04",
+          "plan_amt": 16500
+        },
+        {
+          "maturity_code": "2Y",
+          "source_name": "국고00000-2809",
+          "tranche": "26-7",
+          "auction_date": "2026-08-03",
+          "pay_date": "2026-08-04",
+          "plan_amt": 16500
+        },
+        {
+          "maturity_code": "3Y",
+          "source_name": "국고03500-2906",
+          "tranche": "26-5",
+          "auction_date": "2026-08-10",
+          "pay_date": "2026-08-11",
+          "plan_amt": 36000
+        },
+        {
+          "maturity_code": "5Y",
+          "source_name": "국고03375-3103",
+          "tranche": "26-3",
+          "auction_date": "2026-08-24",
+          "pay_date": "2026-08-25",
+          "plan_amt": 15000
+        },
+        {
+          "maturity_code": "5Y",
+          "source_name": "국고00000-3109",
+          "tranche": "26-9",
+          "auction_date": "2026-08-24",
+          "pay_date": "2026-08-25",
+          "plan_amt": 15000
+        },
+        {
+          "maturity_code": "10Y",
+          "source_name": "국고04250-3606",
+          "tranche": "26-6",
+          "auction_date": "2026-08-18",
+          "pay_date": "2026-08-19",
+          "plan_amt": 30000
+        },
+        {
+          "maturity_code": "KTBi",
+          "source_name": "물가01125-3606",
+          "tranche": "26-4",
+          "auction_date": "2026-08-07",
+          "pay_date": "2026-08-10",
+          "plan_amt": 1000
+        },
+        {
+          "maturity_code": "20Y",
+          "source_name": "국고02750-4509",
+          "tranche": "25-9",
+          "auction_date": "2026-08-25",
+          "pay_date": "2026-08-26",
+          "plan_amt": 2000
+        },
+        {
+          "maturity_code": "20Y",
+          "source_name": "국고00000-4609",
+          "tranche": "26-10",
+          "auction_date": "2026-08-25",
+          "pay_date": "2026-08-26",
+          "plan_amt": 2000
+        },
+        {
+          "maturity_code": "30Y",
+          "source_name": "국고03500-5603",
+          "tranche": "26-2",
+          "auction_date": "2026-08-04",
+          "pay_date": "2026-08-06",
+          "plan_amt": 14000
+        },
+        {
+          "maturity_code": "30Y",
+          "source_name": "국고00000-5609",
+          "tranche": "26-8",
+          "auction_date": "2026-08-04",
+          "pay_date": "2026-08-06",
+          "plan_amt": 14000
+        },
+        {
+          "maturity_code": "50Y",
+          "source_name": "국고02750-7409",
+          "tranche": "24-11",
+          "auction_date": "2026-08-14",
+          "pay_date": "2026-08-18",
+          "plan_amt": 8000
+        }
+      ]
+    },
+    {
+      "month": "2026-09-01",
+      "competitive_total_amt": 160000,
+      "source_ref": "MOEF:MOSF_000000000079143:ATCH_000000000032592:1",
+      "rows": [
+        {
+          "maturity_code": "2Y",
+          "source_name": "국고03625-2809(26-7)",
+          "tranche": "26-7",
+          "auction_date": "2026-08-31",
+          "pay_date": "2026-09-01",
+          "plan_amt": 31000
+        },
+        {
+          "maturity_code": "3Y",
+          "source_name": "국고03500-2906(26-5)",
+          "tranche": "26-5",
+          "auction_date": "2026-09-07",
+          "pay_date": "2026-09-08",
+          "plan_amt": 32000
+        },
+        {
+          "maturity_code": "5Y",
+          "source_name": "국고04125-3109(26-9)",
+          "tranche": "26-9",
+          "auction_date": "2026-09-21",
+          "pay_date": "2026-09-22",
+          "plan_amt": 30000
+        },
+        {
+          "maturity_code": "10Y",
+          "source_name": "국고04250-3606(26-6)",
+          "tranche": "26-6",
+          "auction_date": "2026-09-14",
+          "pay_date": "2026-09-15",
+          "plan_amt": 28000
+        },
+        {
+          "maturity_code": "20Y",
+          "source_name": "국고04500-4609(26-10)",
+          "tranche": "26-10",
+          "auction_date": "2026-09-09",
+          "pay_date": "2026-09-10",
+          "plan_amt": 6000
+        },
+        {
+          "maturity_code": "30Y",
+          "source_name": "국고04500-5609(26-8)",
+          "tranche": "26-8",
+          "auction_date": "2026-09-01",
+          "pay_date": "2026-09-02",
+          "plan_amt": 25000
+        },
+        {
+          "maturity_code": "50Y",
+          "source_name": "국고00000-7609(26-11)",
+          "tranche": "26-11",
+          "auction_date": "2026-09-11",
+          "pay_date": "2026-09-14",
+          "plan_amt": 8000
+        }
+      ]
+    },
+    {
+      "month": "2026-10-01",
+      "competitive_total_amt": 120000,
+      "source_ref": "MOEF:MOSF_000000000079518:ATCH_000000000032846:2",
+      "rows": [
+        {
+          "maturity_code": "2Y",
+          "source_name": "국고03625-2809(26-7)",
+          "tranche": "26-7",
+          "auction_date": "2026-10-06",
+          "pay_date": "2026-10-08",
+          "plan_amt": 21000
+        },
+        {
+          "maturity_code": "3Y",
+          "source_name": "국고03500-2906(26-5)",
+          "tranche": "26-5",
+          "auction_date": "2026-10-12",
+          "pay_date": "2026-10-13",
+          "plan_amt": 24000
+        },
+        {
+          "maturity_code": "5Y",
+          "source_name": "국고04125-3109(26-9)",
+          "tranche": "26-9",
+          "auction_date": "2026-10-26",
+          "pay_date": "2026-10-27",
+          "plan_amt": 22000
+        },
+        {
+          "maturity_code": "10Y",
+          "source_name": "국고04250-3606(26-6)",
+          "tranche": "26-6",
+          "auction_date": "2026-10-19",
+          "pay_date": "2026-10-20",
+          "plan_amt": 21000
+        },
+        {
+          "maturity_code": "KTBi",
+          "source_name": "물가01125-3606(26-4)",
+          "tranche": "26-4",
+          "auction_date": "2026-10-08",
+          "pay_date": "2026-10-12",
+          "plan_amt": 1000
+        },
+        {
+          "maturity_code": "20Y",
+          "source_name": "국고04500-4609(26-10)",
+          "tranche": "26-10",
+          "auction_date": "2026-10-27",
+          "pay_date": "2026-10-28",
+          "plan_amt": 7000
+        },
+        {
+          "maturity_code": "30Y",
+          "source_name": "국고04500-5609(26-8)",
+          "tranche": "26-8",
+          "auction_date": "2026-10-07",
+          "pay_date": "2026-10-08",
+          "plan_amt": 18000
+        },
+        {
+          "maturity_code": "50Y",
+          "source_name": "국고04625-7609(26-11)",
+          "tranche": "26-11",
+          "auction_date": "2026-10-16",
+          "pay_date": "2026-10-19",
+          "plan_amt": 6000
+        }
+      ]
+    }
+  ],
+  "results": [
+    {
+      "source_ref": "MOEF:MOSF_000000000076425",
+      "maturity_code": "2Y",
+      "source_name": "국고02250-2709",
+      "auction_date": "2026-01-05",
+      "auction_type": "comp",
+      "plan_amt": 28000,
+      "bid_amt": 82530,
+      "won_amt": 28000,
+      "low_rate": "2.840",
+      "high_rate": "2.840",
+      "wavg_rate": "2.840",
+      "published_rate": null,
+      "partial_alloc_rate": "35.2"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000076433",
+      "maturity_code": "30Y",
+      "source_name": "국고02625-5509",
+      "auction_date": "2026-01-06",
+      "auction_type": "comp",
+      "plan_amt": 43000,
+      "bid_amt": 90590,
+      "won_amt": 43000,
+      "low_rate": "3.250",
+      "high_rate": "3.250",
+      "wavg_rate": "3.250",
+      "published_rate": null,
+      "partial_alloc_rate": "4.5"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000076479",
+      "maturity_code": "3Y",
+      "source_name": "국고02750-2812",
+      "auction_date": "2026-01-12",
+      "auction_type": "comp",
+      "plan_amt": 29000,
+      "bid_amt": 81110,
+      "won_amt": 29000,
+      "low_rate": "2.965",
+      "high_rate": "2.965",
+      "wavg_rate": "2.965",
+      "published_rate": null,
+      "partial_alloc_rate": "66.9"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000076518",
+      "maturity_code": "50Y",
+      "source_name": "국고02750-7409",
+      "auction_date": "2026-01-16",
+      "auction_type": "comp",
+      "plan_amt": 8000,
+      "bid_amt": 15670,
+      "won_amt": 8000,
+      "low_rate": null,
+      "high_rate": null,
+      "wavg_rate": null,
+      "published_rate": "3.220",
+      "partial_alloc_rate": "33.3"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000076553",
+      "maturity_code": "10Y",
+      "source_name": "국고03250-3512",
+      "auction_date": "2026-01-19",
+      "auction_type": "comp",
+      "plan_amt": 22000,
+      "bid_amt": 59730,
+      "won_amt": 22000,
+      "low_rate": "3.520",
+      "high_rate": "3.520",
+      "wavg_rate": "3.520",
+      "published_rate": null,
+      "partial_alloc_rate": "45.5"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000076621",
+      "maturity_code": "5Y",
+      "source_name": "국고02500-3009",
+      "auction_date": "2026-01-26",
+      "auction_type": "comp",
+      "plan_amt": 25000,
+      "bid_amt": 72080,
+      "won_amt": 25000,
+      "low_rate": "3.385",
+      "high_rate": "3.385",
+      "wavg_rate": "3.385",
+      "published_rate": null,
+      "partial_alloc_rate": "4.0"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000076627",
+      "maturity_code": "20Y",
+      "source_name": "국고02750-4509",
+      "auction_date": "2026-01-27",
+      "auction_type": "comp",
+      "plan_amt": 5000,
+      "bid_amt": 12990,
+      "won_amt": 5000,
+      "low_rate": "3.565",
+      "high_rate": "3.565",
+      "wavg_rate": "3.565",
+      "published_rate": null,
+      "partial_alloc_rate": "7.5"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000076691",
+      "maturity_code": "2Y",
+      "source_name": "국고03000-2803",
+      "auction_date": "2026-02-02",
+      "auction_type": "comp",
+      "plan_amt": 15500,
+      "bid_amt": 46120,
+      "won_amt": 15500,
+      "low_rate": "3.100",
+      "high_rate": "3.100",
+      "wavg_rate": "3.100",
+      "published_rate": null,
+      "partial_alloc_rate": "76.3"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000076692",
+      "maturity_code": "2Y",
+      "source_name": "국고02250-2709",
+      "auction_date": "2026-02-02",
+      "auction_type": "comp",
+      "plan_amt": 15500,
+      "bid_amt": 43890,
+      "won_amt": 15500,
+      "low_rate": "2.990",
+      "high_rate": "2.990",
+      "wavg_rate": "2.990",
+      "published_rate": null,
+      "partial_alloc_rate": "84.1"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000076709",
+      "maturity_code": "30Y",
+      "source_name": "국고03500-5603",
+      "auction_date": "2026-02-03",
+      "auction_type": "comp",
+      "plan_amt": 23500,
+      "bid_amt": 48780,
+      "won_amt": 23500,
+      "low_rate": "3.565",
+      "high_rate": "3.565",
+      "wavg_rate": "3.565",
+      "published_rate": null,
+      "partial_alloc_rate": "43.6"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000076713",
+      "maturity_code": "30Y",
+      "source_name": "국고02625-5509",
+      "auction_date": "2026-02-03",
+      "auction_type": "comp",
+      "plan_amt": 23500,
+      "bid_amt": 50650,
+      "won_amt": 23500,
+      "low_rate": "3.595",
+      "high_rate": "3.595",
+      "wavg_rate": "3.595",
+      "published_rate": null,
+      "partial_alloc_rate": "86.6"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000076766",
+      "maturity_code": "KTBi",
+      "source_name": "물가00750-3406",
+      "auction_date": "2026-02-06",
+      "auction_type": "comp",
+      "plan_amt": 1000,
+      "bid_amt": 2580,
+      "won_amt": 1000,
+      "low_rate": "1.180",
+      "high_rate": "1.180",
+      "wavg_rate": "1.180",
+      "published_rate": null,
+      "partial_alloc_rate": "48.0"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000076782",
+      "maturity_code": "3Y",
+      "source_name": "국고02750-2812",
+      "auction_date": "2026-02-09",
+      "auction_type": "comp",
+      "plan_amt": 31000,
+      "bid_amt": 79330,
+      "won_amt": 31000,
+      "low_rate": "3.255",
+      "high_rate": "3.255",
+      "wavg_rate": "3.255",
+      "published_rate": null,
+      "partial_alloc_rate": "12.2"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000076798",
+      "maturity_code": "10Y",
+      "source_name": "국고03250-3512",
+      "auction_date": "2026-02-10",
+      "auction_type": "comp",
+      "plan_amt": 26000,
+      "bid_amt": 67370,
+      "won_amt": 26000,
+      "low_rate": "3.710",
+      "high_rate": "3.710",
+      "wavg_rate": "3.710",
+      "published_rate": null,
+      "partial_alloc_rate": "15.9"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000076839",
+      "maturity_code": "50Y",
+      "source_name": "국고02750-7409",
+      "auction_date": "2026-02-13",
+      "auction_type": "comp",
+      "plan_amt": 9000,
+      "bid_amt": 12660,
+      "won_amt": 8940,
+      "low_rate": null,
+      "high_rate": null,
+      "wavg_rate": null,
+      "published_rate": "3.465",
+      "partial_alloc_rate": "100.0"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000076885",
+      "maturity_code": "5Y",
+      "source_name": "국고03375-3103",
+      "auction_date": "2026-02-23",
+      "auction_type": "comp",
+      "plan_amt": 15000,
+      "bid_amt": 44020,
+      "won_amt": 15000,
+      "low_rate": "3.390",
+      "high_rate": "3.390",
+      "wavg_rate": "3.390",
+      "published_rate": null,
+      "partial_alloc_rate": "4.2"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000076887",
+      "maturity_code": "5Y",
+      "source_name": "국고02500-3009",
+      "auction_date": "2026-02-23",
+      "auction_type": "comp",
+      "plan_amt": 15000,
+      "bid_amt": 39060,
+      "won_amt": 15000,
+      "low_rate": "3.390",
+      "high_rate": "3.390",
+      "wavg_rate": "3.390",
+      "published_rate": null,
+      "partial_alloc_rate": "68.0"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000076903",
+      "maturity_code": "20Y",
+      "source_name": "국고02750-4509",
+      "auction_date": "2026-02-24",
+      "auction_type": "comp",
+      "plan_amt": 5000,
+      "bid_amt": 14800,
+      "won_amt": 5000,
+      "low_rate": "3.580",
+      "high_rate": "3.580",
+      "wavg_rate": "3.580",
+      "published_rate": null,
+      "partial_alloc_rate": "18.9"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000076996",
+      "maturity_code": "2Y",
+      "source_name": "국고03000-2803",
+      "auction_date": "2026-03-03",
+      "auction_type": "comp",
+      "plan_amt": 32000,
+      "bid_amt": 90990,
+      "won_amt": 32000,
+      "low_rate": "3.030",
+      "high_rate": "3.030",
+      "wavg_rate": "3.030",
+      "published_rate": null,
+      "partial_alloc_rate": "2.3"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000077021",
+      "maturity_code": "30Y",
+      "source_name": "국고03500-5603",
+      "auction_date": "2026-03-04",
+      "auction_type": "comp",
+      "plan_amt": 50000,
+      "bid_amt": 102900,
+      "won_amt": 49940,
+      "low_rate": "3.520",
+      "high_rate": "3.520",
+      "wavg_rate": "3.520",
+      "published_rate": null,
+      "partial_alloc_rate": "100"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000077072",
+      "maturity_code": "3Y",
+      "source_name": "국고02750-2812",
+      "auction_date": "2026-03-09",
+      "auction_type": "comp",
+      "plan_amt": 33000,
+      "bid_amt": 67440,
+      "won_amt": 33000,
+      "low_rate": "3.430",
+      "high_rate": "3.470",
+      "wavg_rate": "3.466",
+      "published_rate": null,
+      "partial_alloc_rate": "23.7"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000077116",
+      "maturity_code": "50Y",
+      "source_name": "국고02750-7409",
+      "auction_date": "2026-03-13",
+      "auction_type": "comp",
+      "plan_amt": 8000,
+      "bid_amt": 13140,
+      "won_amt": 8000,
+      "low_rate": null,
+      "high_rate": null,
+      "wavg_rate": null,
+      "published_rate": "3.485",
+      "partial_alloc_rate": "40.0"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000077130",
+      "maturity_code": "10Y",
+      "source_name": "국고03250-3512",
+      "auction_date": "2026-03-16",
+      "auction_type": "comp",
+      "plan_amt": 30000,
+      "bid_amt": 74600,
+      "won_amt": 30000,
+      "low_rate": "3.695",
+      "high_rate": "3.695",
+      "wavg_rate": "3.695",
+      "published_rate": null,
+      "partial_alloc_rate": "64.7"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000077220",
+      "maturity_code": "5Y",
+      "source_name": "국고03375-3103",
+      "auction_date": "2026-03-23",
+      "auction_type": "comp",
+      "plan_amt": 31000,
+      "bid_amt": 75070,
+      "won_amt": 31000,
+      "low_rate": "3.735",
+      "high_rate": "3.735",
+      "wavg_rate": "3.735",
+      "published_rate": null,
+      "partial_alloc_rate": "4.9"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000077228",
+      "maturity_code": "20Y",
+      "source_name": "국고02750-4509",
+      "auction_date": "2026-03-24",
+      "auction_type": "comp",
+      "plan_amt": 6000,
+      "bid_amt": 13520,
+      "won_amt": 6000,
+      "low_rate": "3.840",
+      "high_rate": "3.840",
+      "wavg_rate": "3.840",
+      "published_rate": null,
+      "partial_alloc_rate": "76.7"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000077296",
+      "maturity_code": "2Y",
+      "source_name": "국고03000-2803",
+      "auction_date": "2026-03-30",
+      "auction_type": "comp",
+      "plan_amt": 30000,
+      "bid_amt": 88900,
+      "won_amt": 30000,
+      "low_rate": "3.500",
+      "high_rate": "3.500",
+      "wavg_rate": "3.500",
+      "published_rate": null,
+      "partial_alloc_rate": "22.2"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000077311",
+      "maturity_code": "30Y",
+      "source_name": "국고03500-5603",
+      "auction_date": "2026-03-31",
+      "auction_type": "comp",
+      "plan_amt": 48000,
+      "bid_amt": 92800,
+      "won_amt": 48000,
+      "low_rate": "3.780",
+      "high_rate": "3.780",
+      "wavg_rate": "3.780",
+      "published_rate": null,
+      "partial_alloc_rate": "76.5"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000077352",
+      "maturity_code": "KTBi",
+      "source_name": "물가00750-3406",
+      "auction_date": "2026-04-03",
+      "auction_type": "comp",
+      "plan_amt": 1000,
+      "bid_amt": 2480,
+      "won_amt": 990,
+      "low_rate": "1.035",
+      "high_rate": "1.035",
+      "wavg_rate": "1.035",
+      "published_rate": null,
+      "partial_alloc_rate": "100.0"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000077368",
+      "maturity_code": "3Y",
+      "source_name": "국고02750-2812",
+      "auction_date": "2026-04-06",
+      "auction_type": "comp",
+      "plan_amt": 31000,
+      "bid_amt": 85500,
+      "won_amt": 31000,
+      "low_rate": "3.450",
+      "high_rate": "3.450",
+      "wavg_rate": "3.450",
+      "published_rate": null,
+      "partial_alloc_rate": "29.6"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000077432",
+      "maturity_code": "50Y",
+      "source_name": "국고02750-7409",
+      "auction_date": "2026-04-10",
+      "auction_type": "comp",
+      "plan_amt": 7000,
+      "bid_amt": 11940,
+      "won_amt": 7000,
+      "low_rate": null,
+      "high_rate": null,
+      "wavg_rate": null,
+      "published_rate": "3.435",
+      "partial_alloc_rate": "60.0"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000077448",
+      "maturity_code": "10Y",
+      "source_name": "국고03250-3512",
+      "auction_date": "2026-04-13",
+      "auction_type": "comp",
+      "plan_amt": 29000,
+      "bid_amt": 78500,
+      "won_amt": 29000,
+      "low_rate": "3.715",
+      "high_rate": "3.715",
+      "wavg_rate": "3.715",
+      "published_rate": null,
+      "partial_alloc_rate": "37.6"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000077555",
+      "maturity_code": "5Y",
+      "source_name": "국고03375-3103",
+      "auction_date": "2026-04-20",
+      "auction_type": "comp",
+      "plan_amt": 29000,
+      "bid_amt": 80030,
+      "won_amt": 29000,
+      "low_rate": "3.530",
+      "high_rate": "3.530",
+      "wavg_rate": "3.530",
+      "published_rate": null,
+      "partial_alloc_rate": "78.6"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000077574",
+      "maturity_code": "20Y",
+      "source_name": "국고02750-4509",
+      "auction_date": "2026-04-21",
+      "auction_type": "comp",
+      "plan_amt": 5000,
+      "bid_amt": 15800,
+      "won_amt": 5000,
+      "low_rate": "3.610",
+      "high_rate": "3.610",
+      "wavg_rate": "3.610",
+      "published_rate": null,
+      "partial_alloc_rate": "14.0"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000077722",
+      "maturity_code": "2Y",
+      "source_name": "국고03000-2803",
+      "auction_date": "2026-05-04",
+      "auction_type": "comp",
+      "plan_amt": 30000,
+      "bid_amt": 80600,
+      "won_amt": 30000,
+      "low_rate": "3.520",
+      "high_rate": "3.520",
+      "wavg_rate": "3.520",
+      "published_rate": null,
+      "partial_alloc_rate": "49.1"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000077734",
+      "maturity_code": "30Y",
+      "source_name": "국고03500-5603",
+      "auction_date": "2026-05-06",
+      "auction_type": "comp",
+      "plan_amt": 50000,
+      "bid_amt": 89270,
+      "won_amt": 50000,
+      "low_rate": "3.830",
+      "high_rate": "3.830",
+      "wavg_rate": "3.830",
+      "published_rate": null,
+      "partial_alloc_rate": "24.5"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000077776",
+      "maturity_code": "KTBi",
+      "source_name": "물가01125-3606",
+      "auction_date": "2026-05-08",
+      "auction_type": "comp",
+      "plan_amt": 500,
+      "bid_amt": 510,
+      "won_amt": 360,
+      "low_rate": "1.145",
+      "high_rate": "1.225",
+      "wavg_rate": "1.197",
+      "published_rate": null,
+      "partial_alloc_rate": "100.0"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000077777",
+      "maturity_code": "KTBi",
+      "source_name": "물가00750-3406",
+      "auction_date": "2026-05-08",
+      "auction_type": "comp",
+      "plan_amt": 500,
+      "bid_amt": 1550,
+      "won_amt": 500,
+      "low_rate": "1.075",
+      "high_rate": "1.115",
+      "wavg_rate": "1.108",
+      "published_rate": null,
+      "partial_alloc_rate": "100.0"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000077791",
+      "maturity_code": "3Y",
+      "source_name": "국고03500-2906",
+      "auction_date": "2026-05-11",
+      "auction_type": "comp",
+      "plan_amt": 15500,
+      "bid_amt": 36570,
+      "won_amt": 15500,
+      "low_rate": "3.545",
+      "high_rate": "3.585",
+      "wavg_rate": "3.583",
+      "published_rate": null,
+      "partial_alloc_rate": "63.2"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000077792",
+      "maturity_code": "3Y",
+      "source_name": "국고02750-2812",
+      "auction_date": "2026-05-11",
+      "auction_type": "comp",
+      "plan_amt": 15500,
+      "bid_amt": 52620,
+      "won_amt": 15500,
+      "low_rate": "3.565",
+      "high_rate": "3.565",
+      "wavg_rate": "3.565",
+      "published_rate": null,
+      "partial_alloc_rate": "88.2"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000077856",
+      "maturity_code": "50Y",
+      "source_name": "국고02750-7409",
+      "auction_date": "2026-05-15",
+      "auction_type": "comp",
+      "plan_amt": 8000,
+      "bid_amt": 12880,
+      "won_amt": 8000,
+      "low_rate": null,
+      "high_rate": null,
+      "wavg_rate": null,
+      "published_rate": "3.915",
+      "partial_alloc_rate": "26.7"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000077871",
+      "maturity_code": "10Y",
+      "source_name": "국고04250-3606",
+      "auction_date": "2026-05-18",
+      "auction_type": "comp",
+      "plan_amt": 16000,
+      "bid_amt": 34230,
+      "won_amt": 16000,
+      "low_rate": "4.235",
+      "high_rate": "4.275",
+      "wavg_rate": "4.273",
+      "published_rate": null,
+      "partial_alloc_rate": "10.4"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000077872",
+      "maturity_code": "10Y",
+      "source_name": "국고03250-3512",
+      "auction_date": "2026-05-18",
+      "auction_type": "comp",
+      "plan_amt": 16000,
+      "bid_amt": 33520,
+      "won_amt": 16000,
+      "low_rate": "4.255",
+      "high_rate": "4.295",
+      "wavg_rate": "4.293",
+      "published_rate": null,
+      "partial_alloc_rate": "26.1"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000077935",
+      "maturity_code": "5Y",
+      "source_name": "국고03375-3103",
+      "auction_date": "2026-05-21",
+      "auction_type": "comp",
+      "plan_amt": 32000,
+      "bid_amt": 86680,
+      "won_amt": 32000,
+      "low_rate": "3.940",
+      "high_rate": "3.940",
+      "wavg_rate": "3.940",
+      "published_rate": null,
+      "partial_alloc_rate": "7.8"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000077971",
+      "maturity_code": "20Y",
+      "source_name": "국고02750-4509",
+      "auction_date": "2026-05-26",
+      "auction_type": "comp",
+      "plan_amt": 6000,
+      "bid_amt": 14380,
+      "won_amt": 6000,
+      "low_rate": "4.145",
+      "high_rate": "4.145",
+      "wavg_rate": "4.145",
+      "published_rate": null,
+      "partial_alloc_rate": "11.0"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000078043",
+      "maturity_code": "2Y",
+      "source_name": "국고03000-2803",
+      "auction_date": "2026-06-01",
+      "auction_type": "comp",
+      "plan_amt": 27000,
+      "bid_amt": 74300,
+      "won_amt": 27000,
+      "low_rate": "3.690",
+      "high_rate": "3.690",
+      "wavg_rate": "3.690",
+      "published_rate": null,
+      "partial_alloc_rate": "19.5"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000078059",
+      "maturity_code": "30Y",
+      "source_name": "국고03500-5603",
+      "auction_date": "2026-06-02",
+      "auction_type": "comp",
+      "plan_amt": 30000,
+      "bid_amt": 60060,
+      "won_amt": 30000,
+      "low_rate": "4.155",
+      "high_rate": "4.155",
+      "wavg_rate": "4.155",
+      "published_rate": null,
+      "partial_alloc_rate": "84.5"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000078099",
+      "maturity_code": "KTBi",
+      "source_name": "물가01125-3606",
+      "auction_date": "2026-06-05",
+      "auction_type": "comp",
+      "plan_amt": 1000,
+      "bid_amt": 1000,
+      "won_amt": 710,
+      "low_rate": "1.460",
+      "high_rate": "1.620",
+      "wavg_rate": "1.524",
+      "published_rate": null,
+      "partial_alloc_rate": "100.0"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000078107",
+      "maturity_code": "3Y",
+      "source_name": "국고03500-2906",
+      "auction_date": "2026-06-08",
+      "auction_type": "comp",
+      "plan_amt": 28000,
+      "bid_amt": 74370,
+      "won_amt": 18480,
+      "low_rate": "4.000",
+      "high_rate": "4.000",
+      "wavg_rate": "4.000",
+      "published_rate": null,
+      "partial_alloc_rate": "100.0"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000078187",
+      "maturity_code": "50Y",
+      "source_name": "국고02750-7409",
+      "auction_date": "2026-06-12",
+      "auction_type": "comp",
+      "plan_amt": 7000,
+      "bid_amt": 12100,
+      "won_amt": 7000,
+      "low_rate": null,
+      "high_rate": null,
+      "wavg_rate": null,
+      "published_rate": "4.250",
+      "partial_alloc_rate": "60.0"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000078200",
+      "maturity_code": "10Y",
+      "source_name": "국고04250-3606",
+      "auction_date": "2026-06-15",
+      "auction_type": "comp",
+      "plan_amt": 27000,
+      "bid_amt": 68590,
+      "won_amt": 27000,
+      "low_rate": "4.115",
+      "high_rate": "4.115",
+      "wavg_rate": "4.115",
+      "published_rate": null,
+      "partial_alloc_rate": "84.6"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000078285",
+      "maturity_code": "5Y",
+      "source_name": "국고03375-3103",
+      "auction_date": "2026-06-22",
+      "auction_type": "comp",
+      "plan_amt": 27000,
+      "bid_amt": 64530,
+      "won_amt": 27000,
+      "low_rate": "4.045",
+      "high_rate": "4.045",
+      "wavg_rate": "4.045",
+      "published_rate": null,
+      "partial_alloc_rate": "3.2"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000078302",
+      "maturity_code": "20Y",
+      "source_name": "국고02750-4509",
+      "auction_date": "2026-06-23",
+      "auction_type": "comp",
+      "plan_amt": 3000,
+      "bid_amt": 9360,
+      "won_amt": 3000,
+      "low_rate": "4.300",
+      "high_rate": "4.300",
+      "wavg_rate": "4.300",
+      "published_rate": null,
+      "partial_alloc_rate": "20.6"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000078379",
+      "maturity_code": "2Y",
+      "source_name": "국고03000-2803",
+      "auction_date": "2026-06-29",
+      "auction_type": "comp",
+      "plan_amt": 28000,
+      "bid_amt": 76940,
+      "won_amt": 28000,
+      "low_rate": "3.665",
+      "high_rate": "3.665",
+      "wavg_rate": "3.665",
+      "published_rate": null,
+      "partial_alloc_rate": "55.0"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000078412",
+      "maturity_code": "30Y",
+      "source_name": "국고03500-5603",
+      "auction_date": "2026-06-30",
+      "auction_type": "comp",
+      "plan_amt": 31000,
+      "bid_amt": 68160,
+      "won_amt": 31000,
+      "low_rate": "4.370",
+      "high_rate": "4.370",
+      "wavg_rate": "4.370",
+      "published_rate": null,
+      "partial_alloc_rate": "63.8"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000078488",
+      "maturity_code": "3Y",
+      "source_name": "국고03500-2906",
+      "auction_date": "2026-07-06",
+      "auction_type": "comp",
+      "plan_amt": 33000,
+      "bid_amt": 86230,
+      "won_amt": 33000,
+      "low_rate": "3.765",
+      "high_rate": "3.765",
+      "wavg_rate": "3.765",
+      "published_rate": null,
+      "partial_alloc_rate": "90.0"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000078543",
+      "maturity_code": "50Y",
+      "source_name": "국고02750-7409",
+      "auction_date": "2026-07-10",
+      "auction_type": "comp",
+      "plan_amt": 8000,
+      "bid_amt": 11460,
+      "won_amt": 8000,
+      "low_rate": null,
+      "high_rate": null,
+      "wavg_rate": null,
+      "published_rate": "4.345",
+      "partial_alloc_rate": "60.0"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000078557",
+      "maturity_code": "10Y",
+      "source_name": "국고04250-3606",
+      "auction_date": "2026-07-13",
+      "auction_type": "comp",
+      "plan_amt": 28000,
+      "bid_amt": 78280,
+      "won_amt": 28000,
+      "low_rate": "4.255",
+      "high_rate": "4.255",
+      "wavg_rate": "4.255",
+      "published_rate": null,
+      "partial_alloc_rate": "91.4"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000078625",
+      "maturity_code": "5Y",
+      "source_name": "국고03375-3103",
+      "auction_date": "2026-07-20",
+      "auction_type": "comp",
+      "plan_amt": 28000,
+      "bid_amt": 72890,
+      "won_amt": 28000,
+      "low_rate": "4.165",
+      "high_rate": "4.165",
+      "wavg_rate": "4.165",
+      "published_rate": null,
+      "partial_alloc_rate": "3.2"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000078646",
+      "maturity_code": "20Y",
+      "source_name": "국고02750-4509",
+      "auction_date": "2026-07-21",
+      "auction_type": "comp",
+      "plan_amt": 4000,
+      "bid_amt": 13520,
+      "won_amt": 4000,
+      "low_rate": "4.530",
+      "high_rate": "4.530",
+      "wavg_rate": "4.530",
+      "published_rate": null,
+      "partial_alloc_rate": "80.3"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000078804",
+      "maturity_code": "2Y",
+      "source_name": "국고03625-2809",
+      "auction_date": "2026-08-03",
+      "auction_type": "comp",
+      "plan_amt": 16500,
+      "bid_amt": 30940,
+      "won_amt": 16500,
+      "low_rate": "3.680",
+      "high_rate": "3.680",
+      "wavg_rate": "3.680",
+      "published_rate": null,
+      "partial_alloc_rate": "75.2"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000078808",
+      "maturity_code": "2Y",
+      "source_name": "국고03000-2803",
+      "auction_date": "2026-08-03",
+      "auction_type": "comp",
+      "plan_amt": 16500,
+      "bid_amt": 57730,
+      "won_amt": 16500,
+      "low_rate": "3.630",
+      "high_rate": "3.630",
+      "wavg_rate": "3.630",
+      "published_rate": null,
+      "partial_alloc_rate": "3.1"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000078825",
+      "maturity_code": "30Y",
+      "source_name": "국고04500-5609",
+      "auction_date": "2026-08-04",
+      "auction_type": "comp",
+      "plan_amt": 14000,
+      "bid_amt": 26990,
+      "won_amt": 14000,
+      "low_rate": "4.505",
+      "high_rate": "4.505",
+      "wavg_rate": "4.505",
+      "published_rate": null,
+      "partial_alloc_rate": "78.7"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000078828",
+      "maturity_code": "30Y",
+      "source_name": "국고03500-5603",
+      "auction_date": "2026-08-04",
+      "auction_type": "comp",
+      "plan_amt": 14000,
+      "bid_amt": 31400,
+      "won_amt": 14000,
+      "low_rate": "4.480",
+      "high_rate": "4.520",
+      "wavg_rate": "4.519",
+      "published_rate": null,
+      "partial_alloc_rate": "3.8"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000078898",
+      "maturity_code": "KTBi",
+      "source_name": "물가01125-3606",
+      "auction_date": "2026-08-07",
+      "auction_type": "comp",
+      "plan_amt": 1000,
+      "bid_amt": 1880,
+      "won_amt": 1000,
+      "low_rate": "1.610",
+      "high_rate": "1.650",
+      "wavg_rate": "1.640",
+      "published_rate": null,
+      "partial_alloc_rate": "34.5"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000078921",
+      "maturity_code": "3Y",
+      "source_name": "국고03500-2906",
+      "auction_date": "2026-08-10",
+      "auction_type": "comp",
+      "plan_amt": 36000,
+      "bid_amt": 92620,
+      "won_amt": 36000,
+      "low_rate": "3.780",
+      "high_rate": "3.780",
+      "wavg_rate": "3.780",
+      "published_rate": null,
+      "partial_alloc_rate": "7.1"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000078998",
+      "maturity_code": "50Y",
+      "source_name": "국고02750-7409",
+      "auction_date": "2026-08-14",
+      "auction_type": "comp",
+      "plan_amt": 8000,
+      "bid_amt": 12590,
+      "won_amt": 8000,
+      "low_rate": null,
+      "high_rate": null,
+      "wavg_rate": null,
+      "published_rate": "4.620",
+      "partial_alloc_rate": "26.0"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000079013",
+      "maturity_code": "10Y",
+      "source_name": "국고04250-3606",
+      "auction_date": "2026-08-18",
+      "auction_type": "comp",
+      "plan_amt": 30000,
+      "bid_amt": 71560,
+      "won_amt": 29710,
+      "low_rate": "4.415",
+      "high_rate": "4.415",
+      "wavg_rate": "4.415",
+      "published_rate": null,
+      "partial_alloc_rate": "100.0"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000079098",
+      "maturity_code": "5Y",
+      "source_name": "국고04125-3109",
+      "auction_date": "2026-08-24",
+      "auction_type": "comp",
+      "plan_amt": 15000,
+      "bid_amt": 35810,
+      "won_amt": 15000,
+      "low_rate": "4.095",
+      "high_rate": "4.135",
+      "wavg_rate": "4.131",
+      "published_rate": null,
+      "partial_alloc_rate": "10.4"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000079101",
+      "maturity_code": "5Y",
+      "source_name": "국고03375-3103",
+      "auction_date": "2026-08-24",
+      "auction_type": "comp",
+      "plan_amt": 15000,
+      "bid_amt": 50710,
+      "won_amt": 15000,
+      "low_rate": "4.085",
+      "high_rate": "4.085",
+      "wavg_rate": "4.085",
+      "published_rate": null,
+      "partial_alloc_rate": "55.9"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000079107",
+      "maturity_code": "20Y",
+      "source_name": "국고04500-4609",
+      "auction_date": "2026-08-25",
+      "auction_type": "comp",
+      "plan_amt": 2000,
+      "bid_amt": 7290,
+      "won_amt": 1990,
+      "low_rate": "4.555",
+      "high_rate": "4.555",
+      "wavg_rate": "4.555",
+      "published_rate": null,
+      "partial_alloc_rate": "100.0"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000079108",
+      "maturity_code": "20Y",
+      "source_name": "국고02750-4509",
+      "auction_date": "2026-08-25",
+      "auction_type": "comp",
+      "plan_amt": 2000,
+      "bid_amt": 7640,
+      "won_amt": 2000,
+      "low_rate": "4.570",
+      "high_rate": "4.570",
+      "wavg_rate": "4.570",
+      "published_rate": null,
+      "partial_alloc_rate": "88.3"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000079176",
+      "maturity_code": "2Y",
+      "source_name": "국고03625-2809",
+      "auction_date": "2026-08-31",
+      "auction_type": "comp",
+      "plan_amt": 31000,
+      "bid_amt": 76650,
+      "won_amt": 31000,
+      "low_rate": "3.705",
+      "high_rate": "3.785",
+      "wavg_rate": "3.779",
+      "published_rate": null,
+      "partial_alloc_rate": "57.3"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000079190",
+      "maturity_code": "30Y",
+      "source_name": "국고04500-5609",
+      "auction_date": "2026-09-01",
+      "auction_type": "comp",
+      "plan_amt": 25000,
+      "bid_amt": 54170,
+      "won_amt": 25000,
+      "low_rate": "4.630",
+      "high_rate": "4.630",
+      "wavg_rate": "4.630",
+      "published_rate": null,
+      "partial_alloc_rate": "29.7"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000079261",
+      "maturity_code": "3Y",
+      "source_name": "국고03500-2906",
+      "auction_date": "2026-09-07",
+      "auction_type": "comp",
+      "plan_amt": 32000,
+      "bid_amt": 88060,
+      "won_amt": 32000,
+      "low_rate": "3.875",
+      "high_rate": "3.875",
+      "wavg_rate": "3.875",
+      "published_rate": null,
+      "partial_alloc_rate": "68.6"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000079288",
+      "maturity_code": "20Y",
+      "source_name": "국고04500-4609",
+      "auction_date": "2026-09-09",
+      "auction_type": "comp",
+      "plan_amt": 6000,
+      "bid_amt": 16780,
+      "won_amt": 6000,
+      "low_rate": "4.520",
+      "high_rate": "4.520",
+      "wavg_rate": "4.520",
+      "published_rate": null,
+      "partial_alloc_rate": "76.7"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000079321",
+      "maturity_code": "50Y",
+      "source_name": "국고04625-7609",
+      "auction_date": "2026-09-11",
+      "auction_type": "comp",
+      "plan_amt": 8000,
+      "bid_amt": 12380,
+      "won_amt": 8000,
+      "low_rate": null,
+      "high_rate": null,
+      "wavg_rate": null,
+      "published_rate": "4.720",
+      "partial_alloc_rate": "30.0"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000079335",
+      "maturity_code": "10Y",
+      "source_name": "국고04250-3606",
+      "auction_date": "2026-09-14",
+      "auction_type": "comp",
+      "plan_amt": 28000,
+      "bid_amt": 69280,
+      "won_amt": 28000,
+      "low_rate": "4.510",
+      "high_rate": "4.510",
+      "wavg_rate": "4.510",
+      "published_rate": null,
+      "partial_alloc_rate": "45.9"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000079399",
+      "maturity_code": "5Y",
+      "source_name": "국고04125-3109",
+      "auction_date": "2026-09-21",
+      "auction_type": "comp",
+      "plan_amt": 30000,
+      "bid_amt": 71600,
+      "won_amt": 30000,
+      "low_rate": "4.275",
+      "high_rate": "4.275",
+      "wavg_rate": "4.275",
+      "published_rate": null,
+      "partial_alloc_rate": "14.9"
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000079577",
+      "maturity_code": "KTBi",
+      "source_name": "물가01125-3606",
+      "auction_date": "2026-10-08",
+      "auction_type": "comp",
+      "plan_amt": 1000,
+      "bid_amt": 1430,
+      "won_amt": 1000,
+      "low_rate": "1.650",
+      "high_rate": "1.690",
+      "wavg_rate": "1.686",
+      "published_rate": null,
+      "partial_alloc_rate": "92.6"
+    }
+  ],
+  "noncomp": [
+    {
+      "source_ref": "MOEF:MOSF_000000000076451",
+      "month": "2026-01-01",
+      "source_name": "국고02250-2709",
+      "parts": [
+        {
+          "auction_type": "nc2",
+          "source_name": "국고02250-2709",
+          "exercise_period": "2026.1.5.(월)∼1.8.(목)",
+          "amount": 6300,
+          "institution_count": 17
+        }
+      ]
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000076465",
+      "month": "2026-01-01",
+      "source_name": "국고02625-5509",
+      "parts": [
+        {
+          "auction_type": "nc2",
+          "source_name": "국고02625-5509",
+          "exercise_period": "2026.1.6.(화)∼1.9.(금)",
+          "amount": 5930,
+          "institution_count": 11
+        },
+        {
+          "auction_type": "nc3",
+          "source_name": "국고02625-5509",
+          "exercise_period": "2026.1.9.(금)",
+          "amount": 710,
+          "institution_count": 5
+        }
+      ]
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000076507",
+      "month": "2026-01-01",
+      "source_name": "국고02750-2812",
+      "parts": [
+        {
+          "auction_type": "nc2",
+          "source_name": "국고02750-2812",
+          "exercise_period": "2026.1.12.(월)∼1.15.(목)",
+          "amount": 0,
+          "institution_count": null
+        },
+        {
+          "auction_type": "nc3",
+          "source_name": "국고02750-2812",
+          "exercise_period": "2026.1.15.(목)",
+          "amount": 0,
+          "institution_count": null
+        }
+      ]
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000076598",
+      "month": "2026-01-01",
+      "source_name": "국고03250-3512",
+      "parts": [
+        {
+          "auction_type": "nc2",
+          "source_name": "국고03250-3512",
+          "exercise_period": "2026.1.19.(월)∼1.22.(목)",
+          "amount": 0,
+          "institution_count": null
+        },
+        {
+          "auction_type": "nc3",
+          "source_name": "국고03250-3512",
+          "exercise_period": "2026.1.22.(목)",
+          "amount": 0,
+          "institution_count": null
+        }
+      ]
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000076662",
+      "month": "2026-01-01",
+      "source_name": "국고02500-3009",
+      "parts": [
+        {
+          "auction_type": "nc2",
+          "source_name": "국고02500-3009",
+          "exercise_period": "2026.1.26.(월)∼1.29.(목)",
+          "amount": 640,
+          "institution_count": 8
+        },
+        {
+          "auction_type": "nc3",
+          "source_name": "국고02500-3009",
+          "exercise_period": "2026.1.29.(목)",
+          "amount": 0,
+          "institution_count": null
+        }
+      ]
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000076681",
+      "month": "2026-01-01",
+      "source_name": "국고02750-4509",
+      "parts": [
+        {
+          "auction_type": "nc2",
+          "source_name": "국고02750-4509",
+          "exercise_period": "2026.1.27.(화)∼1.30.(금)",
+          "amount": 110,
+          "institution_count": 2
+        },
+        {
+          "auction_type": "nc3",
+          "source_name": "국고02750-4509",
+          "exercise_period": "2026.1.30.(금)",
+          "amount": 0,
+          "institution_count": null
+        }
+      ]
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000076753",
+      "month": "2026-02-01",
+      "source_name": "국고02250-2709 / 국고03000-2803",
+      "parts": [
+        {
+          "auction_type": "nc2",
+          "source_name": "국고02250-2709",
+          "exercise_period": "2026.2.2.(월)∼2.5.(목)",
+          "amount": 3170,
+          "institution_count": 13
+        },
+        {
+          "auction_type": "nc2",
+          "source_name": "국고03000-2803",
+          "exercise_period": "2026.2.2.(월)∼2.5.(목)",
+          "amount": 0,
+          "institution_count": null
+        }
+      ]
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000076770",
+      "month": "2026-02-01",
+      "source_name": "국고02625-5509 / 국고03500-5603",
+      "parts": [
+        {
+          "auction_type": "nc2",
+          "source_name": "국고02625-5509",
+          "exercise_period": "2026.2.3.(화)∼2.6.(금)",
+          "amount": 610,
+          "institution_count": 3
+        },
+        {
+          "auction_type": "nc2",
+          "source_name": "국고03500-5603",
+          "exercise_period": "2026.2.3.(화)∼2.6.(금)",
+          "amount": 0,
+          "institution_count": null
+        },
+        {
+          "auction_type": "nc3",
+          "source_name": "국고02625-5509",
+          "exercise_period": "2026.2.6.(금)",
+          "amount": 60,
+          "institution_count": 1
+        }
+      ]
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000076828",
+      "month": "2026-02-01",
+      "source_name": "국고02750-2812",
+      "parts": [
+        {
+          "auction_type": "nc2",
+          "source_name": "국고02750-2812",
+          "exercise_period": "2026.2.9.(월)∼2.12.(목)",
+          "amount": 6910,
+          "institution_count": 17
+        },
+        {
+          "auction_type": "nc3",
+          "source_name": "국고02750-2812",
+          "exercise_period": "2026.2.12.(목)",
+          "amount": 2840,
+          "institution_count": 18
+        }
+      ]
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000076842",
+      "month": "2026-02-01",
+      "source_name": "국고03250-3512",
+      "parts": [
+        {
+          "auction_type": "nc2",
+          "source_name": "국고03250-3512",
+          "exercise_period": "2026.2.10.(화)∼2.13.(금)",
+          "amount": 6040,
+          "institution_count": 16
+        },
+        {
+          "auction_type": "nc3",
+          "source_name": "국고03250-3512",
+          "exercise_period": "2026.2.13.(금)",
+          "amount": 2840,
+          "institution_count": 17
+        }
+      ]
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000076937",
+      "month": "2026-02-01",
+      "source_name": "국고02500-3009 / 국고03375-3103",
+      "parts": [
+        {
+          "auction_type": "nc2",
+          "source_name": "국고02500-3009",
+          "exercise_period": "2026.2.23.(월)∼2.26.(목)",
+          "amount": 3260,
+          "institution_count": 17
+        },
+        {
+          "auction_type": "nc2",
+          "source_name": "국고03375-3103",
+          "exercise_period": "2026.2.23.(월)∼2.26.(목)",
+          "amount": 3410,
+          "institution_count": 16
+        },
+        {
+          "auction_type": "nc3",
+          "source_name": "국고02500-3009",
+          "exercise_period": "2026.2.26.(목)",
+          "amount": 2840,
+          "institution_count": 18
+        }
+      ]
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000076977",
+      "month": "2026-02-01",
+      "source_name": "국고02750-4509",
+      "parts": [
+        {
+          "auction_type": "nc2",
+          "source_name": "국고02750-4509",
+          "exercise_period": "2026.2.24.(화)∼2.27.(금)",
+          "amount": 1100,
+          "institution_count": 15
+        },
+        {
+          "auction_type": "nc3",
+          "source_name": "국고02750-4509",
+          "exercise_period": "2026.2.27.(금)",
+          "amount": 1460,
+          "institution_count": 18
+        }
+      ]
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000077055",
+      "month": "2026-03-01",
+      "source_name": "국고03000-2803",
+      "parts": [
+        {
+          "auction_type": "nc2",
+          "source_name": "국고03000-2803",
+          "exercise_period": "2026.3.3.(화)∼3.6.(금)",
+          "amount": 0,
+          "institution_count": null
+        }
+      ]
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000077075",
+      "month": "2026-03-01",
+      "source_name": "국고03500-5603",
+      "parts": [
+        {
+          "auction_type": "nc2",
+          "source_name": "국고03500-5603",
+          "exercise_period": "2026.3.4.(수)∼3.9.(월)",
+          "amount": 210,
+          "institution_count": 1
+        },
+        {
+          "auction_type": "nc3",
+          "source_name": "국고03500-5603",
+          "exercise_period": "2026.3.9.(월)",
+          "amount": 0,
+          "institution_count": null
+        }
+      ]
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000077103",
+      "month": "2026-03-01",
+      "source_name": "국고02750-2812",
+      "parts": [
+        {
+          "auction_type": "nc2",
+          "source_name": "국고02750-2812",
+          "exercise_period": "2026.3.9.(월)∼3.12.(목)",
+          "amount": 8050,
+          "institution_count": 17
+        },
+        {
+          "auction_type": "nc3",
+          "source_name": "국고02750-2812",
+          "exercise_period": "2026.3.12.(목)",
+          "amount": 2840,
+          "institution_count": 18
+        }
+      ]
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000077184",
+      "month": "2026-03-01",
+      "source_name": "국고03250-3512",
+      "parts": [
+        {
+          "auction_type": "nc2",
+          "source_name": "국고03250-3512",
+          "exercise_period": "2026.3.16.(월)∼3.19.(목)",
+          "amount": 4760,
+          "institution_count": 13
+        },
+        {
+          "auction_type": "nc3",
+          "source_name": "국고03250-3512",
+          "exercise_period": "2026.3.19.(목)",
+          "amount": 1210,
+          "institution_count": 7
+        }
+      ]
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000077248",
+      "month": "2026-03-01",
+      "source_name": "국고03375-3103",
+      "parts": [
+        {
+          "auction_type": "nc2",
+          "source_name": "국고03375-3103",
+          "exercise_period": "2026.3.23.(월)∼3.26.(목)",
+          "amount": 0,
+          "institution_count": null
+        },
+        {
+          "auction_type": "nc3",
+          "source_name": "국고03375-3103",
+          "exercise_period": "2026.3.26.(목)",
+          "amount": 0,
+          "institution_count": null
+        }
+      ]
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000077283",
+      "month": "2026-03-01",
+      "source_name": "국고02750-4509",
+      "parts": [
+        {
+          "auction_type": "nc2",
+          "source_name": "국고02750-4509",
+          "exercise_period": "2026.3.24.(화)∼3.27.(금)",
+          "amount": 10,
+          "institution_count": 1
+        },
+        {
+          "auction_type": "nc3",
+          "source_name": "국고02750-4509",
+          "exercise_period": "2026.3.27.(금)",
+          "amount": 0,
+          "institution_count": null
+        }
+      ]
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000077344",
+      "month": "2026-03-01",
+      "source_name": "국고03000-2803",
+      "parts": [
+        {
+          "auction_type": "nc2",
+          "source_name": "국고03000-2803",
+          "exercise_period": "2026.3.30.(월)∼4.2.(목)",
+          "amount": 6290,
+          "institution_count": 19
+        }
+      ]
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000077360",
+      "month": "2026-03-01",
+      "source_name": "국고03500-5603",
+      "parts": [
+        {
+          "auction_type": "nc2",
+          "source_name": "국고03500-5603",
+          "exercise_period": "2026.3.31.(화)∼4.3.(금)",
+          "amount": 11530,
+          "institution_count": 18
+        },
+        {
+          "auction_type": "nc3",
+          "source_name": "국고03500-5603",
+          "exercise_period": "2026.4.3.(금)",
+          "amount": 3300,
+          "institution_count": 18
+        }
+      ]
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000077415",
+      "month": "2026-04-01",
+      "source_name": "국고02750-2812",
+      "parts": [
+        {
+          "auction_type": "nc2",
+          "source_name": "국고02750-2812",
+          "exercise_period": "2026.4.6.(월)∼4.9.(목)",
+          "amount": 6860,
+          "institution_count": 18
+        },
+        {
+          "auction_type": "nc3",
+          "source_name": "국고02750-2812",
+          "exercise_period": "2026.4.9.(목)",
+          "amount": 2840,
+          "institution_count": 18
+        }
+      ]
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000077520",
+      "month": "2026-04-01",
+      "source_name": "국고03250-3512",
+      "parts": [
+        {
+          "auction_type": "nc2",
+          "source_name": "국고03250-3512",
+          "exercise_period": "2026.4.13.(월)∼4.16.(목)",
+          "amount": 7320,
+          "institution_count": 16
+        },
+        {
+          "auction_type": "nc3",
+          "source_name": "국고03250-3512",
+          "exercise_period": "2026.4.16.(목)",
+          "amount": 2840,
+          "institution_count": 18
+        }
+      ]
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000077617",
+      "month": "2026-04-01",
+      "source_name": "국고03375-3103",
+      "parts": [
+        {
+          "auction_type": "nc2",
+          "source_name": "국고03375-3103",
+          "exercise_period": "2026.4.20.(월)∼4.23.(목)",
+          "amount": 0,
+          "institution_count": null
+        },
+        {
+          "auction_type": "nc3",
+          "source_name": "국고03375-3103",
+          "exercise_period": "2026.4.23.(목)",
+          "amount": 0,
+          "institution_count": null
+        }
+      ]
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000077631",
+      "month": "2026-04-01",
+      "source_name": "국고02750-4509",
+      "parts": [
+        {
+          "auction_type": "nc2",
+          "source_name": "국고02750-4509",
+          "exercise_period": "2026.4.21.(화)∼4.24.(금)",
+          "amount": 0,
+          "institution_count": null
+        },
+        {
+          "auction_type": "nc3",
+          "source_name": "국고02750-4509",
+          "exercise_period": "2026.4.24.(금)",
+          "amount": 0,
+          "institution_count": null
+        }
+      ]
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000077780",
+      "month": "2026-05-01",
+      "source_name": "국고03000-2803",
+      "parts": [
+        {
+          "auction_type": "nc2",
+          "source_name": "국고03000-2803",
+          "exercise_period": "2026.5.4.(월), 5.6.(수) ∼ 5.8.(금)",
+          "amount": 6520,
+          "institution_count": 19
+        }
+      ]
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000077796",
+      "month": "2026-05-01",
+      "source_name": "국고03500-5603",
+      "parts": [
+        {
+          "auction_type": "nc2",
+          "source_name": "국고03500-5603",
+          "exercise_period": "2026.5.6.(수)∼5.8.(금), 5.11(월)",
+          "amount": 10,
+          "institution_count": 1
+        },
+        {
+          "auction_type": "nc3",
+          "source_name": "국고03500-5603",
+          "exercise_period": "2026.5.11.(월)",
+          "amount": 0,
+          "institution_count": null
+        }
+      ]
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000077841",
+      "month": "2026-05-01",
+      "source_name": "국고02750-2812 / 국고03500-2906",
+      "parts": [
+        {
+          "auction_type": "nc2",
+          "source_name": "국고02750-2812",
+          "exercise_period": "2026.5.11.(월)∼5.14.(목)",
+          "amount": 0,
+          "institution_count": null
+        },
+        {
+          "auction_type": "nc2",
+          "source_name": "국고03500-2906",
+          "exercise_period": "2026.5.11.(월)∼5.14.(목)",
+          "amount": 0,
+          "institution_count": null
+        },
+        {
+          "auction_type": "nc3",
+          "source_name": "국고02750-2812",
+          "exercise_period": "2026.5.14.(목)",
+          "amount": 0,
+          "institution_count": null
+        }
+      ]
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000077938",
+      "month": "2026-05-01",
+      "source_name": "국고03250-3512 / 국고04250-3606",
+      "parts": [
+        {
+          "auction_type": "nc2",
+          "source_name": "국고03250-3512",
+          "exercise_period": "2026.5.18.(월)∼5.21.(목)",
+          "amount": 3580,
+          "institution_count": 17
+        },
+        {
+          "auction_type": "nc2",
+          "source_name": "국고04250-3606",
+          "exercise_period": "2026.5.18.(월)∼5.21.(목)",
+          "amount": 3730,
+          "institution_count": 17
+        },
+        {
+          "auction_type": "nc3",
+          "source_name": "국고03250-3512",
+          "exercise_period": "2026.5.21.(목)",
+          "amount": 3100,
+          "institution_count": 18
+        }
+      ]
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000078029",
+      "month": "2026-05-01",
+      "source_name": "국고02750-4509",
+      "parts": [
+        {
+          "auction_type": "nc2",
+          "source_name": "국고02750-4509",
+          "exercise_period": "2026.5.26.(화)∼5.29.(금)",
+          "amount": 1260,
+          "institution_count": 13
+        },
+        {
+          "auction_type": "nc3",
+          "source_name": "국고02750-4509",
+          "exercise_period": "2026.5.29.(금)",
+          "amount": 1600,
+          "institution_count": 17
+        }
+      ]
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000078100",
+      "month": "2026-06-01",
+      "source_name": "국고03000-2803",
+      "parts": [
+        {
+          "auction_type": "nc2",
+          "source_name": "국고03000-2803",
+          "exercise_period": "2026.6.1.(월), ~ 6.2.(화), 6.4.(목) ∼ 6.5.(금)",
+          "amount": 0,
+          "institution_count": null
+        }
+      ]
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000078165",
+      "month": "2026-06-01",
+      "source_name": "국고03500-2906",
+      "parts": [
+        {
+          "auction_type": "nc2",
+          "source_name": "국고03500-2906",
+          "exercise_period": "2026.6.8.(월)∼6.11.(목)",
+          "amount": 4730,
+          "institution_count": 11
+        },
+        {
+          "auction_type": "nc3",
+          "source_name": "국고03500-2906",
+          "exercise_period": "2026.6.11.(목)",
+          "amount": 3100,
+          "institution_count": 17
+        }
+      ]
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000078254",
+      "month": "2026-06-01",
+      "source_name": "국고04250-3606",
+      "parts": [
+        {
+          "auction_type": "nc2",
+          "source_name": "국고04250-3606",
+          "exercise_period": "2026.6.15.(월)∼6.18.(목)",
+          "amount": 6210,
+          "institution_count": 12
+        },
+        {
+          "auction_type": "nc3",
+          "source_name": "국고04250-3606",
+          "exercise_period": "2026.6.18.(목)",
+          "amount": 2380,
+          "institution_count": 11
+        }
+      ]
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000078369",
+      "month": "2026-06-01",
+      "source_name": "국고02750-4509",
+      "parts": [
+        {
+          "auction_type": "nc2",
+          "source_name": "국고02750-4509",
+          "exercise_period": "2026.6.23.(화)∼6.26.(금)",
+          "amount": 0,
+          "institution_count": null
+        },
+        {
+          "auction_type": "nc3",
+          "source_name": "국고02750-4509",
+          "exercise_period": "2026.6.26.(금)",
+          "amount": 0,
+          "institution_count": null
+        }
+      ]
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000078452",
+      "month": "2026-06-01",
+      "source_name": "국고03000-2803",
+      "parts": [
+        {
+          "auction_type": "nc2",
+          "source_name": "국고03000-2803",
+          "exercise_period": "2026.6.29.(월), ~ 7.2.(목)",
+          "amount": 0,
+          "institution_count": null
+        }
+      ]
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000078532",
+      "month": "2026-07-01",
+      "source_name": "국고03500-2906",
+      "parts": [
+        {
+          "auction_type": "nc2",
+          "source_name": "국고03500-2906",
+          "exercise_period": "2026.7.6.(월)∼7.9.(목)",
+          "amount": 0,
+          "institution_count": null
+        },
+        {
+          "auction_type": "nc3",
+          "source_name": "국고03500-2906",
+          "exercise_period": "2026.7.9.(목)",
+          "amount": 0,
+          "institution_count": null
+        }
+      ]
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000078608",
+      "month": "2026-07-01",
+      "source_name": "국고04250-3606",
+      "parts": [
+        {
+          "auction_type": "nc2",
+          "source_name": "국고04250-3606",
+          "exercise_period": "2026.7.13.(월)∼7.16.(목)",
+          "amount": 0,
+          "institution_count": null
+        },
+        {
+          "auction_type": "nc3",
+          "source_name": "국고04250-3606",
+          "exercise_period": "2026.7.16.(목)",
+          "amount": 0,
+          "institution_count": null
+        }
+      ]
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000078709",
+      "month": "2026-07-01",
+      "source_name": "국고02750-4509",
+      "parts": [
+        {
+          "auction_type": "nc2",
+          "source_name": "국고02750-4509",
+          "exercise_period": "2026.7.21.(화)∼7.24.(금)",
+          "amount": 0,
+          "institution_count": null
+        },
+        {
+          "auction_type": "nc3",
+          "source_name": "국고02750-4509",
+          "exercise_period": "2026.7.24.(금)",
+          "amount": 0,
+          "institution_count": null
+        }
+      ]
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000078879",
+      "month": "2026-08-01",
+      "source_name": "국고03000-2803 / 국고03625-2809",
+      "parts": [
+        {
+          "auction_type": "nc2",
+          "source_name": "국고03000-2803",
+          "exercise_period": "2026.8.3.(월)∼8.6.(목)",
+          "amount": 3130,
+          "institution_count": 19
+        },
+        {
+          "auction_type": "nc2",
+          "source_name": "국고03625-2809",
+          "exercise_period": "2026.8.3.(월)∼8.6.(목)",
+          "amount": 4100,
+          "institution_count": 13
+        }
+      ]
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000078981",
+      "month": "2026-08-01",
+      "source_name": "국고03500-2906",
+      "parts": [
+        {
+          "auction_type": "nc2",
+          "source_name": "국고03500-2906",
+          "exercise_period": "2026.8.10.(월)∼8.13.(목)",
+          "amount": 3570,
+          "institution_count": 8
+        },
+        {
+          "auction_type": "nc3",
+          "source_name": "국고03500-2906",
+          "exercise_period": "2026.8.13.(목)",
+          "amount": 390,
+          "institution_count": 3
+        }
+      ]
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000079080",
+      "month": "2026-08-01",
+      "source_name": "국고04250-3606",
+      "parts": [
+        {
+          "auction_type": "nc2",
+          "source_name": "국고04250-3606",
+          "exercise_period": "2026.8.18.(화)∼8.21.(금)",
+          "amount": 6800,
+          "institution_count": 19
+        },
+        {
+          "auction_type": "nc3",
+          "source_name": "국고04250-3606",
+          "exercise_period": "2026.8.21.(금)",
+          "amount": 3100,
+          "institution_count": 19
+        }
+      ]
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000079142",
+      "month": "2026-08-01",
+      "source_name": "국고03375-3103 / 국고04125-3109",
+      "parts": [
+        {
+          "auction_type": "nc2",
+          "source_name": "국고03375-3103",
+          "exercise_period": "2026.8.24.(월)∼8.27.(목)",
+          "amount": 3140,
+          "institution_count": 17
+        },
+        {
+          "auction_type": "nc2",
+          "source_name": "국고04125-3109",
+          "exercise_period": "2026.8.24.(월)∼8.27.(목)",
+          "amount": 3550,
+          "institution_count": 16
+        },
+        {
+          "auction_type": "nc3",
+          "source_name": "국고03375-3103",
+          "exercise_period": "2026.8.27.(목)",
+          "amount": 3100,
+          "institution_count": 19
+        }
+      ]
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000079162",
+      "month": "2026-08-01",
+      "source_name": "국고02750-4509 / 국고04500-4609",
+      "parts": [
+        {
+          "auction_type": "nc2",
+          "source_name": "국고02750-4509",
+          "exercise_period": "2026.8.25.(화)∼8.28.(금)",
+          "amount": 380,
+          "institution_count": 10
+        },
+        {
+          "auction_type": "nc2",
+          "source_name": "국고04500-4609",
+          "exercise_period": "2026.8.25.(화)∼8.28.(금)",
+          "amount": 430,
+          "institution_count": 7
+        },
+        {
+          "auction_type": "nc3",
+          "source_name": "국고02750-4509",
+          "exercise_period": "2026.8.28.(금)",
+          "amount": 1600,
+          "institution_count": 19
+        }
+      ]
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000079238",
+      "month": "2026-09-01",
+      "source_name": "국고03625-2809",
+      "parts": [
+        {
+          "auction_type": "nc2",
+          "source_name": "국고03625-2809",
+          "exercise_period": "2026.8.31.(월)∼9.3.(목)",
+          "amount": 0,
+          "institution_count": null
+        }
+      ]
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000079256",
+      "month": "2026-09-01",
+      "source_name": "국고04500-5609",
+      "parts": [
+        {
+          "auction_type": "nc2",
+          "source_name": "국고04500-5609",
+          "exercise_period": "2026.9.1.(화)∼9.4.(금)",
+          "amount": 5640,
+          "institution_count": 15
+        },
+        {
+          "auction_type": "nc3",
+          "source_name": "국고04500-5609",
+          "exercise_period": "2026.9.4.(금)",
+          "amount": 1980,
+          "institution_count": 13
+        }
+      ]
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000079307",
+      "month": "2026-09-01",
+      "source_name": "국고03500-2906",
+      "parts": [
+        {
+          "auction_type": "nc2",
+          "source_name": "국고03500-2906",
+          "exercise_period": "2026.9.7.(월)∼9.10.(목)",
+          "amount": 0,
+          "institution_count": null
+        },
+        {
+          "auction_type": "nc3",
+          "source_name": "국고03500-2906",
+          "exercise_period": "2026.9.10.(목)",
+          "amount": 0,
+          "institution_count": null
+        }
+      ]
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000079339",
+      "month": "2026-09-01",
+      "source_name": "국고04500-4609",
+      "parts": [
+        {
+          "auction_type": "nc2",
+          "source_name": "국고04500-4609",
+          "exercise_period": "2026.9.9.(수)∼9.11.(금), 9.14.(월)",
+          "amount": 0,
+          "institution_count": null
+        },
+        {
+          "auction_type": "nc3",
+          "source_name": "국고04500-4609",
+          "exercise_period": "2026.9.14.(월)",
+          "amount": 0,
+          "institution_count": null
+        }
+      ]
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000079379",
+      "month": "2026-09-01",
+      "source_name": "국고04250-3606",
+      "parts": [
+        {
+          "auction_type": "nc2",
+          "source_name": "국고04250-3606",
+          "exercise_period": "2026.9.14.(월)∼9.17.(목)",
+          "amount": 620,
+          "institution_count": 3
+        },
+        {
+          "auction_type": "nc3",
+          "source_name": "국고04250-3606",
+          "exercise_period": "2026.9.17.(목)",
+          "amount": 250,
+          "institution_count": 1
+        }
+      ]
+    },
+    {
+      "source_ref": "MOEF:MOSF_000000000079458",
+      "month": "2026-09-01",
+      "source_name": "국고04125-3109",
+      "parts": [
+        {
+          "auction_type": "nc2",
+          "source_name": "국고04125-3109",
+          "exercise_period": "2026.9.21.(월)∼9.23.(수), 9.28.(월)",
+          "amount": 540,
+          "institution_count": 5
+        },
+        {
+          "auction_type": "nc3",
+          "source_name": "국고04125-3109",
+          "exercise_period": "2026.9.28.(월)",
+          "amount": 0,
+          "institution_count": null
+        }
+      ]
+    }
+  ],
+  "events": [
+    {
+      "event_key": "MOEF:MOSF_000000000076459",
+      "event_date": "2026-01-09",
+      "event_type": "EX",
+      "amount": 1000,
+      "target_desc": "교환 대상 3종목"
+    },
+    {
+      "event_key": "MOEF:MOSF_000000000076565",
+      "event_date": "2026-01-20",
+      "event_type": "EX",
+      "amount": 4000,
+      "target_desc": "교환 대상 7종목"
+    },
+    {
+      "event_key": "MOEF:MOSF_000000000076811",
+      "event_date": "2026-02-11",
+      "event_type": "EX",
+      "amount": 5000,
+      "target_desc": "교환 대상 8종목"
+    },
+    {
+      "event_key": "MOEF:MOSF_000000000077048",
+      "event_date": "2026-03-06",
+      "event_type": "EX",
+      "amount": 1000,
+      "target_desc": "교환 대상 3종목"
+    },
+    {
+      "event_key": "MOEF:MOSF_000000000077146",
+      "event_date": "2026-03-17",
+      "event_type": "EX",
+      "amount": 4000,
+      "target_desc": "교환 대상 7종목"
+    },
+    {
+      "event_key": "MOEF:MOSF_000000000077278",
+      "event_date": "2026-03-27",
+      "event_type": "BB",
+      "amount": 25000,
+      "target_desc": "매입 대상 7종목"
+    },
+    {
+      "event_key": "MOEF:MOSF_000000000077327",
+      "event_date": "2026-04-01",
+      "event_type": "BB",
+      "amount": 25000,
+      "target_desc": "매입 대상 5종목"
+    },
+    {
+      "event_key": "MOEF:MOSF_000000000077465",
+      "event_date": "2026-04-14",
+      "event_type": "EX",
+      "amount": 5000,
+      "target_desc": "교환 대상 7종목"
+    },
+    {
+      "event_key": "MOEF:MOSF_000000000077890",
+      "event_date": "2026-05-19",
+      "event_type": "EX",
+      "amount": 5000,
+      "target_desc": "교환 대상 6종목"
+    },
+    {
+      "event_key": "MOEF:MOSF_000000000078215",
+      "event_date": "2026-06-16",
+      "event_type": "EX",
+      "amount": 5000,
+      "target_desc": "교환 대상 6종목"
+    },
+    {
+      "event_key": "MOEF:MOSF_000000000078466",
+      "event_date": "2026-07-03",
+      "event_type": "EX",
+      "amount": 1000,
+      "target_desc": "교환 대상 4종목"
+    },
+    {
+      "event_key": "MOEF:MOSF_000000000078567",
+      "event_date": "2026-07-14",
+      "event_type": "EX",
+      "amount": 2000,
+      "target_desc": "교환 대상 6종목"
+    },
+    {
+      "event_key": "MOEF:MOSF_000000000078591",
+      "event_date": "2026-07-15",
+      "event_type": "BB",
+      "amount": 20000,
+      "target_desc": "매입 대상 5종목"
+    },
+    {
+      "event_key": "MOEF:MOSF_000000000079025",
+      "event_date": "2026-08-19",
+      "event_type": "EX",
+      "amount": 3000,
+      "target_desc": "교환 대상 4종목"
+    },
+    {
+      "event_key": "MOEF:MOSF_000000000079044",
+      "event_date": "2026-08-20",
+      "event_type": "BB",
+      "amount": 20000,
+      "target_desc": "매입 대상 5종목"
+    },
+    {
+      "event_key": "MOEF:MOSF_000000000079250",
+      "event_date": "2026-09-04",
+      "event_type": "EX",
+      "amount": 1000,
+      "target_desc": "교환 대상 4종목"
+    },
+    {
+      "event_key": "MOEF:MOSF_000000000079348",
+      "event_date": "2026-09-15",
+      "event_type": "EX",
+      "amount": 4000,
+      "target_desc": "교환 대상 5종목"
+    },
+    {
+      "event_key": "MOEF:MOSF_000000000079359",
+      "event_date": "2026-09-16",
+      "event_type": "BB",
+      "amount": 15000,
+      "target_desc": "매입 대상 5종목"
+    }
+  ],
+  "ecosMarket": {
+    "STAT_CODE": "817Y002",
+    "STAT_NAME": "1.3.2.1. 시장금리(일별)",
+    "ITEM_CODE1": "010230000",
+    "ITEM_NAME1": "국고채(30년)",
+    "ITEM_CODE2": null,
+    "ITEM_NAME2": null,
+    "ITEM_CODE3": null,
+    "ITEM_NAME3": null,
+    "ITEM_CODE4": null,
+    "ITEM_NAME4": null,
+    "UNIT_NAME": "연%",
+    "WGT": null,
+    "TIME": "20261007",
+    "DATA_VALUE": "4.491"
+  }
+}
