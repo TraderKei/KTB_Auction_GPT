@@ -57,6 +57,7 @@ body{
 .num{font-family:var(--mono); font-variant-numeric:tabular-nums; text-align:right}
 .mono{font-family:var(--mono); font-variant-numeric:tabular-nums}
 .up{color:var(--up)} .down{color:var(--down)} .mut{color:var(--tx-mut)} .dim{color:var(--tx-dim)}
+.fill-below{color:var(--ce-blue)}
 .accent{color:var(--accent)}
 h1,h2,h3,h4{margin:0; font-weight:600; letter-spacing:-0.01em}
 a{color:var(--accent); text-decoration:none}
@@ -181,8 +182,7 @@ table.blot td{
   font-family:var(--mono); font-variant-numeric:tabular-nums; text-align:right;
 }
 table.blot td.l{font-family:var(--sans); text-align:left}
-#blotter th:nth-child(4), #blotter td:nth-child(4),
-#blotter th:nth-child(11), #blotter td:nth-child(11){width:1%; padding-right:3px}
+#blotter th:nth-child(4), #blotter td:nth-child(4){width:1%; padding-left:2px; padding-right:2px}
 table.blot tr:hover td{background:var(--ce-hover)}
 table.blot tr.sel td{background:var(--ce-selected)}
 
@@ -379,9 +379,9 @@ table.blot .stick-3{left:226px; min-width:62px; width:62px; box-shadow:1px 0 0 v
 #scr-auc .blot-filters .chip{font-size:12px}
 #scr-auc .legend{font-size:11px}
 /* sticky 좌측고정 칼럼: 공시 ID 제거 후 위치 재정렬 */
-#scr-auc table.blot .stick-1{min-width:52px; width:52px}
-#scr-auc table.blot .stick-2{left:52px; min-width:128px; width:128px; max-width:128px}
-#scr-auc table.blot .stick-3{left:180px; min-width:68px; width:68px}
+#scr-auc table.blot .stick-1{min-width:88px; width:88px}
+#scr-auc table.blot .stick-2{left:88px; min-width:210px; width:210px; max-width:210px}
+#scr-auc table.blot .stick-3{left:298px; min-width:68px; width:68px}
 
 /* screen visibility */
 .screen{display:none}
@@ -456,11 +456,11 @@ body{padding:4px;min-width:0}
 .dictwrap{padding:8px;overflow:auto}
 .footnote{padding:6px;overflow-wrap:anywhere}
 table.blot .stick-2{max-width:none;overflow:visible;white-space:normal;min-width:172px}
-#scr-auc table.blot .stick-2{max-width:128px; min-width:128px; width:128px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis}
+#scr-auc table.blot .stick-2{max-width:210px; min-width:210px; width:210px; overflow:visible; white-space:nowrap; text-overflow:clip}
 #resDrill td[data-field="bond.name"]{white-space:normal;overflow:visible!important;min-width:150px}
 #scr-auc table.blot .stick-1{left:var(--sticky-left-1,0px)}
-#scr-auc table.blot .stick-2{left:var(--sticky-left-2,52px)}
-#scr-auc table.blot .stick-3{left:var(--sticky-left-3,180px)}
+#scr-auc table.blot .stick-2{left:var(--sticky-left-2,88px)}
+#scr-auc table.blot .stick-3{left:var(--sticky-left-3,298px)}
 .speccard .row{gap:8px;flex-wrap:wrap}
 .heat{min-width:440px}
 .wf{min-width:360px}
@@ -584,8 +584,8 @@ table.blot .stick-2{max-width:none;overflow:visible;white-space:normal;min-width
             <th class="l stick stick-1">입찰일</th><th class="l stick stick-2">종목명</th><th class="stick stick-3">만기</th>
             <th class="l">유형</th>
             <th>발행예정액</th><th>응찰액</th><th>낙찰액</th>
-            <th>응찰률</th><th>최고금리</th><th>가중평균</th>
-            <th>테일</th><th>민평대비</th><th>비경쟁</th>
+            <th>응찰률<span class="en">%</span></th><th>응찰최저금리</th><th>응찰최고금리</th><th>가중평균낙찰금리</th>
+            <th>테일</th><th>민평대비</th><th>예정액 충족률<span class="en">%</span></th>
           </tr></thead>
           <tbody id="blotBody"></tbody>
         </table>
@@ -648,6 +648,75 @@ const NOV_RESULTS = [
   {d:"2026-11-09",code:"MOEF:MOSF_000000000079902",nm:"국고03500-2906",mat:"3Y",seq:"26-5",t:"comp",plan:11000,bid:33330,won:11000,hi:3.650,wavg:3.650,lo:3.650,par:50.2,spr:null,nc:null,bidTime:"10:40~11:00",src:"MOFE",source_ref:"MOEF:MOSF_000000000079902",demoFields:[]},
   {d:"2026-11-09",code:"MOEF:MOSF_000000000079900",nm:"국고03625-2912",mat:"3Y",seq:"26-12",t:"comp",plan:11000,bid:35340,won:11000,hi:3.645,wavg:3.645,lo:3.645,par:22.5,spr:null,nc:null,bidTime:"09:40~10:00",src:"MOFE",source_ref:"MOEF:MOSF_000000000079900",demoFields:[]}
 ];
+/* Bid yield ranges matched to the local competition-result table by date, name, planned amount and bids; unmatched rows stay unavailable. */
+const BID_RATE_RANGE_BY_CODE = {
+  "MOEF:MOSF_000000000079825":[3.695,3.800],
+  "MOEF:MOSF_000000000079845":[4.050,4.125],
+  "MOEF:MOSF_000000000079902":[3.620,3.685],
+  "MOEF:MOSF_000000000076425":[2.810,2.890],
+  "MOEF:MOSF_000000000076433":[3.215,3.270],
+  "MOEF:MOSF_000000000076479":[2.935,3.005],
+  "MOEF:MOSF_000000000076518":[2.000,3.355],
+  "MOEF:MOSF_000000000076553":[3.495,3.550],
+  "MOEF:MOSF_000000000076621":[3.350,3.425],
+  "MOEF:MOSF_000000000076627":[3.530,3.585],
+  "MOEF:MOSF_000000000076692":[2.960,3.045],
+  "MOEF:MOSF_000000000076713":[3.580,3.655],
+  "MOEF:MOSF_000000000076766":[1.145,1.290],
+  "MOEF:MOSF_000000000076782":[3.225,3.300],
+  "MOEF:MOSF_000000000076798":[3.695,3.745],
+  "MOEF:MOSF_000000000076839":[2.000,3.535],
+  "MOEF:MOSF_000000000076887":[3.370,3.450],
+  "MOEF:MOSF_000000000076903":[3.550,3.635],
+  "MOEF:MOSF_000000000076996":[2.995,3.085],
+  "MOEF:MOSF_000000000077072":[3.430,3.490],
+  "MOEF:MOSF_000000000077116":[2.000,3.605],
+  "MOEF:MOSF_000000000077130":[3.685,3.750],
+  "MOEF:MOSF_000000000077220":[3.705,3.785],
+  "MOEF:MOSF_000000000077296":[3.470,3.530],
+  "MOEF:MOSF_000000000077311":[3.755,3.835],
+  "MOEF:MOSF_000000000077352":[1.005,1.070],
+  "MOEF:MOSF_000000000077368":[3.430,3.485],
+  "MOEF:MOSF_000000000077432":[2.350,3.570],
+  "MOEF:MOSF_000000000077448":[3.700,3.765],
+  "MOEF:MOSF_000000000077555":[3.515,3.565],
+  "MOEF:MOSF_000000000077574":[3.590,3.645],
+  "MOEF:MOSF_000000000077722":[3.500,3.555],
+  "MOEF:MOSF_000000000077734":[3.795,3.855],
+  "MOEF:MOSF_000000000077777":[1.070,1.160],
+  "MOEF:MOSF_000000000077792":[3.550,3.610],
+  "MOEF:MOSF_000000000077856":[2.000,4.125],
+  "MOEF:MOSF_000000000077872":[4.255,4.320],
+  "MOEF:MOSF_000000000077935":[3.910,3.985],
+  "MOEF:MOSF_000000000077971":[4.115,4.180],
+  "MOEF:MOSF_000000000078043":[3.660,3.720],
+  "MOEF:MOSF_000000000078059":[4.130,4.200],
+  "MOEF:MOSF_000000000078099":[1.430,1.800],
+  "MOEF:MOSF_000000000078107":[3.995,4.055],
+  "MOEF:MOSF_000000000078187":[3.800,4.370],
+  "MOEF:MOSF_000000000078200":[4.100,4.160],
+  "MOEF:MOSF_000000000078285":[4.010,4.055],
+  "MOEF:MOSF_000000000078302":[4.285,4.345],
+  "MOEF:MOSF_000000000078379":[3.635,3.700],
+  "MOEF:MOSF_000000000078412":[4.350,4.405],
+  "MOEF:MOSF_000000000078488":[3.735,3.790],
+  "MOEF:MOSF_000000000078557":[4.245,4.300],
+  "MOEF:MOSF_000000000078646":[4.520,4.580],
+  "MOEF:MOSF_000000000078808":[3.600,3.650],
+  "MOEF:MOSF_000000000078828":[4.480,4.540],
+  "MOEF:MOSF_000000000078898":[1.610,1.700],
+  "MOEF:MOSF_000000000078921":[3.745,3.795],
+  "MOEF:MOSF_000000000078998":[4.000,4.730],
+  "MOEF:MOSF_000000000079101":[4.070,4.135],
+  "MOEF:MOSF_000000000079108":[4.545,4.620],
+  "MOEF:MOSF_000000000079176":[3.705,3.815],
+  "MOEF:MOSF_000000000079190":[4.595,4.665],
+  "MOEF:MOSF_000000000079261":[3.855,3.910],
+  "MOEF:MOSF_000000000079288":[4.505,4.600],
+  "MOEF:MOSF_000000000079321":[4.000,4.850],
+  "MOEF:MOSF_000000000079335":[4.485,4.545],
+  "MOEF:MOSF_000000000079577":[1.645,1.770],
+};
 const RESULTS = V2.results.concat(NOV_RESULTS);
 
 /* 히트맵: 만기 × 최근 8개 입찰회차 종합 수요강도 스코어(0~100). 100=강세 */
@@ -1017,23 +1086,26 @@ function renderBlotter(){
   RESULTS.filter(r=> months.has(r.d.slice(0,7)) && activeTypes.has(r.t) && (r.mat==="—" || activeMats.has(r.mat)))
     .sort((a,b)=>b.d.localeCompare(a.d)).forEach(r=>{
     const a=AT[r.t];
-    const btc = r.bid&&r.plan? (r.bid/r.plan):null;
-    const mmdd = r.d.slice(2);                            /* "YY-MM-DD" 표시 (기간 조회는 여러 월에 걸칠 수 있어 연·월 명시) */
+    const btc = r.bid!=null && r.plan>0 ? r.bid/r.plan*100 : null;
+    const bidRange = r.t==="comp" ? BID_RATE_RANGE_BY_CODE[r.code] : null;
+    const fillRate = r.won!=null && r.plan>0 ? r.won/r.plan*100 : null;
+    const tail = r.hi!=null && r.wavg!=null ? (r.hi-r.wavg)*100 : null;
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td class="l stick stick-1" data-field="auc.bid_date" data-source="MOEF_KTB" data-freq="발행공고 T-3일">${mmdd}</td>
+      <td class="l stick stick-1" data-field="auc.bid_date" data-source="MOEF_KTB" data-freq="발행공고 T-3일">${r.d}</td>
       <td class="l stick stick-2" data-field="bond.name" data-source="MOEF_KTB" data-freq="발행공고 T-3일">${r.nm}</td>
       <td class="stick stick-3" data-field="bond.maturity" data-source="MOEF_KTB" data-freq="발행공고 T-3일">${matLabel(r.mat)}</td>
       <td class="l"><span class="at ${a.cls}" data-field="auc.type" data-source="MOEF_KTB" data-freq="발행공고 T-3일">${a.short}</span></td>
        <td data-field="auc.plan_amt" data-source="MOEF_KTB" data-freq="발행공고 T-3일">${r.plan!=null?fmt(r.plan):"-"}</td>
        <td data-field="auc.bid_amt" data-source="${r.demoFields?.includes('bid')?'DEMO':'MOEF_KTB'}" data-freq="입찰일 T+0 16:00">${r.bid!=null?fmt(r.bid):"-"}</td>
        <td data-field="auc.won_amt" data-source="${r.demoFields?.includes('won')?'DEMO':'MOEF_KTB'}" data-freq="입찰일 T+0 16:00">${r.won!=null?fmt(r.won):"-"}</td>
-       <td data-field="auc.bid_to_cover" data-source="DERIVED" data-freq="입찰일 T+0 16:00" class="${btc&&btc>=3?'down':''}">${btc?btc.toFixed(2):"-"}</td>
-       <td data-field="auc.high_rate" data-source="${r.demoFields?.includes('hi')?'DEMO':'MOEF_KTB'}" data-freq="입찰일 T+0 16:00">${r.hi!=null?r.hi.toFixed(3):"-"}</td>
+       <td data-field="auc.bid_to_cover" data-source="DERIVED" data-freq="입찰일 T+0 16:00" class="${btc!=null&&btc>=300?'down':''}">${btc!=null?btc.toFixed(1):"-"}</td>
+       <td data-field="auc.bid_rate_min" data-source="MOEF_KTB" data-freq="입찰일 T+0 16:00">${bidRange?bidRange[0].toFixed(3):"-"}</td>
+       <td data-field="auc.bid_rate_max" data-source="MOEF_KTB" data-freq="입찰일 T+0 16:00">${bidRange?bidRange[1].toFixed(3):"-"}</td>
        <td data-field="auc.wavg_rate" data-source="${r.demoFields?.includes('wavg')?'DEMO':'MOEF_KTB'}" data-freq="입찰일 T+0 16:00">${r.wavg!=null?r.wavg.toFixed(3):"-"}</td>
-       <td data-field="auc.tail" data-source="DERIVED" data-freq="입찰일 T+0 16:00">${(r.hi!=null&&r.wavg!=null)?((r.hi-r.wavg)*100).toFixed(1):"-"}</td>
+       <td data-field="auc.tail" data-source="DERIVED" data-freq="입찰일 T+0 16:00">${tail!=null&&Math.abs(tail)>=0.05?tail.toFixed(1):"-"}</td>
        <td data-field="auc.spread_vs_mts" data-source="DEMO" data-freq="입찰일 T+0 16:00" class="${sprCls(r.spr)}">${r.spr!=null?(r.spr>0?"+":"")+r.spr.toFixed(1):"-"}</td>
-       <td data-field="auc.noncomp_amt" data-source="${r.demoFields?.includes('nc')?'DEMO':'MOEF_KTB'}" data-freq="입찰일 T+1">${r.nc!=null?fmt(r.nc):"-"}</td>`;
+       <td data-field="auc.plan_fill_rate" data-source="DERIVED" data-freq="입찰일 T+0 16:00" class="${fillRate!=null?(fillRate>100?'up':fillRate<100?'fill-below':''):''}">${fillRate!=null?fillRate.toFixed(1):"-"}</td>`;
     if(!r.planned) tr.style.cursor="pointer", tr.addEventListener("click",()=>renderAucKPI(r));
     /* 재렌더(월/필터 변경) 후에도 현재 선택 입찰이 계속 보이면 sel 하이라이트 복원 */
     if(r===selectedAuction) tr.classList.add("sel");
@@ -2330,6 +2402,14 @@ window.addEventListener('resize',syncAucBlotterHeight);
 syncAucBlotterHeight();
 </script>
 <script src="mockup/ktb-terminal-v5-i18n.js"></script>
+<script>
+window.KTB_UI_TEXT.push(
+  ["응찰최저금리", "Lowest bid yield"],
+  ["응찰최고금리", "Highest bid yield"],
+  ["가중평균낙찰금리", "Weighted average award yield"],
+  ["예정액 충족률", "Planned amount filled"]
+);
+</script>
 <script src="mockup/ktb-terminal-v5-ui.js"></script>
 </body>
 </html>
