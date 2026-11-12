@@ -302,13 +302,25 @@ table.blot .stick-3{left:226px; min-width:62px; width:62px; box-shadow:1px 0 0 v
 .section-title{font-size:10px; color:var(--tx-dim); text-transform:uppercase; letter-spacing:0.06em; margin:0 0 5px}
 
 /* P1 calendar follows the UST baseline's compact month layout. */
-#scr-auc .grid3{background:var(--panel)}
-#scr-auc .grid3 > .panel:first-child{align-self:start; height:auto; min-height:0}
-#scr-auc .grid3 > .panel:nth-child(2){border:1px solid var(--bd-2); border-radius:2px; height:var(--auc-blotter-height, 600px); min-height:0; overflow:hidden}
-#scr-auc .grid3 > .panel:nth-child(2) > .p-body{min-height:0; overflow:auto; flex:1 1 auto}
-#scr-auc .grid3 > .panel > .p-head{height:38px; min-height:38px; flex:0 0 38px; flex-wrap:nowrap}
-#scr-auc .grid3 > .panel:nth-child(2) .rangesel{flex-wrap:nowrap; flex:0 0 auto}
-#scr-auc .grid3 > .panel:nth-child(2) .p-sub{min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+#scr-auc .grid3{background:transparent; gap:12px; padding:12px; align-items:start}
+#scr-auc .grid3 > .panel{border:1px solid var(--bd-2); border-radius:10px; overflow:hidden}
+#scr-auc .grid3 > .panel:first-child{grid-column:1; grid-row:1 / 3; align-self:start; height:auto; min-height:0}
+#scr-auc .grid3 > .panel:last-child{grid-column:2; grid-row:2; height:var(--auc-blotter-height, 600px); min-height:0}
+#scr-auc .grid3 > .panel:last-child > .p-body{min-height:0; overflow:auto; flex:1 1 auto}
+#scr-auc .grid3 > .panel > .p-head{height:38px; min-height:38px; flex:0 0 38px; flex-wrap:nowrap; margin:8px; border:1px solid var(--bd); border-radius:7px; background:#fff; color:#242424}
+#scr-auc .grid3 > .panel .p-head .p-code,#scr-auc .grid3 > .panel .p-head .p-sub{color:#68717b}
+#scr-auc .grid3 > .panel .p-head .p-code{border-color:#d6dce2}
+#scr-auc .grid3 > .panel:last-child .rangesel{flex-wrap:nowrap; flex:0 0 auto}
+#scr-auc .grid3 > .panel:last-child .p-sub{min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+#scr-auc .grid3 > .kpis{grid-column:2; grid-row:1; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; border:0}
+#scr-auc .grid3 > .kpis .kpi{border:1px solid var(--bd-2); border-radius:10px; background:var(--panel); min-width:0}
+#scr-auc .auc-detail{margin:0 12px; padding:12px; border:1px solid var(--bd); border-radius:8px; background:var(--bg)}
+#scr-auc .auc-detail-top{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:10px}
+#scr-auc .auc-detail-top h4{font-size:12px}
+#scr-auc .auc-detail-grid{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px 12px}
+#scr-auc .auc-detail-grid > div{min-width:0}
+#scr-auc .auc-detail-grid .label{display:block; color:var(--tx-dim); font-size:10px}
+#scr-auc .auc-detail-grid strong{display:block; overflow-wrap:anywhere; font-size:12px; font-weight:600; margin-top:2px}
 #scr-auc .cal-body{display:grid; gap:10px; padding:10px 12px; overflow:visible; flex:none}
 #scr-auc .cal-meta{display:flex; align-items:flex-start; justify-content:space-between; gap:8px}
 #scr-auc .cal-summary{color:var(--tx-mut); font-size:10px; line-height:1.5}
@@ -427,7 +439,7 @@ body{padding:4px;min-width:0}
 .kpi,#scr-auc .kpi{padding:6px 8px}
 #scr-auc .kpi{min-height:170px}
 .screen .grid3{grid-template-columns:repeat(auto-fit,minmax(min(100%,430px),1fr))!important;height:auto!important;min-height:0!important;align-items:start}
-#scr-auc .grid3{grid-template-columns:360px minmax(0,1fr)!important; height:auto!important; min-height:0!important; align-items:start}
+#scr-auc .grid3{grid-template-columns:360px minmax(0,1fr)!important; height:auto!important; min-height:0!important}
 @media(min-width:1500px){#scr-auc .grid3{grid-template-columns:390px minmax(0,1fr)!important}}
 #scr-auc .grid3 > .panel:first-child{height:auto;min-height:0;align-self:start}
 #scr-auc #spk2,#scr-auc #spk3{padding-top:0;height:96px!important}
@@ -440,7 +452,6 @@ body{padding:4px;min-width:0}
 .blot-filters{padding:4px 6px;gap:4px 8px}
 .dictwrap{padding:8px;overflow:auto}
 .footnote{padding:6px;overflow-wrap:anywhere}
-#kpiSelName{white-space:normal!important;overflow:visible!important}
 table.blot .stick-2{max-width:none;overflow:visible;white-space:normal;min-width:172px}
 #scr-auc table.blot .stick-2{max-width:128px; min-width:128px; width:128px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis}
 #resDrill td[data-field="bond.name"]{white-space:normal;overflow:visible!important;min-width:150px}
@@ -452,6 +463,7 @@ table.blot .stick-2{max-width:none;overflow:visible;white-space:normal;min-width
 .wf{min-width:360px}
 @media(max-width:900px){
   .screen .grid3,#scr-auc .grid3{grid-template-columns:minmax(0,1fr)!important;height:auto!important;min-height:0!important}
+  #scr-auc .grid3 > .panel:first-child,#scr-auc .grid3 > .kpis,#scr-auc .grid3 > .panel:last-child{grid-column:1;grid-row:auto}
   table.blot th.stick,table.blot td.stick{position:static}
   .ui-controls{margin-left:0}
 }
@@ -460,6 +472,7 @@ table.blot .stick-2{max-width:none;overflow:visible;white-space:normal;min-width
   .tab{flex:1 1 45%;padding:6px;justify-content:center;font-size:12px}
   .ui-controls{width:100%;justify-content:flex-end}
   .kpis{grid-template-columns:minmax(0,1fr)}
+  #scr-auc .grid3 > .kpis{grid-template-columns:minmax(0,1fr)}
   .mix-wrap{grid-template-columns:minmax(0,1fr);gap:8px}
   .cmp-row{grid-template-columns:1fr}
 }
@@ -487,42 +500,22 @@ table.blot .stick-2{max-width:none;overflow:visible;white-space:normal;min-width
   </div>
 </div>
 
-<div id="v2-source-banner" style="padding:7px 14px;background:#123755;color:#fff;font-size:12px;line-height:1.5">v2 데이터 기준 · <strong>재정경제부 원문</strong>: 2026년 1~10월 계획, 일부 입찰결과·비경쟁인수·매입·교환. 11월 P1 일정은 10월 29일 발행계획과 확인된 개별 발행공고를 반영하며, 11월 2·3·9일 경쟁입찰 및 2·3·6일 비경쟁인수 공시를 연결했습니다. 11월 6일 교환 결과 금액은 미연결입니다. <strong>한국은행 ECOS</strong>: 2026-10-07 국고채 30년 유통금리 4.491% (참고값). <strong>모형값 *</strong>: 결과가 없는 계획의 응찰·낙찰, 민평대비·수요점수, 2025년 비교·연간 전망, 만기상환·교환 순증감·순공급. 같은 만기 공시값과 월별 계획 규모를 기준으로 생성한 화면 예시이며 실제 거래·공시 수치가 아닙니다. 10월 결과와 9월 이후 비경쟁 결과는 수집이 불완전합니다. <a href="https://mofe.go.kr/st/fnancstats/ktb50201.do" style="color:#aee2ff">공식 입찰결과</a> · <a href="https://ecos.bok.or.kr/api/" style="color:#aee2ff">ECOS</a></div>
 <section class="screen on" id="scr-auc">
-  <div class="kpis">
-    <div class="kpi">
-      <div class="k-l">월 발행계획액</div>
-      <div class="k-v" data-field="plan.month_total" data-source="MOEF_KTB" data-freq="월간 전월말목 09:00">12.0<small> 조원</small></div>
-      <div class="k-d mut">2026-10 재정경제부 경쟁입찰 계획</div>
-      <canvas class="k-spark" id="spk1" width="256" height="22"></canvas>
-    </div>
-    <div class="kpi" id="kpiSel">
-      <div class="k-l">선택 입찰</div>
-      <div class="k-v" id="kpiSelName" data-field="bond.name" data-source="MOEF_KTB" data-freq="발행공고 T-3일" style="font-size:13px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">입찰을 선택하세요</div>
-      <div class="k-d mut" id="kpiSelMeta">P2 블로터에서 행을 클릭</div>
-    </div>
-    <div class="kpi">
-      <div class="k-l">평균 응찰률</div>
-      <div class="k-v" id="kpiBtcVal" data-field="auc.bid_to_cover" data-source="DERIVED" data-freq="입찰일 T+0 16:00">—<small> x</small></div>
-      <div class="k-d mut" id="kpiBtcSub">선택 만기 기준</div>
-      <canvas class="k-spark" id="spk2" width="288" height="96"></canvas>
-    </div>
-    <div class="kpi">
-      <div class="k-l">평균 테일</div>
-      <div class="k-v" id="kpiTailVal" data-field="auc.tail" data-source="DERIVED" data-freq="입찰일 T+0 16:00">—<small> bp</small></div>
-      <div class="k-d mut" id="kpiTailSub">선택 만기 기준</div>
-      <canvas class="k-spark" id="spk3" width="288" height="96"></canvas>
-    </div>
-    <div class="kpi">
-      <div class="k-l">낙찰금리 구조</div>
-      <canvas id="ohlcChart" width="288" height="104" data-field="auc.high_rate" data-source="${r.demoFields?.includes('hi')?'DEMO':'MOEF_KTB'}" data-freq="입찰결과 공시"></canvas>
-    </div>
-  </div>
-
   <div class="grid3">
     <div class="panel">
       <div class="p-head"><span class="p-code">P1</span><h3>입찰 캘린더</h3>
         <span class="mnav"><button type="button" class="mnav-prev" title="이전 월" aria-label="이전 월">‹</button><select class="calendar-year" aria-label="연도 선택"></select><select class="calendar-month" aria-label="월 선택"></select><button type="button" class="mnav-next" title="다음 월" aria-label="다음 월">›</button></span>
+      </div>
+      <div class="auc-detail" aria-live="polite">
+        <div class="auc-detail-top"><h4>선택 입찰 발행·입찰정보</h4><span class="at" id="aucDetailType">—</span></div>
+        <div class="auc-detail-grid">
+          <div><span class="label">종목명</span><strong id="aucDetailName" data-field="bond.name" data-source="MOEF_KTB" data-freq="발행공고 T-3일">—</strong></div>
+          <div><span class="label">만기</span><strong id="aucDetailMat" data-field="bond.maturity" data-source="MOEF_KTB" data-freq="발행공고 T-3일">—</strong></div>
+          <div><span class="label">입찰일</span><strong id="aucDetailDate" data-field="auc.bid_date" data-source="MOEF_KTB" data-freq="발행공고 T-3일">—</strong></div>
+          <div><span class="label">입찰시간</span><strong id="aucDetailTime" data-field="auc.bid_time" data-source="MOEF_KTB" data-freq="입찰공고">—</strong></div>
+          <div><span class="label">발행예정금액</span><strong id="aucDetailPlan" data-field="auc.plan_amt" data-source="MOEF_KTB" data-freq="발행공고 T-3일">—</strong></div>
+          <div><span class="label">대금납입일</span><strong id="aucDetailPay" data-field="auc.pay_date" data-source="MOEF_KTB" data-freq="발행공고 T-3일">—</strong></div>
+        </div>
       </div>
       <div class="p-body cal-body">
         <div class="cal-meta"><p class="cal-summary" id="calSummary"></p><label class="cal-filter"><input type="checkbox" id="calCompOnly">경쟁만 조회</label></div>
@@ -531,6 +524,25 @@ table.blot .stick-2{max-width:none;overflow:visible;white-space:normal;min-width
         <div class="cal-legend"><span><i></i>입찰 완료</span><span><i class="planned"></i>공고된 예정</span><span><i class="monthly"></i>월간 계획</span><span><i class="unlinked"></i>결과 미연결</span><span><i class="synthetic"></i>모형 결과</span></div>
         <div class="cal-source" id="calSource" hidden>11월 일정: <a href="https://mofe.go.kr/nw/nes/detailNesDtaView.do?menuNo=4010100&amp;searchBbsId1=MOSFBBS_000000000028&amp;searchNttId1=MOSF_000000000079801" target="_blank" rel="noopener">재정경제부 발행계획</a> · <a href="https://ktb.mofe.go.kr/isuNdReprchsPblanc.do" target="_blank" rel="noopener">국채시장 입찰공고</a></div>
         <p class="cal-message" id="calMessage" aria-live="polite">결과 입찰은 상단 지표에, 예정 일정은 아래 안내에 반영됩니다.</p>
+      </div>
+    </div>
+
+    <div class="kpis">
+      <div class="kpi">
+        <div class="k-l">평균 응찰률</div>
+        <div class="k-v" id="kpiBtcVal" data-field="auc.bid_to_cover" data-source="DERIVED" data-freq="입찰일 T+0 16:00">—<small> x</small></div>
+        <div class="k-d mut" id="kpiBtcSub">선택 만기 기준</div>
+        <canvas class="k-spark" id="spk2" width="288" height="96"></canvas>
+      </div>
+      <div class="kpi">
+        <div class="k-l">평균 테일</div>
+        <div class="k-v" id="kpiTailVal" data-field="auc.tail" data-source="DERIVED" data-freq="입찰일 T+0 16:00">—<small> bp</small></div>
+        <div class="k-d mut" id="kpiTailSub">선택 만기 기준</div>
+        <canvas class="k-spark" id="spk3" width="288" height="96"></canvas>
+      </div>
+      <div class="kpi">
+        <div class="k-l">낙찰금리 구조</div>
+        <canvas id="ohlcChart" width="288" height="104" data-field="auc.high_rate" data-source="MOEF_KTB" data-freq="입찰결과 공시"></canvas>
       </div>
     </div>
 
@@ -592,7 +604,7 @@ table.blot .stick-2{max-width:none;overflow:visible;white-space:normal;min-width
 
 <div class="footnote">
   KTB TERMINAL v2 · 공식 공시 스냅샷 + 표시용 더미 · 재정경제부 원문 스냅샷(2026년 1~10월), 11월 확인된 입찰결과·P1 일정과 화면 예시용 더미데이터 혼합 ·
-  원천표기: MOEF_KTB(기획재정부 국고채통합정보) / BOK_ECOS(한국은행) / KOFIA(금융투자협회 민평) / DERIVED(파생) / EST(추정)
+  원천표기: <a href="https://mofe.go.kr/st/fnancstats/ktb50201.do" target="_blank" rel="noopener">MOEF_KTB(재정경제부 입찰결과)</a> / BOK_ECOS(한국은행) / KOFIA(금융투자협회 민평) / DERIVED(파생) / EST(추정)
 </div>
 
 <script>/* Preserved MOFE disclosure snapshot. Generated by scripts/build_ktb_auction_v2.js. */
@@ -625,13 +637,13 @@ const AT = {
      여러 일자에 반복 발생한다(각 일자 모두 표기). */
 /* 2026-11 재정경제부 입찰결과 공시. 미공시 민평대비는 null로 둔다. */
 const NOV_RESULTS = [
-  {d:"2026-11-02",code:"MOEF:MOSF_000000000079825",nm:"국고03625-2809",mat:"2Y",seq:"26-7",t:"comp",plan:18000,bid:47450,won:18000,hi:3.725,wavg:3.725,lo:3.725,par:78.4,spr:null,nc:4090,src:"MOFE",source_ref:"MOEF:MOSF_000000000079825",demoFields:[]},
+  {d:"2026-11-02",code:"MOEF:MOSF_000000000079825",nm:"국고03625-2809",mat:"2Y",seq:"26-7",t:"comp",plan:18000,bid:47450,won:18000,hi:3.725,wavg:3.725,lo:3.725,par:78.4,spr:null,nc:4090,bidTime:"10:40~11:00",src:"MOFE",source_ref:"MOEF:MOSF_000000000079825",demoFields:[]},
   {d:"2026-11-02",code:"MOEF:MOSF_000000000079869:0",nm:"국고03625-2809",mat:"2Y",seq:"—",t:"nc2",plan:null,bid:null,won:4090,hi:null,wavg:null,lo:null,par:null,spr:null,nc:4090,pd:17,src:"MOFE",source_ref:"MOEF:MOSF_000000000079869",exercise_period:"2026.11.2.(월)∼11.5.(목)",demoFields:[]},
-  {d:"2026-11-03",code:"MOEF:MOSF_000000000079845",nm:"국고04500-5609",mat:"30Y",seq:"26-8",t:"comp",plan:20000,bid:39360,won:20000,hi:4.070,wavg:4.070,lo:4.070,par:93.6,spr:null,nc:8620,src:"MOFE",source_ref:"MOEF:MOSF_000000000079845",demoFields:[]},
+  {d:"2026-11-03",code:"MOEF:MOSF_000000000079845",nm:"국고04500-5609",mat:"30Y",seq:"26-8",t:"comp",plan:20000,bid:39360,won:20000,hi:4.070,wavg:4.070,lo:4.070,par:93.6,spr:null,nc:8620,bidTime:"10:40~11:00",src:"MOFE",source_ref:"MOEF:MOSF_000000000079845",demoFields:[]},
   {d:"2026-11-03",code:"MOEF:MOSF_000000000079897:0",nm:"국고04500-5609",mat:"30Y",seq:"—",t:"nc2",plan:null,bid:null,won:5020,hi:null,wavg:null,lo:null,par:null,spr:null,nc:5020,pd:16,src:"MOFE",source_ref:"MOEF:MOSF_000000000079897",exercise_period:"2026.11.3.(화)∼11.6.(금)",demoFields:[]},
   {d:"2026-11-06",code:"MOEF:MOSF_000000000079897:1",nm:"국고04500-5609",mat:"30Y",seq:"—",t:"nc3",plan:null,bid:null,won:3600,hi:null,wavg:null,lo:null,par:null,spr:null,nc:3600,pd:19,src:"MOFE",source_ref:"MOEF:MOSF_000000000079897",exercise_period:"2026.11.6.(금)",demoFields:[]},
-  {d:"2026-11-09",code:"MOEF:MOSF_000000000079902",nm:"국고03500-2906",mat:"3Y",seq:"26-5",t:"comp",plan:11000,bid:33330,won:11000,hi:3.650,wavg:3.650,lo:3.650,par:50.2,spr:null,nc:null,src:"MOFE",source_ref:"MOEF:MOSF_000000000079902",demoFields:[]},
-  {d:"2026-11-09",code:"MOEF:MOSF_000000000079900",nm:"국고03625-2912",mat:"3Y",seq:"26-12",t:"comp",plan:11000,bid:35340,won:11000,hi:3.645,wavg:3.645,lo:3.645,par:22.5,spr:null,nc:null,src:"MOFE",source_ref:"MOEF:MOSF_000000000079900",demoFields:[]}
+  {d:"2026-11-09",code:"MOEF:MOSF_000000000079902",nm:"국고03500-2906",mat:"3Y",seq:"26-5",t:"comp",plan:11000,bid:33330,won:11000,hi:3.650,wavg:3.650,lo:3.650,par:50.2,spr:null,nc:null,bidTime:"10:40~11:00",src:"MOFE",source_ref:"MOEF:MOSF_000000000079902",demoFields:[]},
+  {d:"2026-11-09",code:"MOEF:MOSF_000000000079900",nm:"국고03625-2912",mat:"3Y",seq:"26-12",t:"comp",plan:11000,bid:35340,won:11000,hi:3.645,wavg:3.645,lo:3.645,par:22.5,spr:null,nc:null,bidTime:"09:40~10:00",src:"MOFE",source_ref:"MOEF:MOSF_000000000079900",demoFields:[]}
 ];
 const RESULTS = V2.results.concat(NOV_RESULTS);
 
@@ -963,14 +975,16 @@ function renderCal(){
     /* 클릭한 칩이 가리키는 바로 그 RESULTS 레코드를 전역 인덱스로 특정(KPI 동기화 대상) */
     const ridx = parseInt(e.dataset.ridx,10);
     const rec = Number.isInteger(ridx) && ridx>=0 ? RESULTS[ridx] : null;
-    /* 상단 KPI 카드(2·3·4·5번 칸)를 클릭한 입찰 기준으로 갱신.
-       P1↔P2 연동 제거됨: 캘린더 클릭은 더 이상 P2 블로터를 필터링하지 않는다. */
     if(rec){
       renderAucKPI(rec);
+      revealBlotterRecord(rec);
       document.getElementById("calMessage").textContent = `${rec.d} · ${AT[rec.t].ko} ${matLabel(rec.mat)} 선택`;
     } else {
       const schedule = CAL_SCHEDULE[+e.dataset.sidx];
-      if(schedule) document.getElementById("calMessage").textContent = `${schedule.d} · ${schedule.nm} · ${fmt(schedule.plan)}억원 · 결과 지표 미연결`;
+      if(schedule){
+        renderAucKPI(schedule);
+        document.getElementById("calMessage").textContent = `${schedule.d} · ${schedule.nm} · ${fmt(schedule.plan)}억원 · 결과 지표 미연결`;
+      }
     }
   }));
 }
@@ -1017,15 +1031,33 @@ function renderBlotter(){
        <td data-field="auc.tail" data-source="DERIVED" data-freq="입찰일 T+0 16:00">${(r.hi!=null&&r.wavg!=null)?((r.hi-r.wavg)*100).toFixed(1):"-"}</td>
        <td data-field="auc.spread_vs_mts" data-source="DEMO" data-freq="입찰일 T+0 16:00" class="${sprCls(r.spr)}">${r.spr!=null?(r.spr>0?"+":"")+r.spr.toFixed(1):"-"}</td>
        <td data-field="auc.noncomp_amt" data-source="${r.demoFields?.includes('nc')?'DEMO':'MOEF_KTB'}" data-freq="입찰일 T+1">${r.nc!=null?fmt(r.nc):"-"}</td>`;
-    if(!r.planned) tr.style.cursor="pointer", tr.addEventListener("click",()=>{document.querySelectorAll("#blotBody tr").forEach(x=>x.classList.remove("sel"));tr.classList.add("sel");renderAucKPI(r);});
+    if(!r.planned) tr.style.cursor="pointer", tr.addEventListener("click",()=>renderAucKPI(r));
     /* 재렌더(월/필터 변경) 후에도 현재 선택 입찰이 계속 보이면 sel 하이라이트 복원 */
-    if(!r.planned && selectedAuction && r.code===selectedAuction.code && r.d===selectedAuction.d && r.seq===selectedAuction.seq) tr.classList.add("sel");
+    if(r===selectedAuction) tr.classList.add("sel");
+    tr.dataset.ridx = RESULTS.indexOf(r);
     tb.appendChild(tr);
   });
   /* 서브텍스트: 현재 조회기간 표기 */
   const loM = BLOT_MONTHS[Math.min(blotStartIdx, blotEndIdx)], hiM = BLOT_MONTHS[Math.max(blotStartIdx, blotEndIdx)];
   const periodTxt = loM===hiM ? loM : `${loM} ~ ${hiM}`;
   document.getElementById("blotSub").textContent = `${periodTxt} · 정렬: 입찰일 ▼`;
+}
+function revealBlotterRecord(r){
+  const monthIdx = BLOT_MONTHS.indexOf(r.d.slice(0,7));
+  if(monthIdx<blotStartIdx) blotStartIdx=monthIdx;
+  if(monthIdx>blotEndIdx) blotEndIdx=monthIdx;
+  document.getElementById("blotStart").value=blotStartIdx;
+  document.getElementById("blotEnd").value=blotEndIdx;
+  activeTypes.add(r.t);
+  if(r.mat!=="—") activeMats.add(r.mat);
+  for(const [group,key,value] of [["typeFilter","t",r.t],["matFilter","m",r.mat]]){
+    const container=document.getElementById(group);
+    const chip=[...container.querySelectorAll(`.chip[data-${key}]`)].find(c=>c.dataset[key]===value);
+    if(chip) chip.classList.add("on");
+    container.querySelector(".chip-all").classList.toggle("on",[...container.querySelectorAll(".chip:not(.chip-all)")].every(c=>c.classList.contains("on")));
+  }
+  renderBlotter();
+  document.querySelector("#blotBody tr.sel")?.scrollIntoView({block:"nearest",inline:"nearest"});
 }
 
 /* 동일 만기 과거 입찰 추이 — 선택 종목과 같은 만기(mat)의 경쟁입찰(comp) 낙찰 완료분을
@@ -1045,30 +1077,34 @@ function matTrendSeries(r){
   }));
 }
 
-/* ---------- 선택 입찰 KPI 연동 (STEP 3) ---------- */
-/* P2 블로터에서 클릭한 입찰 레코드를 보관하는 전역 상태. KPI 2·3·4·5번 칸이 이 값에 연동된다.
-   (STEP 1에서 P3 낙찰상세 패널은 제거됨 → 선택 상세를 상단 KPI strip으로 일원화) */
+/* P1/P2에서 공통으로 선택한 입찰. */
 let selectedAuction = null;
 
-/* 선택 입찰 KPI 갱신 — 상단 KPI strip의 아래 4개 칸을 selected(r) 기준으로 다시 그린다.
-   · 2번 칸: 선택 입찰 개요 (종목명 / 만기·입찰일·발행예정액)
-   · 3번 칸: 선택 만기 동일 만기 comp 과거 응찰률(BTC) 추이 스파크 + 최근값
-   · 4번 칸: 선택 만기 동일 만기 comp 과거 테일(bp) 추이 스파크 + 최근값
-   · 5번 칸: 선택 입찰의 낙찰금리 OHLC 구조 (컴팩트 캔들)
-   과거 renderP3(r) 역할을 대체·일원화. */
+/* 선택 입찰 상세와 세 KPI를 갱신하고 P1/P2 강조 상태를 동기화한다. */
 function renderAucKPI(r){
   selectedAuction = r || null;
-  document.querySelectorAll("#calGrid .ev").forEach(e=>e.classList.toggle("selected",RESULTS[+e.dataset.ridx]===selectedAuction));
-  const nameEl = document.getElementById("kpiSelName");
-  const metaEl = document.getElementById("kpiSelMeta");
+  document.querySelectorAll("#calGrid .ev").forEach(e=>{
+    const record=+e.dataset.ridx>=0 ? RESULTS[+e.dataset.ridx] : CAL_SCHEDULE[+e.dataset.sidx];
+    e.classList.toggle("selected",record===selectedAuction);
+  });
+  document.querySelectorAll("#blotBody tr").forEach(row=>row.classList.toggle("sel",RESULTS[+row.dataset.ridx]===selectedAuction));
+  const a = r && AT[r.t];
+  const detail = {
+    aucDetailName:r?.nm || "—", aucDetailMat:r?matLabel(r.mat):"—",
+    aucDetailDate:r?.d || "—", aucDetailTime:r?.bidTime || "—",
+    aucDetailPlan:r?.plan!=null ? `${fmt(r.plan)}억원` : "—",
+    aucDetailPay:r?.pay || "—"
+  };
+  Object.entries(detail).forEach(([id,value])=>document.getElementById(id).textContent=value);
+  const typeEl=document.getElementById("aucDetailType");
+  typeEl.textContent=a?.ko || "—";
+  typeEl.className=`at ${a?.cls || ""}`;
   const btcVal = document.getElementById("kpiBtcVal");
   const btcSub = document.getElementById("kpiBtcSub");
   const tailVal = document.getElementById("kpiTailVal");
   const tailSub = document.getElementById("kpiTailSub");
   /* 선택 전(placeholder) 처리 — 초기엔 항상 기본 선택이 있으나 방어적으로 유지 */
   if(!r){
-    if(nameEl) nameEl.textContent = "입찰을 선택하세요";
-    if(metaEl) metaEl.textContent = "P2 블로터에서 행을 클릭";
     if(btcVal) btcVal.innerHTML = "—<small> x</small>";
     if(tailVal) tailVal.innerHTML = "—<small> bp</small>";
     if(btcSub) btcSub.textContent = "선택 만기 기준";
@@ -1078,11 +1114,7 @@ function renderAucKPI(r){
     drawOHLC({hi:null, wavg:null});
     return;
   }
-  /* 2번 칸: 선택 입찰 개요 */
-  const a = AT[r.t];
-  if(nameEl){ nameEl.textContent = r.nm; nameEl.title = r.nm; }
-  if(metaEl) metaEl.textContent = `${matLabel(r.mat)} · ${a?a.short:r.t} ${r.seq} · ${r.d} · 발행 ${fmt(r.plan)}억`;
-  /* 3·4번 칸: 선택 만기 동일 만기 comp 추이 (matTrendSeries 재사용) */
+  /* 선택 만기 동일 만기 comp 추이 (matTrendSeries 재사용) */
   const s = matTrendSeries(r);
   const btcArr = s.map(x=>x.btc);
   const tailArr= s.map(x=>x.tail);
@@ -2070,6 +2102,7 @@ function renderDict(){
     ["auc.tranche","차수","string","—","24-6","기재부","입찰공고","발행공고 T-3일","N","—","auction_result PK 일부"],
     ["auc.type","입찰유형","enum","—","경쟁입찰","기재부","입찰공고","발행공고 T-3일","N","—","auction_result(type)"],
     ["auc.plan_amt","발행예정액","number","억원","22,000","기재부","입찰공고/월간계획","발행공고 T-3일","N","—","auction_schedule(plan_amt)"],
+    ["auc.bid_time","입찰시간","string","시:분","10:40~11:00","재정경제부","입찰결과공시/입찰공고","입찰일 T+0","N","—","auction_schedule(bid_time)"],
     ["auc.bid_amt","응찰액","number","억원","63,800","한은","입찰집행결과(BOK-Wire+)","입찰일 T+0 16:00","N","—","auction_result(bid_amt)"],
     ["auc.won_amt","낙찰액","number","억원","22,000","기재부","입찰결과공시","입찰일 T+0 16:00","N","—","auction_result(won_amt)"],
     ["auc.high_rate","최고낙찰금리","number","%","2.968","한은","입찰집행결과","입찰일 T+0 16:00","N","—","auction_result(high_rate)"],
@@ -2254,9 +2287,7 @@ selectedAuction =
   || RESULTS.find(r=>r.t==="comp");
 renderCal(); renderBlotter();
 renderDict();
-/* 월 발행계획액 스파크 — 최근 12개월(2025-10~2026-09, 조원) 더미 시계열. 끝값 15.2 = 2026-09 현재값 */
-kpiSpark("spk1",V2.planDisclosures.map(p=>p.total/10000),"#3899fa");
-renderAucKPI(selectedAuction);                            /* 선택 입찰 KPI(2·3·4·5번 칸) 초기 표시 */
+renderAucKPI(selectedAuction);
 
 window.refreshTerminalCharts = function(){
   if(window.Chart && Chart.instances) Object.values(Chart.instances).forEach(chart=>chart.destroy());
