@@ -302,32 +302,44 @@ table.blot .stick-3{left:226px; min-width:62px; width:62px; box-shadow:1px 0 0 v
 /* P1 calendar follows the UST baseline's compact month layout. */
 #scr-auc .grid3{background:var(--panel)}
 #scr-auc .grid3 > .panel:first-child{align-self:start; height:auto; min-height:0}
-#scr-auc .grid3 > .panel:nth-child(2){border-left:1px solid var(--bd); height:var(--auc-blotter-height, 600px); min-height:0; overflow:hidden}
+#scr-auc .grid3 > .panel:nth-child(2){border:1px solid var(--bd-2); border-radius:2px; height:var(--auc-blotter-height, 600px); min-height:0; overflow:hidden}
 #scr-auc .grid3 > .panel:nth-child(2) > .p-body{min-height:0; overflow:auto; flex:1 1 auto}
+#scr-auc .grid3 > .panel > .p-head{height:38px; min-height:38px; flex:0 0 38px; flex-wrap:nowrap}
+#scr-auc .grid3 > .panel:nth-child(2) .rangesel{flex-wrap:nowrap; flex:0 0 auto}
+#scr-auc .grid3 > .panel:nth-child(2) .p-sub{min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
 #scr-auc .cal-body{display:grid; gap:10px; padding:10px 12px; overflow:visible; flex:none}
+#scr-auc .cal-meta{display:flex; align-items:flex-start; justify-content:space-between; gap:8px}
 #scr-auc .cal-summary{color:var(--tx-mut); font-size:10px; line-height:1.5}
+#scr-auc .cal-filter{display:inline-flex; align-items:center; gap:5px; flex:0 0 auto; white-space:nowrap; color:var(--tx-mut); font-size:10px; cursor:pointer}
+#scr-auc .cal-filter input{width:13px; height:13px; margin:0; accent-color:var(--accent); cursor:pointer}
 #scr-auc .cal-head,#scr-auc .cal{display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:3px}
 #scr-auc .cal-head .cah{color:var(--tx-dim); text-align:center; font-size:9px}
 #scr-auc .cal-head .cah:first-child{color:var(--up)}
 #scr-auc .cal-head .cah:last-child{color:var(--accent)}
 #scr-auc .cal{flex:none; grid-auto-rows:minmax(50px,auto)}
-#scr-auc .cal .cd{min-width:0; min-height:50px; padding:5px 3px 4px; border:1px solid var(--bd); border-radius:4px; background:var(--bg-1)}
+#scr-auc .cal .cd{min-width:0; min-height:50px; padding:5px 3px 4px; border:1px solid var(--bd); border-radius:4px; background:#fff}
 #scr-auc .cal .cd.oth{border-color:transparent; background:transparent}
-#scr-auc .cal .cd.has-events{background:var(--bg-2)}
+#scr-auc .cal .cd.has-events{background:#fff}
 #scr-auc .cal .cd.today{border-color:var(--accent)}
-#scr-auc .cal .cd .dn{display:block; margin:0 1px 3px; color:var(--tx-dim); font-size:9px; line-height:1}
+#scr-auc .cal .cd .dn{display:block; margin:0 1px 3px; color:#4d5660; font-size:9px; line-height:1}
 #scr-auc .cal .events{display:grid; gap:2px}
 #scr-auc .cal .ev{display:block; width:100%; min-width:0; padding:3px 2px; border:1px solid var(--accent); border-radius:3px; background:var(--ce-selected); color:var(--tx); text-align:left; font:9px/1.2 var(--sans); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer}
 #scr-auc .cal .ev.planned{border-color:var(--warn); background:color-mix(in srgb,var(--warn) 20%,var(--panel)); color:var(--tx)}
 #scr-auc .cal .ev.synthetic{border-color:var(--bd-2); background:var(--bg-2); color:var(--tx-mut)}
-#scr-auc .cal .ev:hover,#scr-auc .cal .ev.selected{border-color:var(--accent); background:var(--ce-hover)}
+#scr-auc .cal .ev.monthly{border-color:#a3a3a3; background:#f4f5f7; color:#40464c}
+#scr-auc .cal .ev.unlinked{border-color:#c8ced5; background:#fff; color:#5d6570}
+#scr-auc .cal .ev:hover,#scr-auc .cal .ev.selected{border-color:var(--accent); background:var(--ce-hover); color:var(--tx)}
 #scr-auc .cal-empty{grid-column:1 / -1; padding:8px 5px; color:var(--tx-mut); text-align:center; font-size:10px}
 #scr-auc .cal-legend{display:flex; flex-wrap:wrap; gap:5px 10px; color:var(--tx-mut); font-size:9px}
 #scr-auc .cal-legend span{display:inline-flex; align-items:center; gap:5px}
 #scr-auc .cal-legend i{width:7px; height:7px; border-radius:2px; background:var(--ce-selected)}
 #scr-auc .cal-legend i.planned{background:var(--warn)}
 #scr-auc .cal-legend i.synthetic{background:var(--bg-2); border:1px solid var(--bd-2)}
+#scr-auc .cal-legend i.monthly{background:#f4f5f7; border:1px solid #a3a3a3}
+#scr-auc .cal-legend i.unlinked{background:#fff; border:1px solid #c8ced5}
 #scr-auc .cal-message{min-height:15px; color:var(--tx-mut); font-size:9px; line-height:1.5}
+#scr-auc .cal-source{font-size:9px; line-height:1.4}
+#scr-auc .cal-source[hidden]{display:none}
 
 /* 가시성 개선: 입찰캘린더·블로터 탭 텍스트를 탭 범위로 격리해 확대(타 탭 크기 불변) */
 #scr-auc .p-head h3{font-size:13px}
@@ -351,8 +363,8 @@ table.blot .stick-3{left:226px; min-width:62px; width:62px; box-shadow:1px 0 0 v
 #scr-auc .legend{font-size:11px}
 /* sticky 좌측고정 칼럼: 공시 ID 제거 후 위치 재정렬 */
 #scr-auc table.blot .stick-1{min-width:52px; width:52px}
-#scr-auc table.blot .stick-2{left:52px; min-width:172px; max-width:172px}
-#scr-auc table.blot .stick-3{left:224px; min-width:68px; width:68px}
+#scr-auc table.blot .stick-2{left:52px; min-width:128px; width:128px; max-width:128px}
+#scr-auc table.blot .stick-3{left:180px; min-width:68px; width:68px}
 
 /* screen visibility */
 .screen{display:none}
@@ -427,11 +439,12 @@ body{padding:4px;min-width:0}
 .dictwrap{padding:8px;overflow:auto}
 .footnote{padding:6px;overflow-wrap:anywhere}
 #kpiSelName{white-space:normal!important;overflow:visible!important}
-table.blot .stick-2,#scr-auc table.blot .stick-2{max-width:none;overflow:visible;white-space:normal;min-width:172px}
+table.blot .stick-2{max-width:none;overflow:visible;white-space:normal;min-width:172px}
+#scr-auc table.blot .stick-2{max-width:128px; min-width:128px; width:128px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis}
 #resDrill td[data-field="bond.name"]{white-space:normal;overflow:visible!important;min-width:150px}
 #scr-auc table.blot .stick-1{left:var(--sticky-left-1,0px)}
 #scr-auc table.blot .stick-2{left:var(--sticky-left-2,52px)}
-#scr-auc table.blot .stick-3{left:var(--sticky-left-3,224px)}
+#scr-auc table.blot .stick-3{left:var(--sticky-left-3,180px)}
 .speccard .row{gap:8px;flex-wrap:wrap}
 .heat{min-width:440px}
 .wf{min-width:360px}
@@ -472,7 +485,7 @@ table.blot .stick-2,#scr-auc table.blot .stick-2{max-width:none;overflow:visible
   </div>
 </div>
 
-<div id="v2-source-banner" style="padding:7px 14px;background:#123755;color:#fff;font-size:12px;line-height:1.5">v2 데이터 기준 · <strong>재정경제부 원문</strong>: 2026년 1~10월 계획, 일부 입찰결과·비경쟁인수·매입·교환. <strong>한국은행 ECOS</strong>: 2026-10-07 국고채 30년 유통금리 4.491% (참고값). <strong>모형값 *</strong>: 결과가 없는 계획의 응찰·낙찰, 민평대비·수요점수, 2025년 비교·연간 전망, 만기상환·교환 순증감·순공급. 같은 만기 공시값과 월별 계획 규모를 기준으로 생성한 화면 예시이며 실제 거래·공시 수치가 아닙니다. 10월 결과와 9월 이후 비경쟁 결과는 수집이 불완전합니다. <a href="https://mofe.go.kr/st/fnancstats/ktb50201.do" style="color:#aee2ff">공식 입찰결과</a> · <a href="https://ecos.bok.or.kr/api/" style="color:#aee2ff">ECOS</a></div>
+<div id="v2-source-banner" style="padding:7px 14px;background:#123755;color:#fff;font-size:12px;line-height:1.5">v2 데이터 기준 · <strong>재정경제부 원문</strong>: 2026년 1~10월 계획, 일부 입찰결과·비경쟁인수·매입·교환. 11월 P1 일정은 10월 29일 발행계획과 확인된 개별 발행공고를 반영하며 결과 수치는 연결하지 않았습니다. <strong>한국은행 ECOS</strong>: 2026-10-07 국고채 30년 유통금리 4.491% (참고값). <strong>모형값 *</strong>: 결과가 없는 계획의 응찰·낙찰, 민평대비·수요점수, 2025년 비교·연간 전망, 만기상환·교환 순증감·순공급. 같은 만기 공시값과 월별 계획 규모를 기준으로 생성한 화면 예시이며 실제 거래·공시 수치가 아닙니다. 10월 결과와 9월 이후 비경쟁 결과는 수집이 불완전합니다. <a href="https://mofe.go.kr/st/fnancstats/ktb50201.do" style="color:#aee2ff">공식 입찰결과</a> · <a href="https://ecos.bok.or.kr/api/" style="color:#aee2ff">ECOS</a></div>
 <section class="screen on" id="scr-auc">
   <div class="kpis">
     <div class="kpi">
@@ -510,11 +523,12 @@ table.blot .stick-2,#scr-auc table.blot .stick-2{max-width:none;overflow:visible
         <span class="mnav"><button type="button" class="mnav-prev" title="이전 월" aria-label="이전 월">‹</button><select class="calendar-year" aria-label="연도 선택"></select><select class="calendar-month" aria-label="월 선택"></select><button type="button" class="mnav-next" title="다음 월" aria-label="다음 월">›</button></span>
       </div>
       <div class="p-body cal-body">
-        <p class="cal-summary" id="calSummary"></p>
+        <div class="cal-meta"><p class="cal-summary" id="calSummary"></p><label class="cal-filter"><input type="checkbox" id="calCompOnly">경쟁만 조회</label></div>
         <div class="cal-head"><div class="cah">일</div><div class="cah">월</div><div class="cah">화</div><div class="cah">수</div><div class="cah">목</div><div class="cah">금</div><div class="cah">토</div></div>
         <div class="cal" id="calGrid" role="grid" aria-label="국고채 입찰 일정"></div>
-        <div class="cal-legend"><span><i></i>입찰 완료</span><span><i class="planned"></i>공고된 예정</span><span><i class="synthetic"></i>모형 결과</span></div>
-        <p class="cal-message" id="calMessage" aria-live="polite">입찰을 선택하면 상단 지표에 반영됩니다.</p>
+        <div class="cal-legend"><span><i></i>입찰 완료</span><span><i class="planned"></i>공고된 예정</span><span><i class="monthly"></i>월간 계획</span><span><i class="unlinked"></i>결과 미연결</span><span><i class="synthetic"></i>모형 결과</span></div>
+        <div class="cal-source" id="calSource" hidden>11월 일정: <a href="https://mofe.go.kr/nw/nes/detailNesDtaView.do?menuNo=4010100&amp;searchBbsId1=MOSFBBS_000000000028&amp;searchNttId1=MOSF_000000000079801" target="_blank" rel="noopener">재정경제부 발행계획</a> · <a href="https://ktb.mofe.go.kr/isuNdReprchsPblanc.do" target="_blank" rel="noopener">국채시장 입찰공고</a></div>
+        <p class="cal-message" id="calMessage" aria-live="polite">결과 입찰은 상단 지표에, 예정 일정은 아래 안내에 반영됩니다.</p>
       </div>
     </div>
 
@@ -552,9 +566,9 @@ table.blot .stick-2,#scr-auc table.blot .stick-2{max-width:none;overflow:visible
           <thead><tr>
             <th class="l stick stick-1">입찰일</th><th class="l stick stick-2">종목명</th><th class="stick stick-3">만기</th>
             <th class="l">유형</th>
-            <th>발행예정<span class="en">억</span></th><th>응찰<span class="en">억</span></th><th>낙찰<span class="en">억</span></th>
-            <th>응찰률<span class="en">BTC</span></th><th>최고금리<span class="en">%</span></th><th>가중평균<span class="en">%</span></th>
-            <th>테일<span class="en">bp</span></th><th>민평대비<span class="en">bp</span></th><th>비경쟁<span class="en">억</span></th>
+            <th>발행예정</th><th>응찰</th><th>낙찰</th>
+            <th>응찰률</th><th>최고금리</th><th>가중평균</th>
+            <th>테일</th><th>민평대비</th><th>비경쟁</th>
           </tr></thead>
           <tbody id="blotBody"></tbody>
         </table>
@@ -575,7 +589,7 @@ table.blot .stick-2,#scr-auc table.blot .stick-2{max-width:none;overflow:visible
 </details>
 
 <div class="footnote">
-  KTB TERMINAL v2 · 공식 공시 스냅샷 + 표시용 더미 · 재정경제부 원문 스냅샷(2026년 1~10월)과 화면 예시용 더미데이터 혼합 ·
+  KTB TERMINAL v2 · 공식 공시 스냅샷 + 표시용 더미 · 재정경제부 원문 스냅샷(2026년 1~10월), 11월 P1 일정과 화면 예시용 더미데이터 혼합 ·
   원천표기: MOEF_KTB(기획재정부 국고채통합정보) / BOK_ECOS(한국은행) / KOFIA(금융투자협회 민평) / DERIVED(파생) / EST(추정)
 </div>
 
@@ -835,8 +849,8 @@ let activeTypes = new Set(Object.keys(AT));
 
 /* 조회월 상태 — P1 캘린더 전용. 기준시점 2026-09. (P2 블로터는 아래 별도 기간 상태로 분리 — P1↔P2 월 연동 제거됨)
    과거 월 조회 가능. viewYear/viewMonth(0-based) 변경 시 setViewMonth() 로 P1 캘린더만 재렌더 */
-const TODAY = { y:2026, m:9, d:31 };            /* 오늘(2026-09-11) — 0-based month */
-const DATA_MIN = { y:2026, m:0 };               /* 보유 더미데이터 최소월(2026-07) */
+const TODAY = { y:2026, m:10, d:12 };           /* 화면 기준일 2026-11-12 — 0-based month */
+const DATA_MIN = { y:2026, m:0 };               /* 조회 가능한 첫 월: 2026-01 */
 let viewYear = TODAY.y, viewMonth = TODAY.m;    /* 현재 조회중인 연/월(0-based) */
 const ymStr = (y,m)=> `${y}-${String(m+1).padStart(2,"0")}`;   /* "YYYY-MM" */
 
@@ -871,6 +885,22 @@ const CAL_LABEL = {
   ex:r=>"교환"
 };
 
+/* 2026-11 월간 발행계획(2026-10-29)과 국채시장 개별 발행공고(11-10/11-11).
+   P1 일정 전용이며 결과 수치가 없는 행을 P2 결과 블로터에 섞지 않는다. */
+const CAL_SCHEDULE = [
+  {d:"2026-11-02",t:"comp",mat:"2Y",nm:"국고03625-2809",seq:"26-7",plan:18000,notice:"elapsed"},
+  {d:"2026-11-03",t:"comp",mat:"30Y",nm:"국고04500-5609",seq:"26-8",plan:20000,notice:"elapsed"},
+  {d:"2026-11-06",t:"ex",mat:"—",nm:"물가채 교환",seq:"—",plan:1000,notice:"elapsed"},
+  {d:"2026-11-09",t:"comp",mat:"3Y",nm:"국고03500-2906",seq:"26-5",plan:11000,notice:"elapsed"},
+  {d:"2026-11-09",t:"comp",mat:"3Y",nm:"국고00000-2912",seq:"26-12",plan:11000,notice:"elapsed"},
+  {d:"2026-11-13",t:"comp",mat:"50Y",nm:"국고04625-7609",seq:"26-11",plan:7000,notice:"announced"},
+  {d:"2026-11-16",t:"comp",mat:"10Y",nm:"국고04250-3606",seq:"26-6",plan:11000,notice:"announced"},
+  {d:"2026-11-16",t:"comp",mat:"10Y",nm:"국고00000-3612",seq:"26-13",plan:11000,notice:"announced"},
+  {d:"2026-11-17",t:"ex",mat:"—",nm:"명목채 교환",seq:"—",plan:4000,notice:"monthly"},
+  {d:"2026-11-23",t:"comp",mat:"5Y",nm:"국고04125-3109",seq:"26-9",plan:23000,notice:"monthly"},
+  {d:"2026-11-24",t:"comp",mat:"20Y",nm:"국고04500-4609",seq:"26-10",plan:8000,notice:"monthly"}
+];
+
 /* ---------- P1 캘린더 ---------- */
 function renderCal(){
   const g = document.getElementById("calGrid");
@@ -879,14 +909,21 @@ function renderCal(){
   /* 조회월에 해당하는 이벤트만 필터하여 일자별 그룹핑 */
   const ymPrefix = ymStr(viewYear,viewMonth) + "-";     /* "YYYY-MM-" */
   const evByDay = {};
-  const monthEvents = RESULTS.filter(r=>r.d.startsWith(ymPrefix));
+  const compOnly = document.getElementById("calCompOnly").checked;
+  const monthEvents = RESULTS.concat(CAL_SCHEDULE).filter(r=>r.d.startsWith(ymPrefix) && (!compOnly || r.t==="comp"));
   monthEvents.forEach(r=>{
     const dd = parseInt(r.d.slice(8,10),10); (evByDay[dd]=evByDay[dd]||[]).push(r);
   });
-  const completed = monthEvents.filter(r=>!r.planned&&!r.synthetic).length;
-  const planned = monthEvents.filter(r=>r.planned).length;
-  const synthetic = monthEvents.filter(r=>!r.planned&&r.synthetic).length;
-  document.getElementById("calSummary").textContent = `${viewYear}년 ${viewMonth+1}월 · 입찰 완료 ${completed}건 · 공고된 예정 ${planned}건 · 모형 결과 ${synthetic}건`;
+  const counts = [
+    ["입찰 완료",r=>!r.notice&&!r.planned&&!r.synthetic],
+    ["공고된 예정",r=>r.notice==="announced"||(!r.notice&&r.planned)],
+    ["월간 계획",r=>r.notice==="monthly"],
+    ["결과 미연결",r=>r.notice==="elapsed"],
+    ["모형 결과",r=>!r.notice&&!r.planned&&r.synthetic]
+  ];
+  const summary = counts.map(([label,test])=>[label,monthEvents.filter(test).length]).filter(([,count])=>count).map(([label,count])=>`${label} ${count}건`);
+  document.getElementById("calSummary").textContent = `${viewYear}년 ${viewMonth+1}월${viewYear===2026&&viewMonth===10?" · 11.12 기준":""} · ${summary.join(" · ") || "일정 없음"}`;
+  document.getElementById("calSource").hidden = !(viewYear===2026 && viewMonth===10);
   g.setAttribute("aria-label",`${viewYear}년 ${viewMonth+1}월 국고채 입찰 일정`);
   let html = "";
   /* 동적 계산: 해당 월 1일의 요일, 총 일수 */
@@ -902,12 +939,12 @@ function renderCal(){
     evs.forEach(r=>{
       const a=AT[r.t];
       const label = CAL_LABEL[r.t](r);
-      const status = r.planned ? "공고된 예정" : r.synthetic ? "모형 결과" : "입찰 완료";
-      const stateClass = r.planned ? "planned" : r.synthetic ? "synthetic" : "";
+      const status = r.notice==="announced" ? "공고된 예정" : r.notice==="monthly" ? "월간 계획" : r.notice==="elapsed" ? "입찰일 경과 · 결과 미연결" : r.planned ? "공고된 예정" : r.synthetic ? "모형 결과" : "입찰 완료";
+      const stateClass = r.notice==="announced" ? "planned" : r.notice==="monthly" ? "monthly" : r.notice==="elapsed" ? "unlinked" : r.planned ? "planned" : r.synthetic ? "synthetic" : "";
       /* data-ridx: RESULTS 전역 인덱스. 같은 code가 여러 차수/비경쟁II로 중복될 수 있어
          클릭한 칩이 가리키는 바로 그 레코드를 정확히 특정하기 위함(KPI 동기화용). */
       const ridx = RESULTS.indexOf(r);
-      cell += `<button type="button" class="ev ${stateClass}${r===selectedAuction?" selected":""}" data-ridx="${ridx}" data-field="auc.schedule_cell" data-source="MOEF_KTB" data-freq="발행공고 T-3일" title="${a.ko} ${matLabel(r.mat)} ${r.seq} · ${status} · ${fmt(r.plan)}억" aria-label="${a.ko} ${matLabel(r.mat)} ${r.seq} · ${status}">${label}</button>`;
+      cell += `<button type="button" class="ev ${stateClass}${r===selectedAuction?" selected":""}" data-ridx="${ridx}" data-sidx="${CAL_SCHEDULE.indexOf(r)}" data-field="auc.schedule_cell" data-source="MOEF_KTB" data-freq="${r.notice==="monthly"?"월간 발행계획":"발행공고 T-3일"}" title="${a.ko} ${matLabel(r.mat)} ${r.seq} · ${status} · ${fmt(r.plan)}억" aria-label="${a.ko} ${matLabel(r.mat)} ${r.seq} · ${status}">${label}</button>`;
     });
     if(evs.length) cell += `</div>`;
     cell += `</div>`; html += cell;
@@ -917,12 +954,15 @@ function renderCal(){
   g.querySelectorAll(".ev").forEach(e=> e.addEventListener("click",()=>{
     /* 클릭한 칩이 가리키는 바로 그 RESULTS 레코드를 전역 인덱스로 특정(KPI 동기화 대상) */
     const ridx = parseInt(e.dataset.ridx,10);
-    const rec = Number.isInteger(ridx) ? RESULTS[ridx] : null;
+    const rec = Number.isInteger(ridx) && ridx>=0 ? RESULTS[ridx] : null;
     /* 상단 KPI 카드(2·3·4·5번 칸)를 클릭한 입찰 기준으로 갱신.
        P1↔P2 연동 제거됨: 캘린더 클릭은 더 이상 P2 블로터를 필터링하지 않는다. */
     if(rec){
       renderAucKPI(rec);
       document.getElementById("calMessage").textContent = `${rec.d} · ${AT[rec.t].ko} ${matLabel(rec.mat)} 선택`;
+    } else {
+      const schedule = CAL_SCHEDULE[+e.dataset.sidx];
+      if(schedule) document.getElementById("calMessage").textContent = `${schedule.d} · ${schedule.nm} · ${fmt(schedule.plan)}억원 · 결과 지표 미연결`;
     }
   }));
 }
@@ -2176,6 +2216,7 @@ wireFilterGroup("matFilter",  "m", activeMats);
 document.addEventListener("click",e=>{if(e.target.closest("#scr-auc .mnav-prev")){stepViewMonth(-1);}else if(e.target.closest("#scr-auc .mnav-next")){stepViewMonth(1);}});
 document.querySelector("#scr-auc .calendar-year").addEventListener("change",e=>setViewMonth(+e.target.value,viewMonth));
 document.querySelector("#scr-auc .calendar-month").addEventListener("change",e=>setViewMonth(viewYear,+e.target.value));
+document.getElementById("calCompOnly").addEventListener("change",renderCal);
 
 /* P2 조회기간 셀렉터(from/to) — BLOT_MONTHS 인덱스 구간 선택. R1 onResRange 와 동일하게 from>to 시 자동 스왑. */
 function initBlotRange(){
@@ -2233,9 +2274,13 @@ document.fonts.ready.then(syncBlotterSticky);
 /* Keep the blotter panel at one and a half times the rendered calendar height. */
 function syncAucBlotterHeight(){
   const grid=document.querySelector('#scr-auc .grid3');
-  grid.style.setProperty('--auc-blotter-height',grid.firstElementChild.getBoundingClientRect().height*1.5+'px');
+  const calendar=grid.firstElementChild;
+  if(!calendar.getClientRects().length) return;
+  const available=Math.max(260,window.innerHeight-(grid.getBoundingClientRect().top+window.scrollY)-12);
+  grid.style.setProperty('--auc-blotter-height',Math.min(calendar.getBoundingClientRect().height*1.5,available)+'px');
 }
 new ResizeObserver(syncAucBlotterHeight).observe(document.querySelector('#scr-auc .grid3 > .panel:first-child'));
+window.addEventListener('resize',syncAucBlotterHeight);
 syncAucBlotterHeight();
 </script>
 <script src="mockup/ktb-terminal-v5-i18n.js"></script>
