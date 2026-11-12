@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=1440, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>KTB TERMINAL v5 — 국고채 발행·입찰 정보단말 (Mock-up)</title>
 <!-- 역설계 규약: 모든 데이터 셀은 data-field(논리ID) / data-source(원천: MOEF_KTB·BOK_ECOS·KOFIA·DERIVED·EST) / data-freq(갱신주기) 속성을 가진다. 상세는 하단 #data-dictionary 참조. 기준시점 2026-09, 모두 더미데이터. -->
 <script src="mockup/vendor/chart.umd.4.4.1.min.js"></script>
@@ -52,7 +52,7 @@ body{
   --dmd-w1:var(--ce-orange);--dmd-w2:var(--ce-red);
   background:var(--bg); color:var(--tx);
   font-family:var(--sans); font-size:12px; line-height:1.35;
-  width:1440px; margin:0 auto; -webkit-font-smoothing:antialiased;
+  width:100%; margin:0; -webkit-font-smoothing:antialiased;
 }
 .num{font-family:var(--mono); font-variant-numeric:tabular-nums; text-align:right}
 .mono{font-family:var(--mono); font-variant-numeric:tabular-nums}
@@ -397,6 +397,48 @@ body.dark .mix-seg{color:#eef5ff}
 body.dark .mix-seg:nth-child(2),body.dark .mix-seg:nth-child(3){color:#142230}
 body.white .mix-seg{color:#142230}
 body.white .mix-seg:nth-child(3){color:#fff}
+/* Fluid terminal: compact spacing, natural page height, local scrolling for wide data. */
+body{padding:4px;min-width:0}
+.tabbar{height:auto;flex-wrap:wrap}
+.tab{padding:0 10px;height:auto;min-height:34px;letter-spacing:0;white-space:normal}
+.ui-controls{flex-wrap:wrap;padding:4px 6px}
+.screen,.panel,.p-body,.kpi{min-width:0}
+.kpis{grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr))}
+.kpi,#scr-auc .kpi{padding:6px 8px}
+#scr-auc .kpi{min-height:170px}
+.screen .grid3{grid-template-columns:repeat(auto-fit,minmax(min(100%,430px),1fr))!important;height:auto!important;min-height:0!important;align-items:start}
+#scr-auc .grid3 > .panel:first-child{height:auto;min-height:0;align-self:stretch}
+.panel{overflow:visible}
+.p-head{flex-wrap:wrap;padding:4px 6px}
+.p-head .p-sub{white-space:normal;overflow-wrap:anywhere}
+.p-body{padding:6px;max-width:100%;overflow:auto;flex:1 1 auto}
+.p-body canvas{max-width:100%}
+.rangesel{flex-wrap:wrap;max-width:100%}
+.blot-filters{padding:4px 6px;gap:4px 8px}
+.dictwrap{padding:8px;overflow:auto}
+.footnote{padding:6px;overflow-wrap:anywhere}
+#kpiSelName{white-space:normal!important;overflow:visible!important}
+table.blot .stick-3,#scr-auc table.blot .stick-3{max-width:none;overflow:visible;white-space:normal;min-width:172px}
+#resDrill td[data-field="bond.name"]{white-space:normal;overflow:visible!important;min-width:150px}
+.cal .cd .ev{white-space:normal;overflow:visible;overflow-wrap:anywhere;min-width:0;width:100%!important}
+.cal .cd{min-width:0}
+#scr-auc .cal .cd{min-height:54px}
+.speccard .row{gap:8px;flex-wrap:wrap}
+.heat{min-width:440px}
+.wf{min-width:360px}
+@media(max-width:900px){
+  .screen .grid3{grid-template-columns:minmax(0,1fr)!important}
+  table.blot th.stick,table.blot td.stick{position:static}
+  .ui-controls{margin-left:0}
+}
+@media(max-width:480px){
+  body{padding:2px}
+  .tab{flex:1 1 45%;padding:6px;justify-content:center;font-size:12px}
+  .ui-controls{width:100%;justify-content:flex-end}
+  .kpis{grid-template-columns:minmax(0,1fr)}
+  .mix-wrap{grid-template-columns:minmax(0,1fr);gap:8px}
+  .cmp-row{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body class="dark">
@@ -2044,8 +2086,27 @@ function switchScreen(scr){
   if(scr==="plan"&&!document.getElementById("planYoyMom")) renderPLAN();
   if(scr==="sd"&&!document.getElementById("sdStack")) renderSD();
   if(scr==="pd"&&!document.getElementById("ncbTrend")) renderPD();
-  setTimeout(()=>initCharts(scr),20);
+  setTimeout(()=>{initCharts(scr); fitTerminalCharts();},20);
 }
+
+function fitTerminalCharts(){
+  if(!window.Chart) return;
+  Object.values(Chart.instances).forEach(chart=>{
+    const canvas=chart.canvas;
+    if(!canvas || !canvas.closest('.screen.on')) return;
+    const parent=canvas.parentElement, css=getComputedStyle(parent);
+    const width=Math.floor(parent.clientWidth-parseFloat(css.paddingLeft)-parseFloat(css.paddingRight));
+    if(width>0 && Math.abs(chart.width-width)>1) chart.resize(width,chart.height);
+  });
+}
+let chartResizeFrame;
+window.addEventListener('resize',()=>{
+  cancelAnimationFrame(chartResizeFrame);
+  chartResizeFrame=requestAnimationFrame(()=>{
+    fitTerminalCharts();
+    if(selectedAuction && document.getElementById('scr-auc').classList.contains('on')) drawOHLC(selectedAuction);
+  });
+});
 
 /* ---------- 데이터 사전 렌더 ---------- */
 function renderDict(){
@@ -2251,6 +2312,7 @@ window.refreshTerminalCharts = function(){
   const active=document.querySelector('.screen.on');
   if(active) switchScreen(active.id.slice(4));
   if(selectedAuction) renderAucKPI(selectedAuction);
+  requestAnimationFrame(fitTerminalCharts);
 };
 </script>
 <script src="mockup/ktb-terminal-v5-i18n.js"></script>
