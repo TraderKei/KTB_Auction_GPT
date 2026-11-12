@@ -39,6 +39,8 @@ body.dark{
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
+html{background:#fff; color-scheme:light}
+html:has(body.dark){background:#18222c; color-scheme:dark}
 body{
   background:var(--bg); color:var(--tx);
   font-family:var(--sans); font-size:12px; line-height:1.35;
@@ -76,7 +78,7 @@ a{color:var(--accent); text-decoration:none}
 .tab .qmark{font-size:9px; color:var(--tx-dim)}
 .tab .tcode{font-family:var(--mono); color:var(--tx-dim); font-size:10px}
 .tab:hover{background:var(--bg-2); color:var(--tx)}
-.tab.on{background:var(--bg); color:#fff; border-bottom:2px solid var(--accent)}
+.tab.on{background:var(--bg); color:var(--tx); border-bottom:2px solid var(--accent)}
 .tab.on .tcode{color:var(--accent)}
 
 /* ---- KPI strip ---- */
@@ -85,7 +87,7 @@ a{color:var(--accent); text-decoration:none}
 .kpi:last-child{border-right:0}
 .kpi .k-l{font-size:10px; color:var(--tx-dim); text-transform:uppercase; letter-spacing:0.05em}
 .kpi .k-l .en{color:var(--tx-dim); font-weight:400}
-.kpi .k-v{font-family:var(--mono); font-size:19px; font-variant-numeric:tabular-nums; margin-top:2px; color:#fff}
+.kpi .k-v{font-family:var(--mono); font-size:19px; font-variant-numeric:tabular-nums; margin-top:2px; color:var(--tx)}
 .kpi .k-v small{font-size:11px; color:var(--tx-mut)}
 .kpi .k-d{font-size:10px; margin-top:1px}
 .kpi .k-spark{margin-top:3px; height:16px}
@@ -352,7 +354,7 @@ details#data-dictionary > summary::-webkit-details-marker{display:none}
 details#data-dictionary > summary::before{content:"▸ "; color:var(--accent)}
 details#data-dictionary[open] > summary::before{content:"▾ "}
 .dictwrap{padding:14px 16px; background:var(--bg)}
-.dictwrap h3{font-size:13px; margin:18px 0 8px; color:#fff; border-left:2px solid var(--accent); padding-left:8px}
+.dictwrap h3{font-size:13px; margin:18px 0 8px; color:var(--tx); border-left:2px solid var(--accent); padding-left:8px}
 .dictwrap h3:first-child{margin-top:0}
 table.dict{width:100%; border-collapse:collapse; font-size:10.5px; margin-bottom:8px}
 table.dict th{background:var(--bg-1); color:var(--tx-mut); text-align:left; padding:4px 6px; border:1px solid var(--bd); font-weight:500; white-space:nowrap}
@@ -367,7 +369,6 @@ table.dict code{font-family:var(--mono); background:var(--bg-2); padding:0 3px; 
 /* v5 preference bar and remaining semantic surfaces. */
 body{--ce-hover:#edf6ff;--ce-selected:#d3e3fd;background:var(--bg);color:var(--tx)}
 body.dark{--ce-hover:#2a4058;--ce-selected:#2d5a88}
-.tab.on,.kpi .k-v{color:var(--tx)}
 .tabbar{align-items:stretch}
 .ui-controls{margin-left:auto;display:flex;align-items:center;gap:8px;padding:0 10px;border-left:1px solid var(--bd);flex-shrink:0}
 .ui-controls fieldset{display:flex;gap:2px;align-items:center;margin:0;padding:0;border:0}
@@ -889,7 +890,7 @@ function heatColor(metric, v){
   const ramp = ["#d00058","#fd3c46","#ed6d1e","#7b8288","#84b0dd","#3899fa","#2864fd"];
   const idx = Math.round(norm*(ramp.length-1));
   const bg = ramp[idx];
-  const tx = (idx===3)? uiColor("--tx") : "#242424";
+  const tx = (idx===0 || idx===6) ? "#fff" : "#242424";
   return {bg,tx};
 }
 
@@ -1841,7 +1842,7 @@ function renderSD(){
       </div></div>
     <div class="panel"><div class="p-head"><span class="p-code">SD2</span><h3 id="sdWFTitle">수급 워터폴</h3></div>
       <div class="p-body"><div class="wf" id="sdWF" style="height:200px"></div>
-        <div class="legend" style="margin-top:4px;justify-content:center"><span><i style="background:var(--accent)"></i>발행(+)</span><span><i style="background:var(--up)"></i>상환/매입(−)</span><span><i style="background:var(--warn)"></i>교환(±)</span><span><i style="background:#fff"></i>순공급</span></div>
+        <div class="legend" style="margin-top:4px;justify-content:center"><span><i style="background:var(--accent)"></i>발행(+)</span><span><i style="background:var(--up)"></i>상환/매입(−)</span><span><i style="background:var(--warn)"></i>교환(±)</span><span><i style="background:var(--tx)"></i>순공급</span></div>
         <div class="speccard" id="sdWFDetail" style="margin-top:16px"></div>
       </div></div>
   </div>`;
