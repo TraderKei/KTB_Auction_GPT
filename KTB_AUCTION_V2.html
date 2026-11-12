@@ -181,6 +181,8 @@ table.blot td{
   font-family:var(--mono); font-variant-numeric:tabular-nums; text-align:right;
 }
 table.blot td.l{font-family:var(--sans); text-align:left}
+#blotter th:nth-child(4), #blotter td:nth-child(4),
+#blotter th:nth-child(11), #blotter td:nth-child(11){width:1%; padding-right:3px}
 table.blot tr:hover td{background:var(--ce-hover)}
 table.blot tr.sel td{background:var(--ce-selected)}
 
@@ -485,7 +487,7 @@ table.blot .stick-2{max-width:none;overflow:visible;white-space:normal;min-width
   </div>
 </div>
 
-<div id="v2-source-banner" style="padding:7px 14px;background:#123755;color:#fff;font-size:12px;line-height:1.5">v2 데이터 기준 · <strong>재정경제부 원문</strong>: 2026년 1~10월 계획, 일부 입찰결과·비경쟁인수·매입·교환. 11월 P1 일정은 10월 29일 발행계획과 확인된 개별 발행공고를 반영하며 결과 수치는 연결하지 않았습니다. <strong>한국은행 ECOS</strong>: 2026-10-07 국고채 30년 유통금리 4.491% (참고값). <strong>모형값 *</strong>: 결과가 없는 계획의 응찰·낙찰, 민평대비·수요점수, 2025년 비교·연간 전망, 만기상환·교환 순증감·순공급. 같은 만기 공시값과 월별 계획 규모를 기준으로 생성한 화면 예시이며 실제 거래·공시 수치가 아닙니다. 10월 결과와 9월 이후 비경쟁 결과는 수집이 불완전합니다. <a href="https://mofe.go.kr/st/fnancstats/ktb50201.do" style="color:#aee2ff">공식 입찰결과</a> · <a href="https://ecos.bok.or.kr/api/" style="color:#aee2ff">ECOS</a></div>
+<div id="v2-source-banner" style="padding:7px 14px;background:#123755;color:#fff;font-size:12px;line-height:1.5">v2 데이터 기준 · <strong>재정경제부 원문</strong>: 2026년 1~10월 계획, 일부 입찰결과·비경쟁인수·매입·교환. 11월 P1 일정은 10월 29일 발행계획과 확인된 개별 발행공고를 반영하며, 11월 2·3·9일 경쟁입찰 및 2·3·6일 비경쟁인수 공시를 연결했습니다. 11월 6일 교환 결과 금액은 미연결입니다. <strong>한국은행 ECOS</strong>: 2026-10-07 국고채 30년 유통금리 4.491% (참고값). <strong>모형값 *</strong>: 결과가 없는 계획의 응찰·낙찰, 민평대비·수요점수, 2025년 비교·연간 전망, 만기상환·교환 순증감·순공급. 같은 만기 공시값과 월별 계획 규모를 기준으로 생성한 화면 예시이며 실제 거래·공시 수치가 아닙니다. 10월 결과와 9월 이후 비경쟁 결과는 수집이 불완전합니다. <a href="https://mofe.go.kr/st/fnancstats/ktb50201.do" style="color:#aee2ff">공식 입찰결과</a> · <a href="https://ecos.bok.or.kr/api/" style="color:#aee2ff">ECOS</a></div>
 <section class="screen on" id="scr-auc">
   <div class="kpis">
     <div class="kpi">
@@ -566,7 +568,7 @@ table.blot .stick-2{max-width:none;overflow:visible;white-space:normal;min-width
           <thead><tr>
             <th class="l stick stick-1">입찰일</th><th class="l stick stick-2">종목명</th><th class="stick stick-3">만기</th>
             <th class="l">유형</th>
-            <th>발행예정</th><th>응찰</th><th>낙찰</th>
+            <th>발행예정액</th><th>응찰액</th><th>낙찰액</th>
             <th>응찰률</th><th>최고금리</th><th>가중평균</th>
             <th>테일</th><th>민평대비</th><th>비경쟁</th>
           </tr></thead>
@@ -589,7 +591,7 @@ table.blot .stick-2{max-width:none;overflow:visible;white-space:normal;min-width
 </details>
 
 <div class="footnote">
-  KTB TERMINAL v2 · 공식 공시 스냅샷 + 표시용 더미 · 재정경제부 원문 스냅샷(2026년 1~10월), 11월 P1 일정과 화면 예시용 더미데이터 혼합 ·
+  KTB TERMINAL v2 · 공식 공시 스냅샷 + 표시용 더미 · 재정경제부 원문 스냅샷(2026년 1~10월), 11월 확인된 입찰결과·P1 일정과 화면 예시용 더미데이터 혼합 ·
   원천표기: MOEF_KTB(기획재정부 국고채통합정보) / BOK_ECOS(한국은행) / KOFIA(금융투자협회 민평) / DERIVED(파생) / EST(추정)
 </div>
 
@@ -621,7 +623,17 @@ const AT = {
    · pd(참여 PD수): 비경쟁 II(PD옵션)에서만 공시되는 값 → 그 외 유형은 null. 화면 블로터에서는 미표기.
    · 비경쟁은 I/II/III/IV 유형이 있으며, 특히 비경쟁 II(PD옵션)는 지표물 경쟁입찰마다 연계되어
      여러 일자에 반복 발생한다(각 일자 모두 표기). */
-const RESULTS = V2.results;
+/* 2026-11 재정경제부 입찰결과 공시. 미공시 민평대비는 null로 둔다. */
+const NOV_RESULTS = [
+  {d:"2026-11-02",code:"MOEF:MOSF_000000000079825",nm:"국고03625-2809",mat:"2Y",seq:"26-7",t:"comp",plan:18000,bid:47450,won:18000,hi:3.725,wavg:3.725,lo:3.725,par:78.4,spr:null,nc:4090,src:"MOFE",source_ref:"MOEF:MOSF_000000000079825",demoFields:[]},
+  {d:"2026-11-02",code:"MOEF:MOSF_000000000079869:0",nm:"국고03625-2809",mat:"2Y",seq:"—",t:"nc2",plan:null,bid:null,won:4090,hi:null,wavg:null,lo:null,par:null,spr:null,nc:4090,pd:17,src:"MOFE",source_ref:"MOEF:MOSF_000000000079869",exercise_period:"2026.11.2.(월)∼11.5.(목)",demoFields:[]},
+  {d:"2026-11-03",code:"MOEF:MOSF_000000000079845",nm:"국고04500-5609",mat:"30Y",seq:"26-8",t:"comp",plan:20000,bid:39360,won:20000,hi:4.070,wavg:4.070,lo:4.070,par:93.6,spr:null,nc:8620,src:"MOFE",source_ref:"MOEF:MOSF_000000000079845",demoFields:[]},
+  {d:"2026-11-03",code:"MOEF:MOSF_000000000079897:0",nm:"국고04500-5609",mat:"30Y",seq:"—",t:"nc2",plan:null,bid:null,won:5020,hi:null,wavg:null,lo:null,par:null,spr:null,nc:5020,pd:16,src:"MOFE",source_ref:"MOEF:MOSF_000000000079897",exercise_period:"2026.11.3.(화)∼11.6.(금)",demoFields:[]},
+  {d:"2026-11-06",code:"MOEF:MOSF_000000000079897:1",nm:"국고04500-5609",mat:"30Y",seq:"—",t:"nc3",plan:null,bid:null,won:3600,hi:null,wavg:null,lo:null,par:null,spr:null,nc:3600,pd:19,src:"MOFE",source_ref:"MOEF:MOSF_000000000079897",exercise_period:"2026.11.6.(금)",demoFields:[]},
+  {d:"2026-11-09",code:"MOEF:MOSF_000000000079902",nm:"국고03500-2906",mat:"3Y",seq:"26-5",t:"comp",plan:11000,bid:33330,won:11000,hi:3.650,wavg:3.650,lo:3.650,par:50.2,spr:null,nc:null,src:"MOFE",source_ref:"MOEF:MOSF_000000000079902",demoFields:[]},
+  {d:"2026-11-09",code:"MOEF:MOSF_000000000079900",nm:"국고03625-2912",mat:"3Y",seq:"26-12",t:"comp",plan:11000,bid:35340,won:11000,hi:3.645,wavg:3.645,lo:3.645,par:22.5,spr:null,nc:null,src:"MOFE",source_ref:"MOEF:MOSF_000000000079900",demoFields:[]}
+];
+const RESULTS = V2.results.concat(NOV_RESULTS);
 
 /* 히트맵: 만기 × 최근 8개 입찰회차 종합 수요강도 스코어(0~100). 100=강세 */
 const HEAT_LABELS = V2.heatLabels;
@@ -886,13 +898,9 @@ const CAL_LABEL = {
 };
 
 /* 2026-11 월간 발행계획(2026-10-29)과 국채시장 개별 발행공고(11-10/11-11).
-   P1 일정 전용이며 결과 수치가 없는 행을 P2 결과 블로터에 섞지 않는다. */
+   결과가 확인된 입찰은 NOV_RESULTS에 두고, 미연결 일정만 여기에 남긴다. */
 const CAL_SCHEDULE = [
-  {d:"2026-11-02",t:"comp",mat:"2Y",nm:"국고03625-2809",seq:"26-7",plan:18000,notice:"elapsed"},
-  {d:"2026-11-03",t:"comp",mat:"30Y",nm:"국고04500-5609",seq:"26-8",plan:20000,notice:"elapsed"},
   {d:"2026-11-06",t:"ex",mat:"—",nm:"물가채 교환",seq:"—",plan:1000,notice:"elapsed"},
-  {d:"2026-11-09",t:"comp",mat:"3Y",nm:"국고03500-2906",seq:"26-5",plan:11000,notice:"elapsed"},
-  {d:"2026-11-09",t:"comp",mat:"3Y",nm:"국고00000-2912",seq:"26-12",plan:11000,notice:"elapsed"},
   {d:"2026-11-13",t:"comp",mat:"50Y",nm:"국고04625-7609",seq:"26-11",plan:7000,notice:"announced"},
   {d:"2026-11-16",t:"comp",mat:"10Y",nm:"국고04250-3606",seq:"26-6",plan:11000,notice:"announced"},
   {d:"2026-11-16",t:"comp",mat:"10Y",nm:"국고00000-3612",seq:"26-13",plan:11000,notice:"announced"},
@@ -989,7 +997,8 @@ function renderBlotter(){
      R1 filteredComp 의 구간 교집합 방식과 동일. from>to 는 호출 전 onBlotRange 에서 스왑 보정됨. */
   const lo = Math.min(blotStartIdx, blotEndIdx), hi = Math.max(blotStartIdx, blotEndIdx);
   const months = new Set(BLOT_MONTHS.slice(lo, hi+1));
-  RESULTS.filter(r=> months.has(r.d.slice(0,7)) && activeTypes.has(r.t) && (r.mat==="—" || activeMats.has(r.mat))).forEach(r=>{
+  RESULTS.filter(r=> months.has(r.d.slice(0,7)) && activeTypes.has(r.t) && (r.mat==="—" || activeMats.has(r.mat)))
+    .sort((a,b)=>b.d.localeCompare(a.d)).forEach(r=>{
     const a=AT[r.t];
     const btc = r.bid&&r.plan? (r.bid/r.plan):null;
     const mmdd = r.d.slice(2);                            /* "YY-MM-DD" 표시 (기간 조회는 여러 월에 걸칠 수 있어 연·월 명시) */
@@ -999,15 +1008,15 @@ function renderBlotter(){
       <td class="l stick stick-2" data-field="bond.name" data-source="MOEF_KTB" data-freq="발행공고 T-3일">${r.nm}</td>
       <td class="stick stick-3" data-field="bond.maturity" data-source="MOEF_KTB" data-freq="발행공고 T-3일">${matLabel(r.mat)}</td>
       <td class="l"><span class="at ${a.cls}" data-field="auc.type" data-source="MOEF_KTB" data-freq="발행공고 T-3일">${a.short}</span></td>
-      <td data-field="auc.plan_amt" data-source="MOEF_KTB" data-freq="발행공고 T-3일">${fmt(r.plan)}</td>
-      <td data-field="auc.bid_amt" data-source="${r.demoFields?.includes('bid')?'DEMO':'MOEF_KTB'}" data-freq="입찰일 T+0 16:00">${r.bid!=null?fmt(r.bid):"—"}</td>
-      <td data-field="auc.won_amt" data-source="${r.demoFields?.includes('won')?'DEMO':'MOEF_KTB'}" data-freq="입찰일 T+0 16:00">${r.won!=null?fmt(r.won):"—"}</td>
-      <td data-field="auc.bid_to_cover" data-source="DERIVED" data-freq="입찰일 T+0 16:00" class="${btc&&btc>=3?'down':''}">${btc?btc.toFixed(2):"—"}</td>
-      <td data-field="auc.high_rate" data-source="${r.demoFields?.includes('hi')?'DEMO':'MOEF_KTB'}" data-freq="입찰일 T+0 16:00">${r.hi!=null?r.hi.toFixed(3):"—"}</td>
-      <td data-field="auc.wavg_rate" data-source="${r.demoFields?.includes('wavg')?'DEMO':'MOEF_KTB'}" data-freq="입찰일 T+0 16:00">${r.wavg!=null?r.wavg.toFixed(3):"—"}</td>
-      <td data-field="auc.tail" data-source="DERIVED" data-freq="입찰일 T+0 16:00">${(r.hi!=null&&r.wavg!=null)?((r.hi-r.wavg)*100).toFixed(1):"—"}</td>
-      <td data-field="auc.spread_vs_mts" data-source="DEMO" data-freq="입찰일 T+0 16:00" class="${sprCls(r.spr)}">${r.spr!=null?(r.spr>0?"+":"")+r.spr.toFixed(1):"—"}</td>
-      <td data-field="auc.noncomp_amt" data-source="${r.demoFields?.includes('nc')?'DEMO':'MOEF_KTB'}" data-freq="입찰일 T+1">${r.nc!=null?fmt(r.nc):"—"}</td>`;
+       <td data-field="auc.plan_amt" data-source="MOEF_KTB" data-freq="발행공고 T-3일">${r.plan!=null?fmt(r.plan):"-"}</td>
+       <td data-field="auc.bid_amt" data-source="${r.demoFields?.includes('bid')?'DEMO':'MOEF_KTB'}" data-freq="입찰일 T+0 16:00">${r.bid!=null?fmt(r.bid):"-"}</td>
+       <td data-field="auc.won_amt" data-source="${r.demoFields?.includes('won')?'DEMO':'MOEF_KTB'}" data-freq="입찰일 T+0 16:00">${r.won!=null?fmt(r.won):"-"}</td>
+       <td data-field="auc.bid_to_cover" data-source="DERIVED" data-freq="입찰일 T+0 16:00" class="${btc&&btc>=3?'down':''}">${btc?btc.toFixed(2):"-"}</td>
+       <td data-field="auc.high_rate" data-source="${r.demoFields?.includes('hi')?'DEMO':'MOEF_KTB'}" data-freq="입찰일 T+0 16:00">${r.hi!=null?r.hi.toFixed(3):"-"}</td>
+       <td data-field="auc.wavg_rate" data-source="${r.demoFields?.includes('wavg')?'DEMO':'MOEF_KTB'}" data-freq="입찰일 T+0 16:00">${r.wavg!=null?r.wavg.toFixed(3):"-"}</td>
+       <td data-field="auc.tail" data-source="DERIVED" data-freq="입찰일 T+0 16:00">${(r.hi!=null&&r.wavg!=null)?((r.hi-r.wavg)*100).toFixed(1):"-"}</td>
+       <td data-field="auc.spread_vs_mts" data-source="DEMO" data-freq="입찰일 T+0 16:00" class="${sprCls(r.spr)}">${r.spr!=null?(r.spr>0?"+":"")+r.spr.toFixed(1):"-"}</td>
+       <td data-field="auc.noncomp_amt" data-source="${r.demoFields?.includes('nc')?'DEMO':'MOEF_KTB'}" data-freq="입찰일 T+1">${r.nc!=null?fmt(r.nc):"-"}</td>`;
     if(!r.planned) tr.style.cursor="pointer", tr.addEventListener("click",()=>{document.querySelectorAll("#blotBody tr").forEach(x=>x.classList.remove("sel"));tr.classList.add("sel");renderAucKPI(r);});
     /* 재렌더(월/필터 변경) 후에도 현재 선택 입찰이 계속 보이면 sel 하이라이트 복원 */
     if(!r.planned && selectedAuction && r.code===selectedAuction.code && r.d===selectedAuction.d && r.seq===selectedAuction.seq) tr.classList.add("sel");
