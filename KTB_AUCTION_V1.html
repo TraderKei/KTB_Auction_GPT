@@ -32,6 +32,8 @@
   --mono:"Noto Sans KR Web",sans-serif;--sans:"Noto Sans KR Web",sans-serif;
 }
 body.dark{
+  --ce-blue:#75a7ff;--ce-primary:#64b5ff;--ce-green:#65c5cc;
+  --ce-red:#ff7b86;--ce-orange:#ffb16b;
   --ce-bg:#18222c;--ce-bg2:#41454b;--ce-bg3:#273039;
   --ce-border:#2e333c;--ce-border2:#313c46;--ce-text:#e6e6e6;
   --bg-1:#273039;--bg-2:#273039;--panel:#18222c;
@@ -42,6 +44,12 @@ html,body{margin:0;padding:0}
 html{background:#fff; color-scheme:light}
 html:has(body.dark){background:#18222c; color-scheme:dark}
 body{
+  /* Resolve aliases on the theme owner: root aliases otherwise inherit light values. */
+  --bg:var(--ce-bg);--bg-1:var(--ce-bg2);--bg-2:var(--ce-bg3);--panel:var(--ce-bg);
+  --tx:var(--ce-text);--bd:var(--ce-border);--bd-2:var(--ce-border2);
+  --accent:var(--ce-primary);--up:var(--ce-red);--down:var(--ce-green);--warn:var(--ce-orange);
+  --dmd-s3:var(--ce-blue);--dmd-s2:var(--ce-primary);
+  --dmd-w1:var(--ce-orange);--dmd-w2:var(--ce-red);
   background:var(--bg); color:var(--tx);
   font-family:var(--sans); font-size:12px; line-height:1.35;
   width:1440px; margin:0 auto; -webkit-font-smoothing:antialiased;
@@ -59,7 +67,7 @@ a{color:var(--accent); text-decoration:none}
   font-size:11px; padding:3px 7px; border-radius:2px; cursor:pointer; font-family:var(--sans);
 }
 .chip{color:var(--tx-mut)}
-.chip.on{background:var(--accent); border-color:var(--accent); color:#fff}
+.chip.on{background:var(--accent); border-color:var(--accent); color:#142230}
 .chip.mat{padding:2px 6px}
 /* 필터 그룹 '전체' 토글 버튼: 개별 칩과 구분되도록 우측에 얇은 구분선 + 점선 테두리로 역할 차별화.
    on=모두 선택 상태(accent), off=전부 해제 상태(기존 chip off 색). 색 토큰은 기존 다크 터미널 변수 재사용. */
@@ -374,7 +382,7 @@ body.dark{--ce-hover:#2a4058;--ce-selected:#2d5a88}
 .ui-controls fieldset{display:flex;gap:2px;align-items:center;margin:0;padding:0;border:0}
 .ui-controls legend{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 .ui-controls button{background:var(--bg-2);border:1px solid var(--bd-2);color:var(--tx);border-radius:3px;padding:3px 6px;font:11px var(--sans);cursor:pointer}
-.ui-controls button.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.ui-controls button.active{background:var(--accent);border-color:var(--accent);color:#142230}
 .ui-controls button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 .at-comp,.at-nc1,.at-nc2,.at-nc3,.at-nc4,.at-bb,.at-ex{background:var(--bg-2);border-color:var(--bd-2)}
 .at-comp{color:var(--ce-blue)}.at-nc1,.at-nc2{color:var(--ce-green)}
@@ -385,6 +393,10 @@ body.dark{--ce-hover:#2a4058;--ce-selected:#2d5a88}
 table.blot tr:hover td,table.blot tr:hover td.stick{background:var(--ce-hover)}
 table.blot tr.sel td,table.blot tr.sel td.stick{background:var(--ce-selected)}
 table.dict code,.erd{background:var(--bg-2);color:var(--tx)}
+body.dark .mix-seg{color:#eef5ff}
+body.dark .mix-seg:nth-child(2),body.dark .mix-seg:nth-child(3){color:#142230}
+body.white .mix-seg{color:#142230}
+body.white .mix-seg:nth-child(3){color:#fff}
 </style>
 </head>
 <body class="dark">
@@ -887,10 +899,13 @@ function heatColor(metric, v){
   else if(metric==="btc") norm = Math.max(0,Math.min(1,(v-2.2)/(3.6-2.2)));
   else if(metric==="tail") norm = 1-Math.max(0,Math.min(1,(v-0.3)/(4.1-0.3)));   /* 낮을수록 강세 */
   else if(metric==="spr") norm = 1-Math.max(0,Math.min(1,(v+1.6)/(1.5+1.6)));    /* 낮을(음)수록 강세 */
-  const ramp = ["#d00058","#fd3c46","#ed6d1e","#7b8288","#84b0dd","#3899fa","#2864fd"];
+  const dark = document.body.classList.contains("dark");
+  const ramp = dark
+    ? ["#763347","#86414c","#795330","#3c4a59","#365b78","#285e88","#244f83"]
+    : ["#d00058","#fd3c46","#ed6d1e","#7b8288","#84b0dd","#3899fa","#2864fd"];
   const idx = Math.round(norm*(ramp.length-1));
   const bg = ramp[idx];
-  const tx = (idx===0 || idx===6) ? "#fff" : "#242424";
+  const tx = dark ? "#eef5ff" : (idx===0 || idx===6) ? "#fff" : "#242424";
   return {bg,tx};
 }
 
@@ -961,7 +976,7 @@ function renderCal(){
     evs.forEach(r=>{
       const a=AT[r.t]; const w = Math.max(0.4, Math.min(1,(r.plan/24000)));
       const bg = {comp:"var(--ce-selected)",nc1:"var(--bg-2)",nc2:"var(--bg-2)",nc3:"var(--bg-2)",nc4:"var(--bg-2)",bb:"var(--bg-2)",ex:"var(--bg-2)"}[r.t];
-      const fg = {comp:"#3899fa",nc1:"#84b0dd",nc2:"#ffd179",nc3:"#ffd179",nc4:"#2864fd",bb:"#fd3c46",ex:"#43a6c1"}[r.t];
+      const fg = {comp:"var(--accent)",nc1:"var(--down)",nc2:"var(--warn)",nc3:"var(--warn)",nc4:"var(--ce-blue)",bb:"var(--up)",ex:"var(--down)"}[r.t];
       const label = CAL_LABEL[r.t](r);
       /* data-ridx: RESULTS 전역 인덱스. 같은 code가 여러 차수/비경쟁II로 중복될 수 있어
          클릭한 칩이 가리키는 바로 그 레코드를 정확히 특정하기 위함(KPI 동기화용). */
@@ -1403,7 +1418,9 @@ function renderRES(){
   });
   applyResFilter();
 }
+let selectedResult = null;
 function renderR2(r){
+  selectedResult = r;
   document.getElementById("r2Sub").textContent = `${r.code} ${r.seq}`;
   /* 차등가격 구간별 낙찰액(r.tiers)은 미공시(역산 불가) → 공시 3금리 OHLC + 부분낙찰률로 대체.
      최저낙찰금리(auc.low_rate)·부분낙찰률(auc.partial_alloc_rate)은 이제 결과공시 수집값을 그대로 사용. */
@@ -1956,6 +1973,7 @@ function renderPD(){
 const charted = {};
 function initCharts(scr){
   if(charted[scr]) return; charted[scr]=true;
+  if(scr==="res" && selectedResult && document.getElementById("r2ohlc")) renderR2(selectedResult);
   const gopt=(extra={})=>({responsive:false,maintainAspectRatio:false,plugins:{legend:{display:extra.leg!==false,labels:{color:uiColor("--tx-mut"),font:{size:9},boxWidth:8}}},
     scales:{x:{ticks:{color:uiColor("--tx-dim"),font:{size:9}},grid:{color:uiColor("--bd")}},y:{ticks:{color:uiColor("--tx-dim"),font:{size:9}},grid:{color:uiColor("--bd")}}}});
   const cols={ "2Y":"#43a6c1","3Y":"#84b0dd","5Y":"#ffd179","10Y":"#3899fa","20Y":"#2864fd","30Y":"#fd3c46" };
