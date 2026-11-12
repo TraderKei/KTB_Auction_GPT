@@ -302,19 +302,22 @@ table.blot .stick-3{left:226px; min-width:62px; width:62px; box-shadow:1px 0 0 v
 .section-title{font-size:10px; color:var(--tx-dim); text-transform:uppercase; letter-spacing:0.06em; margin:0 0 5px}
 
 /* P1 calendar follows the UST baseline's compact month layout. */
+#scr-auc{--auc-outline:#dee0ea}
 #scr-auc .grid3{background:transparent; gap:12px; padding:12px; align-items:start}
-#scr-auc .grid3 > .panel{border:1px solid var(--bd-2); border-radius:10px; overflow:hidden}
-#scr-auc .grid3 > .panel:first-child{grid-column:1; grid-row:1 / 3; align-self:start; height:auto; min-height:0}
-#scr-auc .grid3 > .panel:last-child{grid-column:2; grid-row:2; height:var(--auc-blotter-height, 600px); min-height:0}
-#scr-auc .grid3 > .panel:last-child > .p-body{min-height:0; overflow:auto; flex:1 1 auto}
-#scr-auc .grid3 > .panel > .p-head{height:38px; min-height:38px; flex:0 0 38px; flex-wrap:nowrap; margin:8px; border:1px solid var(--bd); border-radius:7px; background:#fff; color:#242424}
+#scr-auc .grid3 > .panel{border:1px solid var(--auc-outline); border-radius:10px; overflow:hidden}
+#scr-auc #aucCalendarPanel{grid-column:1; grid-row:2; align-self:start; height:auto; min-height:0}
+#scr-auc #aucBlotterPanel{grid-column:2; grid-row:2; height:var(--auc-blotter-height, 600px); min-height:0}
+#scr-auc #aucBlotterPanel > .p-body{min-height:0; overflow:auto; flex:1 1 auto}
+#scr-auc .grid3 > .panel > .p-head{height:38px; min-height:38px; flex:0 0 38px; flex-wrap:nowrap; margin:8px; border:1px solid var(--auc-outline); border-radius:7px; background:#fff; color:#242424}
 #scr-auc .grid3 > .panel .p-head .p-code,#scr-auc .grid3 > .panel .p-head .p-sub{color:#68717b}
-#scr-auc .grid3 > .panel .p-head .p-code{border-color:#d6dce2}
-#scr-auc .grid3 > .panel:last-child .rangesel{flex-wrap:nowrap; flex:0 0 auto}
-#scr-auc .grid3 > .panel:last-child .p-sub{min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+#scr-auc .grid3 > .panel .p-head .p-code{border-color:var(--auc-outline)}
+#scr-auc #aucBlotterPanel .rangesel{flex-wrap:nowrap; flex:0 0 auto}
+#scr-auc #aucBlotterPanel .p-sub{min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+#scr-auc #aucBlotterPanel .rangesel select{background:transparent; color:#242424; border-color:var(--auc-outline); color-scheme:light}
+#scr-auc #aucBlotterPanel .rangesel .rs-lbl,#scr-auc #aucBlotterPanel .rangesel .rs-tilde{color:#68717b}
 #scr-auc .grid3 > .kpis{grid-column:2; grid-row:1; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; border:0}
-#scr-auc .grid3 > .kpis .kpi{border:1px solid var(--bd-2); border-radius:10px; background:var(--panel); min-width:0}
-#scr-auc .auc-detail{margin:0 12px; padding:12px; border:1px solid var(--bd); border-radius:8px; background:var(--bg)}
+#scr-auc .grid3 > .kpis .kpi{border:1px solid var(--auc-outline); border-radius:10px; background:var(--panel); min-width:0}
+#scr-auc .auc-detail{grid-column:1; grid-row:1; padding:12px; border:1px solid var(--auc-outline); border-radius:10px; background:var(--panel)}
 #scr-auc .auc-detail-top{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:10px}
 #scr-auc .auc-detail-top h4{font-size:12px}
 #scr-auc .auc-detail-grid{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px 12px}
@@ -370,7 +373,7 @@ table.blot .stick-3{left:226px; min-width:62px; width:62px; box-shadow:1px 0 0 v
 #scr-auc table.blot{font-size:12.5px}
 #scr-auc table.blot th{font-size:11px}
 #scr-auc table.blot th .en{font-size:10px}
-#scr-auc table.blot td{padding:4px 6px}
+#scr-auc table.blot td{padding:4px 6px; font-size:12.5px}
 #scr-auc .badge{font-size:10px}
 #scr-auc .blot-filters .lbl{font-size:11px}
 #scr-auc .blot-filters .chip{font-size:12px}
@@ -441,7 +444,7 @@ body{padding:4px;min-width:0}
 .screen .grid3{grid-template-columns:repeat(auto-fit,minmax(min(100%,430px),1fr))!important;height:auto!important;min-height:0!important;align-items:start}
 #scr-auc .grid3{grid-template-columns:360px minmax(0,1fr)!important; height:auto!important; min-height:0!important}
 @media(min-width:1500px){#scr-auc .grid3{grid-template-columns:390px minmax(0,1fr)!important}}
-#scr-auc .grid3 > .panel:first-child{height:auto;min-height:0;align-self:start}
+#scr-auc #aucCalendarPanel{height:auto;min-height:0;align-self:start}
 #scr-auc #spk2,#scr-auc #spk3{padding-top:0;height:96px!important}
 .panel{overflow:visible}
 .p-head{flex-wrap:wrap;padding:4px 6px}
@@ -463,7 +466,7 @@ table.blot .stick-2{max-width:none;overflow:visible;white-space:normal;min-width
 .wf{min-width:360px}
 @media(max-width:900px){
   .screen .grid3,#scr-auc .grid3{grid-template-columns:minmax(0,1fr)!important;height:auto!important;min-height:0!important}
-  #scr-auc .grid3 > .panel:first-child,#scr-auc .grid3 > .kpis,#scr-auc .grid3 > .panel:last-child{grid-column:1;grid-row:auto}
+  #scr-auc .auc-detail,#scr-auc .grid3 > .kpis,#scr-auc #aucCalendarPanel,#scr-auc #aucBlotterPanel{grid-column:1;grid-row:auto}
   table.blot th.stick,table.blot td.stick{position:static}
   .ui-controls{margin-left:0}
 }
@@ -502,11 +505,7 @@ table.blot .stick-2{max-width:none;overflow:visible;white-space:normal;min-width
 
 <section class="screen on" id="scr-auc">
   <div class="grid3">
-    <div class="panel">
-      <div class="p-head"><span class="p-code">P1</span><h3>입찰 캘린더</h3>
-        <span class="mnav"><button type="button" class="mnav-prev" title="이전 월" aria-label="이전 월">‹</button><select class="calendar-year" aria-label="연도 선택"></select><select class="calendar-month" aria-label="월 선택"></select><button type="button" class="mnav-next" title="다음 월" aria-label="다음 월">›</button></span>
-      </div>
-      <div class="auc-detail" aria-live="polite">
+    <div class="auc-detail" aria-live="polite">
         <div class="auc-detail-top"><h4>선택 입찰 발행·입찰정보</h4><span class="at" id="aucDetailType">—</span></div>
         <div class="auc-detail-grid">
           <div><span class="label">종목명</span><strong id="aucDetailName" data-field="bond.name" data-source="MOEF_KTB" data-freq="발행공고 T-3일">—</strong></div>
@@ -516,6 +515,10 @@ table.blot .stick-2{max-width:none;overflow:visible;white-space:normal;min-width
           <div><span class="label">발행예정금액</span><strong id="aucDetailPlan" data-field="auc.plan_amt" data-source="MOEF_KTB" data-freq="발행공고 T-3일">—</strong></div>
           <div><span class="label">대금납입일</span><strong id="aucDetailPay" data-field="auc.pay_date" data-source="MOEF_KTB" data-freq="발행공고 T-3일">—</strong></div>
         </div>
+    </div>
+    <div class="panel" id="aucCalendarPanel">
+      <div class="p-head"><span class="p-code">P1</span><h3>입찰 캘린더</h3>
+        <span class="mnav"><button type="button" class="mnav-prev" title="이전 월" aria-label="이전 월">‹</button><select class="calendar-year" aria-label="연도 선택"></select><select class="calendar-month" aria-label="월 선택"></select><button type="button" class="mnav-next" title="다음 월" aria-label="다음 월">›</button></span>
       </div>
       <div class="p-body cal-body">
         <div class="cal-meta"><p class="cal-summary" id="calSummary"></p><label class="cal-filter"><input type="checkbox" id="calCompOnly">경쟁만 조회</label></div>
@@ -546,7 +549,7 @@ table.blot .stick-2{max-width:none;overflow:visible;white-space:normal;min-width
       </div>
     </div>
 
-    <div class="panel">
+    <div class="panel" id="aucBlotterPanel">
       <div class="p-head"><span class="p-code">P2</span><h3>입찰 결과 블로터</h3>
         <span class="rangesel">
           <span class="rs-lbl">기간</span>
@@ -554,7 +557,7 @@ table.blot .stick-2{max-width:none;overflow:visible;white-space:normal;min-width
           <span class="rs-tilde">~</span>
           <select id="blotEnd"></select>
         </span>
-        <span class="p-sub" style="margin-left:8px" id="blotSub">전체 · 정렬: 입찰일 ▼</span></div>
+        <span class="p-sub" style="margin-left:8px">(단위: 억원, %, bp)</span></div>
       <div class="blot-filters">
         <div class="filtergrp" id="typeFilter">
           <span class="lbl">입찰유형</span>
@@ -1037,13 +1040,10 @@ function renderBlotter(){
     tr.dataset.ridx = RESULTS.indexOf(r);
     tb.appendChild(tr);
   });
-  /* 서브텍스트: 현재 조회기간 표기 */
-  const loM = BLOT_MONTHS[Math.min(blotStartIdx, blotEndIdx)], hiM = BLOT_MONTHS[Math.max(blotStartIdx, blotEndIdx)];
-  const periodTxt = loM===hiM ? loM : `${loM} ~ ${hiM}`;
-  document.getElementById("blotSub").textContent = `${periodTxt} · 정렬: 입찰일 ▼`;
 }
 function revealBlotterRecord(r){
   const monthIdx = BLOT_MONTHS.indexOf(r.d.slice(0,7));
+  const needsRender = monthIdx<blotStartIdx || monthIdx>blotEndIdx || !activeTypes.has(r.t) || (r.mat!=="—" && !activeMats.has(r.mat));
   if(monthIdx<blotStartIdx) blotStartIdx=monthIdx;
   if(monthIdx>blotEndIdx) blotEndIdx=monthIdx;
   document.getElementById("blotStart").value=blotStartIdx;
@@ -1056,8 +1056,14 @@ function revealBlotterRecord(r){
     if(chip) chip.classList.add("on");
     container.querySelector(".chip-all").classList.toggle("on",[...container.querySelectorAll(".chip:not(.chip-all)")].every(c=>c.classList.contains("on")));
   }
-  renderBlotter();
-  document.querySelector("#blotBody tr.sel")?.scrollIntoView({block:"nearest",inline:"nearest"});
+  if(needsRender) renderBlotter();
+  const row=document.querySelector("#blotBody tr.sel");
+  const body=document.querySelector("#aucBlotterPanel .p-body");
+  if(row && body){
+    const rowRect=row.getBoundingClientRect(), bodyRect=body.getBoundingClientRect();
+    if(rowRect.top<bodyRect.top) body.scrollTop+=rowRect.top-bodyRect.top;
+    else if(rowRect.bottom>bodyRect.bottom) body.scrollTop+=rowRect.bottom-bodyRect.bottom;
+  }
 }
 
 /* 동일 만기 과거 입찰 추이 — 선택 종목과 같은 만기(mat)의 경쟁입찰(comp) 낙찰 완료분을
@@ -2313,13 +2319,13 @@ new ResizeObserver(syncBlotterSticky).observe(document.getElementById('blotter')
 document.fonts.ready.then(syncBlotterSticky);
 /* Keep the blotter panel at one and a half times the rendered calendar height. */
 function syncAucBlotterHeight(){
-  const grid=document.querySelector('#scr-auc .grid3');
-  const calendar=grid.firstElementChild;
+  const calendar=document.getElementById('aucCalendarPanel');
+  const blotter=document.getElementById('aucBlotterPanel');
   if(!calendar.getClientRects().length) return;
-  const available=Math.max(260,window.innerHeight-(grid.getBoundingClientRect().top+window.scrollY)-12);
-  grid.style.setProperty('--auc-blotter-height',Math.min(calendar.getBoundingClientRect().height*1.5,available)+'px');
+  const available=Math.max(260,window.innerHeight-blotter.getBoundingClientRect().top-12);
+  blotter.style.setProperty('--auc-blotter-height',Math.min(calendar.getBoundingClientRect().height*1.5,available)+'px');
 }
-new ResizeObserver(syncAucBlotterHeight).observe(document.querySelector('#scr-auc .grid3 > .panel:first-child'));
+new ResizeObserver(syncAucBlotterHeight).observe(document.getElementById('aucCalendarPanel'));
 window.addEventListener('resize',syncAucBlotterHeight);
 syncAucBlotterHeight();
 </script>
