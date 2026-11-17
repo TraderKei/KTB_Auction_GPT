@@ -104,9 +104,19 @@ a{color:var(--accent); text-decoration:none}
 #scr-auc .auc-insights{grid-column:2; grid-row:1; min-width:0; display:grid; gap:12px}
 #scr-auc .spot-grid{display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:8px}
 #scr-auc .spot-card,#scr-auc .trend-card{min-width:0; border:1px solid var(--auc-outline); border-radius:10px; background:var(--panel); padding:10px 12px}
-#scr-auc .spot-card{min-height:112px}
-#scr-auc .spot-label,#scr-auc .trend-label{font-size:11px; color:var(--tx-dim); line-height:1.3}
+#scr-auc .spot-card{min-height:112px; position:relative}
+#scr-auc .spot-card:hover,#scr-auc .spot-card:focus-within{z-index:2}
+#scr-auc .spot-head{display:flex; align-items:flex-start; justify-content:space-between; gap:6px}
+#scr-auc .spot-label{font-size:12.5px; color:#242424; font-weight:700; line-height:1.3}
+body.dark #scr-auc .spot-label{color:#e6e6e6}
+#scr-auc .trend-label{font-size:11px; color:var(--tx-dim); line-height:1.3}
+#scr-auc .spot-info{width:17px; height:17px; flex:0 0 17px; padding:0; border:1px solid var(--tx-dim); border-radius:50%; background:transparent; color:var(--tx-dim); font:700 11px/15px var(--sans); text-align:center; cursor:help}
+#scr-auc .spot-info:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+#scr-auc .spot-tooltip{display:none; position:absolute; top:31px; right:8px; width:min(250px,calc(100vw - 32px)); padding:9px 11px; border:1px solid var(--bd-2); border-radius:6px; background:var(--panel); color:var(--tx); box-shadow:0 6px 18px #0003; font-size:11px; font-weight:400; line-height:1.5; text-align:left; white-space:normal; z-index:3}
+#scr-auc .spot-info:hover .spot-tooltip,#scr-auc .spot-info:focus .spot-tooltip{display:block}
 #scr-auc .spot-value{font-family:var(--mono); font-size:21px; font-variant-numeric:tabular-nums; line-height:1.2; margin:5px 0}
+#scr-auc .spot-value.up{color:var(--up)}
+#scr-auc .spot-value.down{color:var(--down)}
 #scr-auc .spot-value small{font-size:11px; color:var(--tx-mut)}
 #scr-auc .spot-sub{font-size:10px; color:var(--tx-mut); line-height:1.45}
 #scr-auc .spot-sub .up{color:var(--up)}
@@ -319,6 +329,11 @@ table.blot .stick-3{left:226px; min-width:62px; width:62px; box-shadow:1px 0 0 v
 #scr-auc .auc-detail{grid-column:1; grid-row:1; padding:12px; border:1px solid var(--auc-outline); border-radius:10px; background:var(--panel)}
 #scr-auc .auc-detail-top{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:10px}
 #scr-auc .auc-detail-top h4{font-size:12px}
+#scr-auc .auc-detail-hero{display:flex; align-items:center; gap:7px; flex-wrap:wrap; margin-bottom:12px}
+#scr-auc .auc-detail-hero strong{font-size:25px; font-weight:800; line-height:1.2; letter-spacing:-.03em}
+#scr-auc .issue-badge{display:none; padding:2px 7px; border-radius:4px; border:1px solid var(--bd-2); background:var(--bg-2); color:var(--tx-mut); font-size:10px; font-weight:700}
+#scr-auc .issue-badge.new{display:inline-block; color:var(--ce-blue)}
+#scr-auc .issue-badge.reopen{display:inline-block; color:var(--ce-orange)}
 #scr-auc .auc-detail-grid{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px 12px}
 #scr-auc .auc-detail-grid > div{min-width:0}
 #scr-auc .auc-detail-grid .label{display:block; color:var(--tx-dim); font-size:10px}
@@ -504,9 +519,9 @@ table.blot .stick-2{max-width:none;overflow:visible;white-space:normal;min-width
   <div class="grid3">
     <div class="auc-detail" aria-live="polite">
         <div class="auc-detail-top"><h4>선택 입찰 발행·입찰정보</h4><span class="at" id="aucDetailType">—</span></div>
+        <div class="auc-detail-hero"><strong id="aucDetailMat" data-field="bond.maturity" data-source="MOEF_KTB" data-freq="발행공고 T-3일">—</strong><span class="issue-badge" id="aucDetailIssue">—</span></div>
         <div class="auc-detail-grid">
           <div><span class="label">종목명</span><strong id="aucDetailName" data-field="bond.name" data-source="MOEF_KTB" data-freq="발행공고 T-3일">—</strong></div>
-          <div><span class="label">만기</span><strong id="aucDetailMat" data-field="bond.maturity" data-source="MOEF_KTB" data-freq="발행공고 T-3일">—</strong></div>
           <div><span class="label">입찰일</span><strong id="aucDetailDate" data-field="auc.bid_date" data-source="MOEF_KTB" data-freq="발행공고 T-3일">—</strong></div>
           <div><span class="label">입찰시간</span><strong id="aucDetailTime" data-field="auc.bid_time" data-source="MOEF_KTB" data-freq="입찰공고">—</strong></div>
           <div><span class="label">발행예정금액</span><strong id="aucDetailPlan" data-field="auc.plan_amt" data-source="MOEF_KTB" data-freq="발행공고 T-3일">—</strong></div>
@@ -529,11 +544,11 @@ table.blot .stick-2{max-width:none;overflow:visible;white-space:normal;min-width
 
     <div class="auc-insights" aria-label="선택 입찰 지표와 동일 만기 추이">
       <div class="spot-grid" aria-label="선택 입찰 Spot 지표">
-        <div class="spot-card"><div class="spot-label">응찰률</div><div class="spot-value" id="spotBtc" data-field="auc.bid_to_cover" data-source="DERIVED">—</div><div class="spot-sub" id="spotBtcCompare">직전 6회 평균 —</div></div>
-        <div class="spot-card"><div class="spot-label">가중평균낙찰금리</div><div class="spot-value" id="spotWavg" data-field="auc.wavg_rate" data-source="MOEF_KTB">—</div><div class="spot-sub" id="spotWavgCompare">직전 동일 만기 —</div></div>
-        <div class="spot-card"><div class="spot-label">부분낙찰률</div><div class="spot-value" id="spotPartial" data-field="auc.partial_alloc_rate" data-source="MOEF_KTB">—</div><div class="spot-sub" id="spotPartialCompare">직전 동일 만기 —</div></div>
-        <div class="spot-card"><div class="spot-label">테일</div><div class="spot-value" id="spotTail" data-field="auc.tail" data-source="DERIVED">—</div><div class="spot-sub">최고낙찰금리 − 가중평균낙찰금리</div></div>
-        <div class="spot-card"><div class="spot-label">응찰금리범위</div><div class="spot-value" id="spotBidRange" data-field="auc.bid_rate_range" data-source="DERIVED">—</div><div class="spot-sub" id="spotBidRangeCompare">직전 6회 평균 —</div><div class="spot-sub" id="spotAwardBounds">최고낙찰 — · 최저낙찰 —</div></div>
+        <div class="spot-card"><div class="spot-head"><div class="spot-label">응찰률</div><button type="button" class="spot-info" aria-label="응찰률 설명" aria-describedby="spotBtcHelp">!<span class="spot-tooltip" id="spotBtcHelp" role="tooltip">응찰액 ÷ 발행예정액 × 100. 직전 동일 만기의 유효한 6개 값 평균과 비교합니다.</span></button></div><div class="spot-value" id="spotBtc" data-field="auc.bid_to_cover" data-source="DERIVED">—</div><div class="spot-sub" id="spotBtcCompare">직전 6회 평균 —</div></div>
+        <div class="spot-card"><div class="spot-head"><div class="spot-label">가중평균낙찰금리</div><button type="button" class="spot-info" aria-label="가중평균낙찰금리 설명" aria-describedby="spotWavgHelp">!<span class="spot-tooltip" id="spotWavgHelp" role="tooltip">낙찰 금리의 가중평균입니다. 직전 동일 만기 경쟁입찰과의 차이를 bp로 표시합니다.</span></button></div><div class="spot-value" id="spotWavg" data-field="auc.wavg_rate" data-source="MOEF_KTB">—</div><div class="spot-sub" id="spotWavgCompare">직전 동일 만기 —</div></div>
+        <div class="spot-card"><div class="spot-head"><div class="spot-label">부분낙찰률</div><button type="button" class="spot-info" aria-label="부분낙찰률 설명" aria-describedby="spotPartialHelp">!<span class="spot-tooltip" id="spotPartialHelp" role="tooltip">공시된 부분낙찰률입니다. 직전 동일 만기 경쟁입찰과의 차이를 %p로 표시합니다.</span></button></div><div class="spot-value" id="spotPartial" data-field="auc.partial_alloc_rate" data-source="MOEF_KTB">—</div><div class="spot-sub" id="spotPartialCompare">직전 동일 만기 —</div></div>
+        <div class="spot-card"><div class="spot-head"><div class="spot-label">테일</div><button type="button" class="spot-info" aria-label="테일 설명" aria-describedby="spotTailHelp">!<span class="spot-tooltip" id="spotTailHelp" role="tooltip">최고낙찰금리 − 가중평균낙찰금리. 직전 동일 만기 경쟁입찰과의 차이를 bp로 표시합니다.</span></button></div><div class="spot-value" id="spotTail" data-field="auc.tail" data-source="DERIVED">—</div><div class="spot-sub" id="spotTailCompare">직전 동일 만기 —</div></div>
+        <div class="spot-card"><div class="spot-head"><div class="spot-label">응찰금리범위</div><button type="button" class="spot-info" aria-label="응찰금리범위 설명" aria-describedby="spotBidRangeHelp">!<span class="spot-tooltip" id="spotBidRangeHelp" role="tooltip">응찰최고금리 − 응찰최저금리. 직전 동일 만기의 유효한 6개 값 평균과 비교합니다. 아래 금리는 낙찰 결과입니다.</span></button></div><div class="spot-value" id="spotBidRange" data-field="auc.bid_rate_range" data-source="DERIVED">—</div><div class="spot-sub" id="spotBidRangeCompare">직전 6회 평균 —</div><div class="spot-sub" id="spotAwardBounds">최고낙찰 — · 최저낙찰 —</div></div>
       </div>
       <div class="trend-grid" aria-label="동일 만기 최근 12회 추이">
         <div class="trend-card"><div class="trend-label">응찰률 추이</div><div class="trend-sub" id="trendBtcMeta">동일 만기 최근 12회</div><canvas id="spk2" width="288" height="132" aria-label="동일 만기 응찰률 추이"></canvas></div>
@@ -615,6 +630,8 @@ if(window.Chart) Chart.defaults.font.family="Noto Sans KR Web";
 const MATS = ["2Y","3Y","5Y","10Y","20Y","30Y","50Y","KTBi"];
 /* 만기 표시 라벨: 데이터 키 "KTBi"는 로직에 그대로 유지하고, 화면 표시 시점에만 '물가'로 매핑 */
 const matLabel = m => m==="KTBi" ? "물가" : m;
+const detailMatLabel = m => m==="KTBi" ? "물가연동국채" : /^\d+Y$/.test(m || "") ? `${parseInt(m,10)}년물` : m || "—";
+const issueKind = name => /^국고00000/.test(name || "") ? "new" : /^국고\d{5}/.test(name || "") ? "reopen" : "";
 let activeMats = new Set(MATS);   /* 만기 필터 상태(초기값: 전체 선택) */
 const AT = {
   comp:{cls:"at-comp",ko:"경쟁입찰",short:"경쟁"},
@@ -1173,7 +1190,7 @@ function renderAucKPI(r){
   document.querySelectorAll("#blotBody tr").forEach(row=>row.classList.toggle("sel",RESULTS[+row.dataset.ridx]===selectedAuction));
   const a = r && AT[r.t];
   const detail = {
-    aucDetailName:r?.nm || "—", aucDetailMat:r?matLabel(r.mat):"—",
+    aucDetailName:r?.nm || "—", aucDetailMat:detailMatLabel(r?.mat),
     aucDetailDate:r?.d || "—", aucDetailTime:r?.bidTime || "—",
     aucDetailPlan:r?.plan!=null ? `${fmt(r.plan)}억원` : "—",
     aucDetailPay:r?.pay || "—"
@@ -1182,6 +1199,9 @@ function renderAucKPI(r){
   const typeEl=document.getElementById("aucDetailType");
   typeEl.textContent=a?.ko || "—";
   typeEl.className=`at ${a?.cls || ""}`;
+  const issueEl=document.getElementById("aucDetailIssue"), issue=issueKind(r?.nm);
+  issueEl.textContent=issue==="new" ? "신규발행" : issue==="reopen" ? "통합발행" : "";
+  issueEl.className=`issue-badge ${issue}`;
   const rows=comparableAuctions(r);
   const prior=rows.filter(x=>x!==r);
   const latestPrior=prior.at(-1);
@@ -1191,20 +1211,37 @@ function renderAucKPI(r){
   const range=auctionMetric(current,"range");
   const btcAvg=priorSixAverage(prior,"btc"), rangeAvg=priorSixAverage(prior,"range");
   const priorWavg=auctionMetric(latestPrior,"wavg"), priorPartial=auctionMetric(latestPrior,"partial");
-  const spot=(id,value,digits,unit)=>document.getElementById(id).textContent=value==null ? "—" : `${value.toFixed(digits)} ${unit}`;
-  spot("spotBtc",btc,1,"%");
-  spot("spotWavg",wavg,3,"%");
-  spot("spotPartial",partial,1,"%");
-  spot("spotTail",tail,1,"bp");
-  spot("spotBidRange",range,1,"bp");
-  document.getElementById("spotBtcCompare").textContent=btcAvg==null ? "직전 6회 평균 —" :
-    `직전 6회 평균 ${btcAvg.toFixed(1)}% · ${btc==null?"—":signedChange(btc-btcAvg,1,"%p")}`;
-  document.getElementById("spotWavgCompare").textContent=priorWavg==null ? "직전 동일 만기 —" :
-    `직전 ${priorWavg.toFixed(3)}% · ${wavg==null?"—":signedChange((wavg-priorWavg)*100,1,"bp")}`;
-  document.getElementById("spotPartialCompare").textContent=priorPartial==null ? "직전 동일 만기 —" :
-    `직전 ${priorPartial.toFixed(1)}% · ${partial==null?"—":signedChange(partial-priorPartial,1,"%p")}`;
-  document.getElementById("spotBidRangeCompare").textContent=rangeAvg==null ? "직전 6회 평균 —" :
-    `직전 6회 평균 ${rangeAvg.toFixed(1)}bp · ${range==null?"—":signedChange((range-rangeAvg)/100,3,"%p")}`;
+  const priorTail=auctionMetric(latestPrior,"tail");
+  const direction=value=>value>0 ? "up" : value<0 ? "down" : "";
+  const spot=(id,value,digits,unit,delta)=>{
+    const el=document.getElementById(id);
+    el.textContent=value==null ? "—" : `${value.toFixed(digits)} ${unit}`;
+    el.className=`spot-value ${delta==null ? "" : direction(delta)}`;
+  };
+  const comparison=(id,label,delta,digits,unit)=>{
+    const el=document.getElementById(id);
+    el.textContent=label;
+    if(delta==null) return;
+    const change=document.createElement("span");
+    change.className=direction(delta);
+    change.textContent=` · ${signedChange(delta,digits,unit)}`;
+    el.appendChild(change);
+  };
+  const btcDelta=btc!=null && btcAvg!=null ? btc-btcAvg : null;
+  const wavgDelta=wavg!=null && priorWavg!=null ? (wavg-priorWavg)*100 : null;
+  const partialDelta=partial!=null && priorPartial!=null ? partial-priorPartial : null;
+  const tailDelta=tail!=null && priorTail!=null ? tail-priorTail : null;
+  const rangeDelta=range!=null && rangeAvg!=null ? (range-rangeAvg)/100 : null;
+  spot("spotBtc",btc,1,"%",btcDelta);
+  spot("spotWavg",wavg,3,"%",wavgDelta);
+  spot("spotPartial",partial,1,"%",partialDelta);
+  spot("spotTail",tail,1,"bp",tailDelta);
+  spot("spotBidRange",range,1,"bp",rangeDelta);
+  comparison("spotBtcCompare",btcAvg==null ? "직전 6회 평균 —" : `직전 6회 평균 ${btcAvg.toFixed(1)}%`,btcDelta,1,"%p");
+  comparison("spotWavgCompare",priorWavg==null ? "직전 동일 만기 —" : `직전 ${priorWavg.toFixed(3)}%`,wavgDelta,1,"bp");
+  comparison("spotPartialCompare",priorPartial==null ? "직전 동일 만기 —" : `직전 ${priorPartial.toFixed(1)}%`,partialDelta,1,"%p");
+  comparison("spotTailCompare",priorTail==null ? "직전 동일 만기 —" : `직전 ${priorTail.toFixed(1)}bp`,tailDelta,1,"bp");
+  comparison("spotBidRangeCompare",rangeAvg==null ? "직전 6회 평균 —" : `직전 6회 평균 ${rangeAvg.toFixed(1)}bp`,rangeDelta,3,"%p");
   const hi=current?.hi!=null && !current.demoFields?.includes("hi") ? `${current.hi.toFixed(3)}%` : "—";
   const lo=current?.lo!=null && !current.demoFields?.includes("lo") ? `${current.lo.toFixed(3)}%` : "—";
   document.getElementById("spotAwardBounds").textContent=`최고낙찰 ${hi} · 최저낙찰 ${lo}`;
@@ -1273,7 +1310,7 @@ function kpiTrendChart(id, arr, color, unit, labels, curFlags){
     responsive:false, maintainAspectRatio:false,
     plugins:{ legend:{display:false}, tooltip:{enabled:true, callbacks:{ label:ctx=>`${ctx.parsed.y}${unit}` }} },
     scales:{
-      x:{ ticks:{color:uiColor("--tx-dim"),font:{size:8},maxRotation:0,autoSkip:true,maxTicksLimit:6}, grid:{color:uiColor("--bd")} },
+      x:{ ticks:{color:uiColor("--tx-dim"),font:{size:8},maxRotation:0,autoSkip:true,maxTicksLimit:6}, grid:{display:false} },
       y:{ ticks:{color:uiColor("--tx-dim"),font:{size:8}}, grid:{color:uiColor("--bd")} }
     }
   };
@@ -2363,7 +2400,10 @@ window.KTB_UI_TEXT.push(
   ["동일 만기 최근", "Same tenor, latest"],
   ["최고낙찰", "Highest award"],
   ["최저낙찰", "Lowest award"],
-  ["경쟁입찰 결과 없음", "No competitive auction result"]
+  ["경쟁입찰 결과 없음", "No competitive auction result"],
+  ["신규발행", "New issue"],
+  ["통합발행", "Reopening"],
+  ["물가연동국채", "Inflation-linked bond"]
 );
 </script>
 <script src="mockup/ktb-terminal-v5-ui.js"></script>
