@@ -109,7 +109,8 @@ a{color:var(--accent); text-decoration:none}
 #scr-auc .spot-head{display:flex; align-items:flex-start; justify-content:space-between; gap:6px}
 #scr-auc .spot-label{font-size:12.5px; color:#242424; font-weight:700; line-height:1.3}
 body.dark #scr-auc .spot-label{color:#e6e6e6}
-#scr-auc .trend-label{font-size:11px; color:var(--tx-dim); line-height:1.3}
+#scr-auc .trend-label{font-size:12.5px; color:#242424; font-weight:700; line-height:1.3}
+body.dark #scr-auc .trend-label{color:#e6e6e6}
 #scr-auc .spot-info{width:17px; height:17px; flex:0 0 17px; padding:0; border:1px solid var(--tx-dim); border-radius:50%; background:transparent; color:var(--tx-dim); font:700 11px/15px var(--sans); text-align:center; cursor:help}
 #scr-auc .spot-info:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
 #scr-auc .spot-tooltip{display:none; position:absolute; top:31px; right:8px; width:min(250px,calc(100vw - 32px)); padding:9px 11px; border:1px solid var(--bd-2); border-radius:6px; background:var(--panel); color:var(--tx); box-shadow:0 6px 18px #0003; font-size:11px; font-weight:400; line-height:1.5; text-align:left; white-space:normal; z-index:3}
@@ -548,10 +549,10 @@ table.blot .stick-2{max-width:none;overflow:visible;white-space:normal;min-width
         <div class="spot-card"><div class="spot-head"><div class="spot-label">가중평균낙찰금리</div><button type="button" class="spot-info" aria-label="가중평균낙찰금리 설명" aria-describedby="spotWavgHelp">!<span class="spot-tooltip" id="spotWavgHelp" role="tooltip">낙찰 금리의 가중평균입니다. 직전 동일 만기 경쟁입찰과의 차이를 bp로 표시합니다.</span></button></div><div class="spot-value" id="spotWavg" data-field="auc.wavg_rate" data-source="MOEF_KTB">—</div><div class="spot-sub" id="spotWavgCompare">직전 동일 만기 —</div></div>
         <div class="spot-card"><div class="spot-head"><div class="spot-label">부분낙찰률</div><button type="button" class="spot-info" aria-label="부분낙찰률 설명" aria-describedby="spotPartialHelp">!<span class="spot-tooltip" id="spotPartialHelp" role="tooltip">공시된 부분낙찰률입니다. 직전 동일 만기 경쟁입찰과의 차이를 %p로 표시합니다.</span></button></div><div class="spot-value" id="spotPartial" data-field="auc.partial_alloc_rate" data-source="MOEF_KTB">—</div><div class="spot-sub" id="spotPartialCompare">직전 동일 만기 —</div></div>
         <div class="spot-card"><div class="spot-head"><div class="spot-label">테일</div><button type="button" class="spot-info" aria-label="테일 설명" aria-describedby="spotTailHelp">!<span class="spot-tooltip" id="spotTailHelp" role="tooltip">최고낙찰금리 − 가중평균낙찰금리. 직전 동일 만기 경쟁입찰과의 차이를 bp로 표시합니다.</span></button></div><div class="spot-value" id="spotTail" data-field="auc.tail" data-source="DERIVED">—</div><div class="spot-sub" id="spotTailCompare">직전 동일 만기 —</div></div>
-        <div class="spot-card"><div class="spot-head"><div class="spot-label">응찰금리범위</div><button type="button" class="spot-info" aria-label="응찰금리범위 설명" aria-describedby="spotBidRangeHelp">!<span class="spot-tooltip" id="spotBidRangeHelp" role="tooltip">응찰최고금리 − 응찰최저금리. 직전 동일 만기의 유효한 6개 값 평균과 비교합니다. 아래 금리는 낙찰 결과입니다.</span></button></div><div class="spot-value" id="spotBidRange" data-field="auc.bid_rate_range" data-source="DERIVED">—</div><div class="spot-sub" id="spotBidRangeCompare">직전 6회 평균 —</div><div class="spot-sub" id="spotAwardBounds">최고낙찰 — · 최저낙찰 —</div></div>
+        <div class="spot-card"><div class="spot-head"><div class="spot-label">응찰금리범위</div><button type="button" class="spot-info" aria-label="응찰금리범위 설명" aria-describedby="spotBidRangeHelp">!<span class="spot-tooltip" id="spotBidRangeHelp" role="tooltip">응찰최고금리 − 응찰최저금리. 직전 동일 만기의 유효한 6개 값 평균과 비교합니다. 아래 금리는 응찰 결과입니다.</span></button></div><div class="spot-value" id="spotBidRange" data-field="auc.bid_rate_range" data-source="DERIVED">—</div><div class="spot-sub" id="spotBidRangeCompare">직전 6회 평균 —</div><div class="spot-sub" id="spotAwardBounds">응찰최고금리 — · 응찰최저금리 —</div></div>
       </div>
       <div class="trend-grid" aria-label="동일 만기 최근 12회 추이">
-        <div class="trend-card"><div class="trend-label">응찰률 추이</div><div class="trend-sub" id="trendBtcMeta">동일 만기 최근 12회</div><canvas id="spk2" width="288" height="132" aria-label="동일 만기 응찰률 추이"></canvas></div>
+        <div class="trend-card"><div class="trend-label">응찰률 추이</div><div class="trend-sub" id="trendBtcMeta">동일 만기 최근 12회</div><canvas id="spk2" width="288" height="132" aria-label="동일 만기 응찰률 및 직전 6회 평균 추이"></canvas></div>
         <div class="trend-card"><div class="trend-label">테일 추이</div><div class="trend-sub" id="trendTailMeta">동일 만기 최근 12회</div><canvas id="spk3" width="288" height="132" aria-label="동일 만기 테일 추이"></canvas></div>
         <div class="trend-card"><div class="trend-label">부분낙찰률 추이</div><div class="trend-sub" id="trendPartialMeta">동일 만기 최근 12회</div><canvas id="spk4" width="288" height="132" aria-label="동일 만기 부분낙찰률 추이"></canvas></div>
       </div>
@@ -593,7 +594,7 @@ table.blot .stick-2{max-width:none;overflow:visible;white-space:normal;min-width
             <th class="l">유형</th>
             <th>발행<br>예정액</th><th>응찰액</th><th>응찰률</th><th>낙찰액</th>
             <th>가중평균<br>낙찰금리</th><th>민평대비</th><th>부분낙찰률</th>
-            <th>예정액<br>충족률</th><th>응찰최저<br>금리</th><th>응찰최고<br>금리</th><th>테일</th>
+            <th>예정액<br>충족률</th><th>응찰최저<br>금리</th><th>응찰최고<br>금리</th><th>테일</th><th>최고낙찰<br>금리</th><th>최저낙찰<br>금리</th>
           </tr></thead>
           <tbody id="blotBody"></tbody>
         </table>
@@ -1116,7 +1117,9 @@ function renderBlotter(){
        <td data-field="auc.plan_fill_rate" data-source="DERIVED" data-freq="입찰일 T+0 16:00" class="${fillRate!=null?(fillRate>100?'up':fillRate<100?'fill-below':''):''}">${fillRate!=null?fillRate.toFixed(1):"-"}</td>
        <td data-field="auc.bid_rate_min" data-source="MOEF_KTB" data-freq="입찰일 T+0 16:00">${bidRange?bidRange[0].toFixed(3):"-"}</td>
        <td data-field="auc.bid_rate_max" data-source="MOEF_KTB" data-freq="입찰일 T+0 16:00">${bidRange?bidRange[1].toFixed(3):"-"}</td>
-       <td data-field="auc.tail" data-source="DERIVED" data-freq="입찰일 T+0 16:00">${tail!=null&&Math.abs(tail)>=0.05?tail.toFixed(1):"-"}</td>`;
+       <td data-field="auc.tail" data-source="DERIVED" data-freq="입찰일 T+0 16:00">${tail!=null&&Math.abs(tail)>=0.05?tail.toFixed(1):"-"}</td>
+       <td data-field="auc.high_rate" data-source="${r.demoFields?.includes('hi')?'DEMO':'MOEF_KTB'}" data-freq="입찰일 T+0 16:00">${r.hi!=null?r.hi.toFixed(3):"-"}</td>
+       <td data-field="auc.low_rate" data-source="${r.demoFields?.includes('lo')?'DEMO':'MOEF_KTB'}" data-freq="입찰일 T+0 16:00">${r.lo!=null?r.lo.toFixed(3):"-"}</td>`;
     if(!r.planned) tr.style.cursor="pointer", tr.addEventListener("click",()=>renderAucKPI(r));
     /* 재렌더(월/필터 변경) 후에도 현재 선택 입찰이 계속 보이면 sel 하이라이트 복원 */
     if(r===selectedAuction) tr.classList.add("sel");
@@ -1242,10 +1245,12 @@ function renderAucKPI(r){
   comparison("spotPartialCompare",priorPartial==null ? "직전 동일 만기 —" : `직전 ${priorPartial.toFixed(1)}%`,partialDelta,1,"%p");
   comparison("spotTailCompare",priorTail==null ? "직전 동일 만기 —" : `직전 ${priorTail.toFixed(1)}bp`,tailDelta,1,"bp");
   comparison("spotBidRangeCompare",rangeAvg==null ? "직전 6회 평균 —" : `직전 6회 평균 ${rangeAvg.toFixed(1)}bp`,rangeDelta,3,"%p");
-  const hi=current?.hi!=null && !current.demoFields?.includes("hi") ? `${current.hi.toFixed(3)}%` : "—";
-  const lo=current?.lo!=null && !current.demoFields?.includes("lo") ? `${current.lo.toFixed(3)}%` : "—";
-  document.getElementById("spotAwardBounds").textContent=`최고낙찰 ${hi} · 최저낙찰 ${lo}`;
+  const bidBounds=current && BID_RATE_RANGE_BY_CODE[current.code];
+  document.getElementById("spotAwardBounds").textContent=bidBounds ?
+    `응찰최고금리 ${bidBounds[1].toFixed(3)}% · 응찰최저금리 ${bidBounds[0].toFixed(3)}%` :
+    "응찰최고금리 — · 응찰최저금리 —";
   const recent=rows.slice(-12), labels=recent.map(x=>x.d.slice(2)), flags=recent.map(x=>x===r);
+  const btcSixAvg=recent.map(x=>priorSixAverage(rows.slice(0,rows.indexOf(x)),"btc"));
   for(const [id,metric,color,unit,meta] of [
     ["spk2","btc","#43a6c1","%","trendBtcMeta"],
     ["spk3","tail","#fd3c46","bp","trendTailMeta"],
@@ -1255,7 +1260,7 @@ function renderAucKPI(r){
     const count=values.filter(Number.isFinite).length;
     document.getElementById(meta).textContent=recent.length ?
       `동일 만기 최근 ${recent.length}회 · 값 ${count}회` : "경쟁입찰 결과 없음";
-    kpiTrendChart(id,count?values:[],color,unit,labels,flags);
+    kpiTrendChart(id,count?values:[],color,unit,labels,flags,id==="spk2" ? btcSixAvg : null);
   }
   requestAnimationFrame(fitTerminalCharts);
 }
@@ -1296,9 +1301,10 @@ function kpiSpark(id,arr,color){
      재렌더마다 이전 인스턴스를 destroy 한다.
    · curFlags[i]=true(선택 회차)면 해당 포인트 반경을 크게 강조한다.
    id: 캔버스 요소 id / arr: y값 배열 / color: 선·포인트 색 / unit: 축 단위 라벨
-   labels: x축 라벨(MM-DD) 배열 / curFlags: 선택 회차 강조 플래그 배열 */
+   labels: x축 라벨(MM-DD) 배열 / curFlags: 선택 회차 강조 플래그 배열
+   averageArr: 응찰률 차트의 각 시점 이전 6회 평균(데이터 부족 시 null) */
 const kpiTrendRefs = {};                 /* 캔버스 id → Chart 인스턴스 (재렌더 시 destroy) */
-function kpiTrendChart(id, arr, color, unit, labels, curFlags){
+function kpiTrendChart(id, arr, color, unit, labels, curFlags, averageArr){
   if(typeof Chart==="undefined") return;
   const el = document.getElementById(id); if(!el) return;
   if(kpiTrendRefs[id]){ kpiTrendRefs[id].destroy(); kpiTrendRefs[id]=null; }
@@ -1306,9 +1312,10 @@ function kpiTrendChart(id, arr, color, unit, labels, curFlags){
   const rgba = (hex,a)=>{ const n=parseInt(hex.slice(1),16); return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},${a})`; };
   const ptR = (curFlags||[]).map(c=> c ? 4 : 2);
   const ptBorder = (curFlags||[]).map(c=> c ? "#fff" : color);
+  const hasAverage=averageArr?.some(Number.isFinite) || false;
   const opt = {
     responsive:false, maintainAspectRatio:false,
-    plugins:{ legend:{display:false}, tooltip:{enabled:true, callbacks:{ label:ctx=>`${ctx.parsed.y}${unit}` }} },
+    plugins:{ legend:{display:hasAverage, labels:{color:uiColor("--tx-dim"),font:{size:9},boxWidth:15,boxHeight:2}}, tooltip:{enabled:true, callbacks:{ label:ctx=>`${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)}${unit}` }} },
     scales:{
       x:{ ticks:{color:uiColor("--tx-dim"),font:{size:8},maxRotation:0,autoSkip:true,maxTicksLimit:6}, grid:{display:false} },
       y:{ ticks:{color:uiColor("--tx-dim"),font:{size:8}}, grid:{color:uiColor("--bd")} }
@@ -1317,10 +1324,14 @@ function kpiTrendChart(id, arr, color, unit, labels, curFlags){
   kpiTrendRefs[id] = new Chart(el,{
     type:"line",
     data:{ labels:labels||arr.map((_,i)=>i+1), datasets:[{
+      label:id==="spk2" ? "응찰률" : id==="spk3" ? "테일" : "부분낙찰률",
       data:arr, borderColor:color, backgroundColor:rgba(color,0.10),
       tension:.3, fill:true, borderWidth:1.5,
       pointRadius:ptR, pointBackgroundColor:color, pointBorderColor:ptBorder, pointBorderWidth:1
-    }]},
+    },...(hasAverage ? [{
+      label:"직전 6회 평균", data:averageArr, borderColor:"#ed6d1e", backgroundColor:"#ed6d1e",
+      borderWidth:1.5, borderDash:[5,3], pointRadius:0, fill:false, tension:.2
+    }] : [])]},
     options:opt
   });
 }
