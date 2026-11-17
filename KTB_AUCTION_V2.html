@@ -100,22 +100,23 @@ a{color:var(--accent); text-decoration:none}
 .kpi .k-v small{font-size:11px; color:var(--tx-mut)}
 .kpi .k-d{font-size:10px; margin-top:1px}
 .kpi .k-spark{margin-top:3px; height:16px}
-/* scr-auc 전용: P3~P6 제거로 생긴 가로 여유를 활용해 KPI 칸을 확대 (다른 탭 KPI엔 미적용).
-   텍스트(라벨·값·설명)는 상단에 조밀하게 모으고, 그래프(스파크/OHLC)가 하단 잔여공간을 최대로 차지. */
-#scr-auc .kpi{padding:10px 16px 12px; min-height:188px; display:flex; flex-direction:column}
-#scr-auc .kpi .k-l{font-size:12px; line-height:1.2}
-#scr-auc .kpi .k-v{font-size:22px; margin-top:2px; line-height:1.1}
-#scr-auc .kpi .k-v small{font-size:12px}
-#scr-auc .kpi .k-d{font-size:10.5px; margin-top:1px; line-height:1.25}
-/* 그래프를 하단에 고정 높이로 배치 → 칸의 대부분을 그래프가 채우되 높이는 불변.
-   주의: height를 auto/flex로 두면 렌더 함수(kpiSpark·drawOHLC)가 clientHeight를
-   drawing-buffer에 되쓰는 과정에서 레이아웃 높이가 단조 증가하는 되먹임 루프가 발생한다
-   (블로터 행 재클릭마다 차트가 커지는 버그). height를 고정값으로 못박아 루프를 차단한다.
-   spk2·spk3 는 축 있는 Chart.js 라인차트(kpiTrendChart)로 전환되어 x/y축 눈금 공간이
-   필요하므로 높이를 확대(96px). Chart.js responsive:false 이므로 캔버스 width/height
-   속성(마크업)과 이 CSS 고정 높이가 일치해야 눈금이 선명하게 렌더된다. */
-#scr-auc .kpi .k-spark{margin-top:auto; padding-top:8px; width:100%; height:96px; flex:0 0 auto; box-sizing:border-box}
-#scr-auc .kpi #ohlcChart{margin-top:auto!important; padding-top:8px; width:100%; height:104px!important; flex:0 0 auto; box-sizing:border-box}
+/* P2 위: 선택 입찰 Spot 5개와 동일 만기 최근 12회 추이 3개. */
+#scr-auc .auc-insights{grid-column:2; grid-row:1; min-width:0; display:grid; gap:12px}
+#scr-auc .spot-grid{display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:8px}
+#scr-auc .spot-card,#scr-auc .trend-card{min-width:0; border:1px solid var(--auc-outline); border-radius:10px; background:var(--panel); padding:10px 12px}
+#scr-auc .spot-card{min-height:112px}
+#scr-auc .spot-label,#scr-auc .trend-label{font-size:11px; color:var(--tx-dim); line-height:1.3}
+#scr-auc .spot-value{font-family:var(--mono); font-size:21px; font-variant-numeric:tabular-nums; line-height:1.2; margin:5px 0}
+#scr-auc .spot-value small{font-size:11px; color:var(--tx-mut)}
+#scr-auc .spot-sub{font-size:10px; color:var(--tx-mut); line-height:1.45}
+#scr-auc .spot-sub .up{color:var(--up)}
+#scr-auc .spot-sub .down{color:var(--down)}
+#scr-auc .trend-grid{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px}
+#scr-auc .trend-card{height:185px; display:flex; flex-direction:column}
+#scr-auc .trend-sub{font-size:10px; color:var(--tx-mut); margin:2px 0 6px}
+#scr-auc .trend-card canvas{width:100%; height:132px; min-height:132px; flex:0 0 132px}
+@media(max-width:1500px){#scr-auc .spot-grid{grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}}
+@media(max-width:1150px){#scr-auc .trend-grid{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}}
 
 /* ---- Panels ---- */
 .grid3{display:grid; gap:1px; background:var(--bd)}
@@ -315,8 +316,6 @@ table.blot .stick-3{left:226px; min-width:62px; width:62px; box-shadow:1px 0 0 v
 #scr-auc #aucBlotterPanel .p-sub{min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
 #scr-auc #aucBlotterPanel .rangesel select{background:transparent; color:#242424; border-color:var(--auc-outline); color-scheme:light}
 #scr-auc #aucBlotterPanel .rangesel .rs-lbl,#scr-auc #aucBlotterPanel .rangesel .rs-tilde{color:#68717b}
-#scr-auc .grid3 > .kpis{grid-column:2; grid-row:1; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; border:0}
-#scr-auc .grid3 > .kpis .kpi{border:1px solid var(--auc-outline); border-radius:10px; background:var(--panel); min-width:0}
 #scr-auc .auc-detail{grid-column:1; grid-row:1; padding:12px; border:1px solid var(--auc-outline); border-radius:10px; background:var(--panel)}
 #scr-auc .auc-detail-top{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:10px}
 #scr-auc .auc-detail-top h4{font-size:12px}
@@ -440,12 +439,10 @@ body{padding:4px;min-width:0}
 .screen,.panel,.p-body,.kpi{min-width:0}
 .kpis{grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr))}
 .kpi,#scr-auc .kpi{padding:6px 8px}
-#scr-auc .kpi{min-height:170px}
 .screen .grid3{grid-template-columns:repeat(auto-fit,minmax(min(100%,430px),1fr))!important;height:auto!important;min-height:0!important;align-items:start}
 #scr-auc .grid3{grid-template-columns:360px minmax(0,1fr)!important; height:auto!important; min-height:0!important}
 @media(min-width:1500px){#scr-auc .grid3{grid-template-columns:390px minmax(0,1fr)!important}}
 #scr-auc #aucCalendarPanel{height:auto;min-height:0;align-self:start}
-#scr-auc #spk2,#scr-auc #spk3{padding-top:0;height:96px!important}
 .panel{overflow:visible}
 .p-head{flex-wrap:wrap;padding:4px 6px}
 .p-head .p-sub{white-space:normal;overflow-wrap:anywhere}
@@ -466,7 +463,7 @@ table.blot .stick-2{max-width:none;overflow:visible;white-space:normal;min-width
 .wf{min-width:360px}
 @media(max-width:900px){
   .screen .grid3,#scr-auc .grid3{grid-template-columns:minmax(0,1fr)!important;height:auto!important;min-height:0!important}
-  #scr-auc .auc-detail,#scr-auc .grid3 > .kpis,#scr-auc #aucCalendarPanel,#scr-auc #aucBlotterPanel{grid-column:1;grid-row:auto}
+  #scr-auc .auc-detail,#scr-auc .auc-insights,#scr-auc #aucCalendarPanel,#scr-auc #aucBlotterPanel{grid-column:1;grid-row:auto}
   table.blot th.stick,table.blot td.stick{position:static}
   .ui-controls{margin-left:0}
 }
@@ -475,7 +472,7 @@ table.blot .stick-2{max-width:none;overflow:visible;white-space:normal;min-width
   .tab{flex:1 1 45%;padding:6px;justify-content:center;font-size:12px}
   .ui-controls{width:100%;justify-content:flex-end}
   .kpis{grid-template-columns:minmax(0,1fr)}
-  #scr-auc .grid3 > .kpis{grid-template-columns:minmax(0,1fr)}
+  #scr-auc .spot-grid,#scr-auc .trend-grid{grid-template-columns:minmax(0,1fr)}
   .mix-wrap{grid-template-columns:minmax(0,1fr);gap:8px}
   .cmp-row{grid-template-columns:1fr}
 }
@@ -530,22 +527,18 @@ table.blot .stick-2{max-width:none;overflow:visible;white-space:normal;min-width
       </div>
     </div>
 
-    <div class="kpis">
-      <div class="kpi">
-        <div class="k-l">평균 응찰률</div>
-        <div class="k-v" id="kpiBtcVal" data-field="auc.bid_to_cover" data-source="DERIVED" data-freq="입찰일 T+0 16:00">—<small> x</small></div>
-        <div class="k-d mut" id="kpiBtcSub">선택 만기 기준</div>
-        <canvas class="k-spark" id="spk2" width="288" height="96"></canvas>
+    <div class="auc-insights" aria-label="선택 입찰 지표와 동일 만기 추이">
+      <div class="spot-grid" aria-label="선택 입찰 Spot 지표">
+        <div class="spot-card"><div class="spot-label">응찰률</div><div class="spot-value" id="spotBtc" data-field="auc.bid_to_cover" data-source="DERIVED">—</div><div class="spot-sub" id="spotBtcCompare">직전 6회 평균 —</div></div>
+        <div class="spot-card"><div class="spot-label">가중평균낙찰금리</div><div class="spot-value" id="spotWavg" data-field="auc.wavg_rate" data-source="MOEF_KTB">—</div><div class="spot-sub" id="spotWavgCompare">직전 동일 만기 —</div></div>
+        <div class="spot-card"><div class="spot-label">부분낙찰률</div><div class="spot-value" id="spotPartial" data-field="auc.partial_alloc_rate" data-source="MOEF_KTB">—</div><div class="spot-sub" id="spotPartialCompare">직전 동일 만기 —</div></div>
+        <div class="spot-card"><div class="spot-label">테일</div><div class="spot-value" id="spotTail" data-field="auc.tail" data-source="DERIVED">—</div><div class="spot-sub">최고낙찰금리 − 가중평균낙찰금리</div></div>
+        <div class="spot-card"><div class="spot-label">응찰금리범위</div><div class="spot-value" id="spotBidRange" data-field="auc.bid_rate_range" data-source="DERIVED">—</div><div class="spot-sub" id="spotBidRangeCompare">직전 6회 평균 —</div><div class="spot-sub" id="spotAwardBounds">최고낙찰 — · 최저낙찰 —</div></div>
       </div>
-      <div class="kpi">
-        <div class="k-l">평균 테일</div>
-        <div class="k-v" id="kpiTailVal" data-field="auc.tail" data-source="DERIVED" data-freq="입찰일 T+0 16:00">—<small> bp</small></div>
-        <div class="k-d mut" id="kpiTailSub">선택 만기 기준</div>
-        <canvas class="k-spark" id="spk3" width="288" height="96"></canvas>
-      </div>
-      <div class="kpi">
-        <div class="k-l">낙찰금리 구조</div>
-        <canvas id="ohlcChart" width="288" height="104" data-field="auc.high_rate" data-source="MOEF_KTB" data-freq="입찰결과 공시"></canvas>
+      <div class="trend-grid" aria-label="동일 만기 최근 12회 추이">
+        <div class="trend-card"><div class="trend-label">응찰률 추이</div><div class="trend-sub" id="trendBtcMeta">동일 만기 최근 12회</div><canvas id="spk2" width="288" height="132" aria-label="동일 만기 응찰률 추이"></canvas></div>
+        <div class="trend-card"><div class="trend-label">테일 추이</div><div class="trend-sub" id="trendTailMeta">동일 만기 최근 12회</div><canvas id="spk3" width="288" height="132" aria-label="동일 만기 테일 추이"></canvas></div>
+        <div class="trend-card"><div class="trend-label">부분낙찰률 추이</div><div class="trend-sub" id="trendPartialMeta">동일 만기 최근 12회</div><canvas id="spk4" width="288" height="132" aria-label="동일 만기 부분낙찰률 추이"></canvas></div>
       </div>
     </div>
 
@@ -1139,27 +1132,38 @@ function revealBlotterRecord(r){
   }
 }
 
-/* 동일 만기 과거 입찰 추이 — 선택 종목과 같은 만기(mat)의 경쟁입찰(comp) 낙찰 완료분을
-   입찰일 순으로 모아 응찰률(응찰액/발행예정액)·테일((최고−가중평균)*bp) 시계열을 그린다.
-   현재 선택한 입찰이 comp 낙찰분이면 추이의 마지막 점으로 포함된다.
-   comp 낙찰금리(hi/wavg)가 없는 매입·교환·예정 종목은 동일 만기 comp 이력만으로 추이를 그린다.
-   KPI 3·4번 칸(응찰률·테일 스파크)이 이 시계열을 재사용한다. */
-function matTrendSeries(r){
-  const rows = RESULTS
-    .filter(x=> x.mat===r.mat && x.t==="comp" && !x.planned && x.hi!=null && x.wavg!=null && x.plan)
-    .sort((a,b)=> a.d < b.d ? -1 : a.d > b.d ? 1 : 0);
-  return rows.map(x=>({
-    d: x.d.slice(5),                                   /* "MM-DD" */
-    btc: +(x.bid/x.plan).toFixed(2),
-    tail: +((x.hi-x.wavg)*100).toFixed(1),
-    cur: x.code===r.code && x.d===r.d && x.seq===r.seq  /* 선택 회차 강조용 */
-  }));
+/* 선택 회차 이전의 확정 경쟁입찰만 비교한다. 같은 날은 입찰 시작시각이 모두 있을 때만 순서를 정한다. */
+function isEarlierAuction(x,r){
+  return x.d<r.d || (x.d===r.d && x.bidTime && r.bidTime && x.bidTime.slice(0,5)<r.bidTime.slice(0,5));
 }
+function comparableAuctions(r){
+  if(!r || r.t!=="comp" || r.planned || r.synthetic || !RESULTS.includes(r)) return [];
+  return RESULTS.filter(x=>x.mat===r.mat && x.t==="comp" && !x.planned && !x.synthetic &&
+      (x===r || isEarlierAuction(x,r)))
+    .sort((a,b)=>a.d.localeCompare(b.d) || (a.bidTime||"").localeCompare(b.bidTime||"") || a.code.localeCompare(b.code));
+}
+function auctionMetric(r,metric){
+  if(!r || r.demoFields?.includes(metric)) return null;
+  if(metric==="btc") return r.plan>0 && r.bid!=null && !r.demoFields?.includes("bid") ? r.bid/r.plan*100 : null;
+  if(metric==="wavg") return r.wavg!=null ? r.wavg : null;
+  if(metric==="partial") return r.par!=null && !r.demoFields?.includes("par") ? r.par : null;
+  if(metric==="tail") return r.hi!=null && r.wavg!=null && !r.demoFields?.includes("hi") && !r.demoFields?.includes("wavg") ? (r.hi-r.wavg)*100 : null;
+  if(metric==="range"){
+    const bounds=BID_RATE_RANGE_BY_CODE[r.code];
+    return bounds ? (bounds[1]-bounds[0])*100 : null;
+  }
+  return null;
+}
+function priorSixAverage(prior,metric){
+  const values=prior.map(x=>auctionMetric(x,metric)).filter(Number.isFinite).slice(-6);
+  return values.length===6 ? values.reduce((sum,value)=>sum+value,0)/6 : null;
+}
+const signedChange=(value,digits,unit)=>`${value>0?"+":""}${value.toFixed(digits)}${unit}`;
 
 /* P1/P2에서 공통으로 선택한 입찰. */
 let selectedAuction = null;
 
-/* 선택 입찰 상세와 세 KPI를 갱신하고 P1/P2 강조 상태를 동기화한다. */
+/* 선택 입찰 상세, Spot 5개, 동일 만기 최근 12회 차트를 P1/P2와 동기화한다. */
 function renderAucKPI(r){
   selectedAuction = r || null;
   document.querySelectorAll("#calGrid .ev").forEach(e=>{
@@ -1178,119 +1182,45 @@ function renderAucKPI(r){
   const typeEl=document.getElementById("aucDetailType");
   typeEl.textContent=a?.ko || "—";
   typeEl.className=`at ${a?.cls || ""}`;
-  const btcVal = document.getElementById("kpiBtcVal");
-  const btcSub = document.getElementById("kpiBtcSub");
-  const tailVal = document.getElementById("kpiTailVal");
-  const tailSub = document.getElementById("kpiTailSub");
-  /* 선택 전(placeholder) 처리 — 초기엔 항상 기본 선택이 있으나 방어적으로 유지 */
-  if(!r){
-    if(btcVal) btcVal.innerHTML = "—<small> x</small>";
-    if(tailVal) tailVal.innerHTML = "—<small> bp</small>";
-    if(btcSub) btcSub.textContent = "선택 만기 기준";
-    if(tailSub) tailSub.textContent = "선택 만기 기준";
-    kpiTrendChart("spk2", [], "#43a6c1", "배");
-    kpiTrendChart("spk3", [], "#fd3c46", "bp");
-    drawOHLC({hi:null, wavg:null});
-    return;
+  const rows=comparableAuctions(r);
+  const prior=rows.filter(x=>x!==r);
+  const latestPrior=prior.at(-1);
+  const current=rows.includes(r) ? r : null;
+  const btc=auctionMetric(current,"btc"), wavg=auctionMetric(current,"wavg");
+  const partial=auctionMetric(current,"partial"), tail=auctionMetric(current,"tail");
+  const range=auctionMetric(current,"range");
+  const btcAvg=priorSixAverage(prior,"btc"), rangeAvg=priorSixAverage(prior,"range");
+  const priorWavg=auctionMetric(latestPrior,"wavg"), priorPartial=auctionMetric(latestPrior,"partial");
+  const spot=(id,value,digits,unit)=>document.getElementById(id).textContent=value==null ? "—" : `${value.toFixed(digits)} ${unit}`;
+  spot("spotBtc",btc,1,"%");
+  spot("spotWavg",wavg,3,"%");
+  spot("spotPartial",partial,1,"%");
+  spot("spotTail",tail,1,"bp");
+  spot("spotBidRange",range,1,"bp");
+  document.getElementById("spotBtcCompare").textContent=btcAvg==null ? "직전 6회 평균 —" :
+    `직전 6회 평균 ${btcAvg.toFixed(1)}% · ${btc==null?"—":signedChange(btc-btcAvg,1,"%p")}`;
+  document.getElementById("spotWavgCompare").textContent=priorWavg==null ? "직전 동일 만기 —" :
+    `직전 ${priorWavg.toFixed(3)}% · ${wavg==null?"—":signedChange((wavg-priorWavg)*100,1,"bp")}`;
+  document.getElementById("spotPartialCompare").textContent=priorPartial==null ? "직전 동일 만기 —" :
+    `직전 ${priorPartial.toFixed(1)}% · ${partial==null?"—":signedChange(partial-priorPartial,1,"%p")}`;
+  document.getElementById("spotBidRangeCompare").textContent=rangeAvg==null ? "직전 6회 평균 —" :
+    `직전 6회 평균 ${rangeAvg.toFixed(1)}bp · ${range==null?"—":signedChange((range-rangeAvg)/100,3,"%p")}`;
+  const hi=current?.hi!=null && !current.demoFields?.includes("hi") ? `${current.hi.toFixed(3)}%` : "—";
+  const lo=current?.lo!=null && !current.demoFields?.includes("lo") ? `${current.lo.toFixed(3)}%` : "—";
+  document.getElementById("spotAwardBounds").textContent=`최고낙찰 ${hi} · 최저낙찰 ${lo}`;
+  const recent=rows.slice(-12), labels=recent.map(x=>x.d.slice(2)), flags=recent.map(x=>x===r);
+  for(const [id,metric,color,unit,meta] of [
+    ["spk2","btc","#43a6c1","%","trendBtcMeta"],
+    ["spk3","tail","#fd3c46","bp","trendTailMeta"],
+    ["spk4","partial","#d29455","%","trendPartialMeta"]
+  ]){
+    const values=recent.map(x=>auctionMetric(x,metric));
+    const count=values.filter(Number.isFinite).length;
+    document.getElementById(meta).textContent=recent.length ?
+      `동일 만기 최근 ${recent.length}회 · 값 ${count}회` : "경쟁입찰 결과 없음";
+    kpiTrendChart(id,count?values:[],color,unit,labels,flags);
   }
-  /* 선택 만기 동일 만기 comp 추이 (matTrendSeries 재사용) */
-  const s = matTrendSeries(r);
-  const btcArr = s.map(x=>x.btc);
-  const tailArr= s.map(x=>x.tail);
-  const matLbl = matLabel(r.mat);
-  if(btcVal) btcVal.innerHTML = btcArr.length ? `${btcArr[btcArr.length-1].toFixed(2)}<small> x</small>` : "—<small> x</small>";
-  if(tailVal) tailVal.innerHTML = tailArr.length ? `${tailArr[tailArr.length-1].toFixed(1)}<small> bp</small>` : "—<small> bp</small>";
-  if(btcSub) btcSub.textContent = btcArr.length ? `${matLbl} · 최근 ${btcArr.length}회 (동일 만기)` : `${matLbl} · comp 이력 없음`;
-  if(tailSub) tailSub.textContent = tailArr.length ? `${matLbl} · 최근 ${tailArr.length}회 (동일 만기)` : `${matLbl} · comp 이력 없음`;
-  /* 가로축=입찰일(MM-DD), 세로축=값(응찰률 배/테일 bp)인 축 있는 라인차트.
-     선택 회차(cur=true)는 포인트를 크게 강조. */
-  const labels = s.map(x=>x.d);
-  const curFlags = s.map(x=>x.cur);
-  kpiTrendChart("spk2", btcArr, "#43a6c1", "배", labels, curFlags);
-  kpiTrendChart("spk3", tailArr, "#fd3c46", "bp", labels, curFlags);
-  /* 5번 칸: 낙찰금리 OHLC 구조 (선택 입찰 기준, 컴팩트 렌더) */
-  drawOHLC(r);
-}
-
-/* 낙찰금리 OHLC형 레인지 차트 — 최저·가중평균·최고 낙찰금리를 세로 캔들로 표현.
-   R2(drawR2OHLC)와 동일하게 comp 전체 최대범위(r2MaxRangeBp) 기준 고정 bp/px 스케일 →
-   범위(테일)가 큰 입찰일수록 캔들이 길게 보인다(가변 높이). 차등가격 구간별 낙찰액은 미공시.
-   STEP 3: KPI 칸(폭 좁음)에 맞춰 컴팩트 모드(축소 라벨·패딩) 지원. 좁은 캔버스(W≤280)면
-   자동으로 컴팩트 렌더 → KPI 5번 칸에 낙찰금리 구조를 축소 표시. */
-function drawOHLC(r){
-  const c = document.getElementById("ohlcChart"); if(!c) return;
-  const ctx = c.getContext("2d");
-  /* drawing buffer를 실제 표시 크기에 동기화 → flex로 커진 KPI 칸 영역에 선명하게 렌더.
-     이후 좌표는 CSS 픽셀(W,H) 기준으로 계산(transform에 dpr 반영). */
-  const dpr=window.devicePixelRatio||1;
-  const cw=c.clientWidth||c.width, ch=c.clientHeight||c.height;
-  if(c.width!==Math.round(cw*dpr)||c.height!==Math.round(ch*dpr)){
-    c.width=Math.round(cw*dpr); c.height=Math.round(ch*dpr);
-  }
-  const W=c.width/dpr, H=c.height/dpr;
-  ctx.setTransform(dpr,0,0,dpr,0,0);
-  ctx.clearRect(0,0,W,H);
-  const stat = document.getElementById("ohlcStat");
-  const compact = W<=280;                    /* KPI 칸용 컴팩트 모드 */
-  if(r.hi==null || r.wavg==null){
-    ctx.fillStyle=uiColor("--tx-dim"); ctx.font=(compact?"9px":"11px")+" Noto Sans KR Web";
-    ctx.textAlign="left"; ctx.textBaseline="alphabetic";
-    ctx.fillText(compact?"데이터 없음 (예정/매입/교환)":"낙찰금리 데이터 없음 (예정/매입/교환)", compact?6:10, H/2);
-    if(stat) stat.innerHTML=""; return;
-  }
-  /* 최저 낙찰금리: 공시값(r.lo) 우선, 없으면 구간 하단, 그것도 없으면 (가중평균−테일) 근사 */
-  const tail = (r.hi-r.wavg);
-  const lo = r.lo!=null ? r.lo : (r.tiers ? Math.min(...r.tiers.map(t=>t[0])) : +(r.wavg - tail).toFixed(3));
-  const hi = r.hi, wavg = r.wavg;
-  /* 컴팩트: 라벨 짧게(예 "2.941"), 패딩 축소. 일반: 기존 넓은 라벨 유지 */
-  const padT = compact?8:14, padB = compact?8:22, padL = compact?6:8;
-  const padR = compact?58:96;                /* 우측 금리 라벨 영역 */
-  const plotH=H-padT-padB;
-  /* 고정 스케일: 세로 전체를 FULL_BP(comp 전체 최대범위×1.15 헤드룸)에 매핑 →
-     bp/px 비율이 모든 입찰에서 동일. 실제 범위(hi−lo)가 큰 입찰일수록 캔들이 길다. */
-  const FULL_BP=(r2MaxRangeBp||3)*1.15;
-  const pxPerBp=plotH/FULL_BP;
-  const rangeBp=(hi-lo)*100;
-  const candleH=Math.min(plotH, rangeBp*pxPerBp);  /* 범위 비례 캔들 높이(가변) */
-  const yHi=padT+(plotH-candleH)/2;          /* 캔들 세로 중앙 정렬 */
-  const yLo=yHi+candleH;
-  const wFrac=(hi-wavg)/(hi-lo||1);          /* wavg의 lo~hi 사이 실제 위치 */
-  const yW=yHi+wFrac*candleH;
-  const cx=(W-padR+padL)/2;
-  /* 후행 gridline (최저/평균/최고) */
-  const gridR = compact ? W-padR+34 : W-padR+56;
-  [yHi,yW,yLo].forEach(yy=>{
-    ctx.strokeStyle=uiColor("--bd"); ctx.lineWidth=1; ctx.beginPath();
-    ctx.moveTo(padL,yy); ctx.lineTo(gridR,yy); ctx.stroke();
-  });
-  /* 캔들 몸통: 최저~최고 범위 */
-  const bw = compact?26:46;
-  ctx.fillStyle="rgba(59,130,246,0.18)";
-  ctx.strokeStyle="#3899fa"; ctx.lineWidth=1.5;
-  ctx.fillRect(cx-bw/2, yHi, bw, candleH);
-  ctx.strokeRect(cx-bw/2, yHi, bw, candleH);
-  /* 가중평균 낙찰금리 — 굵은 가로 마커 */
-  ctx.strokeStyle=uiColor("--tx"); ctx.lineWidth=compact?2:2.5; ctx.beginPath();
-  ctx.moveTo(cx-bw/2-(compact?5:8),yW); ctx.lineTo(cx+bw/2+(compact?5:8),yW); ctx.stroke();
-  /* 라벨 — 컴팩트면 금리값만(3자리), 일반이면 "최고/가중평균/최저 X%" */
-  ctx.font=(compact?"8px":"9px")+" Noto Sans KR Web"; ctx.textBaseline="middle";
-  const labR = cx+bw/2+(compact?7:12);
-  ctx.fillStyle="#fd3c46"; ctx.textAlign="left"; ctx.fillText(compact?hi.toFixed(3):`최고 ${hi.toFixed(3)}%`, labR, yHi);
-  ctx.fillStyle=uiColor("--tx"); ctx.fillText(compact?wavg.toFixed(3):`가중평균 ${wavg.toFixed(3)}%`, labR, yW);
-  ctx.fillStyle="#43a6c1"; ctx.fillText(compact?lo.toFixed(3):`최저 ${lo.toFixed(3)}%`, labR, yLo);
-  /* 테일 표기 (좌측) */
-  ctx.fillStyle=uiColor("--tx-mut"); ctx.textAlign="right";
-  ctx.fillText((compact?"":"테일 ")+`${(tail*100).toFixed(1)}bp`, cx-bw/2-(compact?5:12), (yHi+yW)/2);
-  ctx.textAlign="left"; ctx.textBaseline="alphabetic";
-  /* 하단 통계 스트립 (있을 때만 — KPI 칸에는 없음) */
-  if(stat){
-    const estBadge = (r.lo!=null || r.tiers) ? "" : ' <span class="badge est">최저추정</span>';
-    stat.innerHTML = `
-      <span class="down"><b class="mono">${lo.toFixed(3)}</b><small>최저%${estBadge? "*":""}</small></span>
-      <span><b class="mono">${wavg.toFixed(3)}</b><small>가중평균%</small></span>
-      <span class="up"><b class="mono">${hi.toFixed(3)}</b><small>최고%</small></span>
-      <span><b class="mono">${(tail*100).toFixed(1)}</b><small>테일bp</small></span>${estBadge}`;
-  }
+  requestAnimationFrame(fitTerminalCharts);
 }
 
 /* ---------- sparkline / chart helpers ---------- */
@@ -1322,13 +1252,12 @@ function kpiSpark(id,arr,color){
   ctx.stroke();
 }
 
-/* KPI 3·4번 칸 추이 그래프 — 가로축=입찰일(MM-DD), 세로축=값(응찰률 배/테일 bp)인
-   축 있는 Chart.js 라인차트. 기존 kpiSpark(축 없는 스파크라인)를 대체한다.
+/* P2 위 최근 12회 추이 — 입찰일(YY-MM-DD)과 지표값을 그리는 Chart.js 라인차트.
    · R3(drawResSeries)·D1(drawDMDTrend) 과 동일한 다크 테마 축 옵션을 공유.
    · 되먹임 버그(캔버스 clientHeight→buffer 되쓰기로 재클릭마다 커지는 루프) 방지를 위해
      responsive:false + maintainAspectRatio:false + 고정 캔버스 크기를 사용하고,
      재렌더마다 이전 인스턴스를 destroy 한다.
-   · curFlags[i]=true(선택 회차)면 해당 포인트 반경을 크게 강조.
+   · curFlags[i]=true(선택 회차)면 해당 포인트 반경을 크게 강조한다.
    id: 캔버스 요소 id / arr: y값 배열 / color: 선·포인트 색 / unit: 축 단위 라벨
    labels: x축 라벨(MM-DD) 배열 / curFlags: 선택 회차 강조 플래그 배열 */
 const kpiTrendRefs = {};                 /* 캔버스 id → Chart 인스턴스 (재렌더 시 destroy) */
@@ -1559,7 +1488,7 @@ function renderR2(r){
   drawR2OHLC({lo, wavg:r.wavg, hi:r.hi, tail, lowIsEst:false});
   drawResSeries(r);
 }
-/* R2 낙찰금리 OHLC형 레인지 차트 — P3 drawOHLC와 동일 원칙(공시 3금리)을 R2 넓이(440px)로 확대.
+/* R2 낙찰금리 OHLC형 레인지 차트 — 공시 3금리를 R2 넓이(440px)로 표시.
    차등가격 구간별 낙찰액은 미공시이므로 히스토그램 대신 최저·가중평균·최고 금리 캔들로 표현. */
 function drawR2OHLC({lo,wavg,hi,tail,lowIsEst}){
   const c=document.getElementById("r2ohlc"); if(!c)return;
@@ -2157,7 +2086,7 @@ function fitTerminalCharts(){
     if(!canvas || !canvas.closest('.screen.on')) return;
     const parent=canvas.parentElement, css=getComputedStyle(parent);
     const width=Math.floor(parent.clientWidth-parseFloat(css.paddingLeft)-parseFloat(css.paddingRight));
-    const height=canvas.matches('#spk2,#spk3') ? 96 : chart.height;
+    const height=canvas.matches('#spk2,#spk3,#spk4') ? 132 : chart.height;
     if(width>0 && (Math.abs(chart.width-width)>1 || chart.height!==height)) chart.resize(width,height);
   });
 }
@@ -2166,7 +2095,6 @@ window.addEventListener('resize',()=>{
   cancelAnimationFrame(chartResizeFrame);
   chartResizeFrame=requestAnimationFrame(()=>{
     fitTerminalCharts();
-    if(selectedAuction && document.getElementById('scr-auc').classList.contains('on')) drawOHLC(selectedAuction);
   });
 });
 
@@ -2424,7 +2352,18 @@ window.KTB_UI_TEXT.push(
   ["응찰최고", "Highest bid"],
   ["낙찰금리", "Award yield"],
   ["예정액", "Planned amount"],
-  ["충족률", "Fill rate"]
+  ["충족률", "Fill rate"],
+  ["응찰금리범위", "Bid yield range"],
+  ["응찰률 추이", "Bid-to-cover trend"],
+  ["테일 추이", "Tail trend"],
+  ["부분낙찰률 추이", "Partial allotment trend"],
+  ["직전 6회 평균", "Previous six average"],
+  ["직전 동일 만기", "Previous auction of same tenor"],
+  ["동일 만기 최근 12회 추이", "Last 12 auctions of same tenor"],
+  ["동일 만기 최근", "Same tenor, latest"],
+  ["최고낙찰", "Highest award"],
+  ["최저낙찰", "Lowest award"],
+  ["경쟁입찰 결과 없음", "No competitive auction result"]
 );
 </script>
 <script src="mockup/ktb-terminal-v5-ui.js"></script>
