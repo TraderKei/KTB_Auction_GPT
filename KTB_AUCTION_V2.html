@@ -101,7 +101,7 @@ a{color:var(--accent); text-decoration:none}
 .kpi .k-d{font-size:10px; margin-top:1px}
 .kpi .k-spark{margin-top:3px; height:16px}
 /* P2 위: 선택 입찰 Spot 5개와 동일 만기 최근 12회 추이 3개. */
-#scr-auc .auc-insights{grid-column:2; grid-row:1; min-width:0; display:grid; gap:12px}
+#scr-auc .auc-insights{min-width:0; display:grid; gap:12px}
 #scr-auc .spot-grid{display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:8px}
 #scr-auc .spot-card,#scr-auc .trend-card{min-width:0; border:1px solid var(--auc-outline); border-radius:10px; background:var(--panel); padding:8px 10px}
 #scr-auc .spot-card{min-height:96px; position:relative}
@@ -321,13 +321,16 @@ table.blot .stick-3{left:226px; min-width:62px; width:62px; box-shadow:1px 0 0 v
 /* P1 calendar follows the UST baseline's compact month layout. */
 #scr-auc{--auc-outline:#dee0ea}
 #scr-auc .grid3{background:transparent; gap:12px; padding:12px; align-items:start}
-#scr-auc .grid3 > .panel{border:1px solid var(--auc-outline); border-radius:10px; overflow:hidden}
-#scr-auc #aucCalendarPanel{grid-column:1; grid-row:2; align-self:start; height:auto; min-height:0}
-#scr-auc #aucBlotterPanel{grid-column:2; grid-row:2; height:var(--auc-blotter-height, 600px); min-height:0}
+#scr-auc .auc-column{display:flex; flex-direction:column; gap:12px; min-width:0}
+#scr-auc .auc-left{grid-column:1}
+#scr-auc .auc-right{grid-column:2}
+#scr-auc .grid3 .panel{border:1px solid var(--auc-outline); border-radius:10px; overflow:hidden}
+#scr-auc #aucCalendarPanel{align-self:stretch; height:auto; min-height:0}
+#scr-auc #aucBlotterPanel{height:var(--auc-blotter-height, 600px); min-height:0}
 #scr-auc #aucBlotterPanel > .p-body{min-height:0; overflow:auto; flex:1 1 auto}
-#scr-auc .grid3 > .panel > .p-head{height:38px; min-height:38px; flex:0 0 38px; flex-wrap:nowrap; margin:0; padding:0 12px; border:0; border-bottom:1px solid var(--auc-outline); border-radius:0; background:transparent; color:var(--tx)}
-#scr-auc .grid3 > .panel .p-head .p-code,#scr-auc .grid3 > .panel .p-head .p-sub{color:var(--tx-dim)}
-#scr-auc .grid3 > .panel .p-head .p-code{border-color:var(--auc-outline)}
+#scr-auc .grid3 .panel > .p-head{height:38px; min-height:38px; flex:0 0 38px; flex-wrap:nowrap; margin:0; padding:0 12px; border:0; border-bottom:1px solid var(--auc-outline); border-radius:0; background:transparent; color:var(--tx)}
+#scr-auc .grid3 .panel .p-head .p-code,#scr-auc .grid3 .panel .p-head .p-sub{color:var(--tx-dim)}
+#scr-auc .grid3 .panel .p-head .p-code{border-color:var(--auc-outline)}
 #scr-auc .mnav button,#scr-auc .mnav select{border-radius:7px; background:transparent}
 #scr-auc #aucBlotterPanel .blot-filters{background:transparent}
 #scr-auc #aucBlotterPanel .blot-filters .chip{border-radius:7px; background:transparent}
@@ -337,7 +340,7 @@ body.dark #scr-auc #aucBlotterPanel .blot-filters .chip.on{background:#1d3853; b
 #scr-auc #aucBlotterPanel .p-sub{min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
 #scr-auc #aucBlotterPanel .rangesel select{background:transparent; color:var(--tx); border-color:var(--bd-2); border-radius:7px; color-scheme:inherit}
 #scr-auc #aucBlotterPanel .rangesel .rs-lbl,#scr-auc #aucBlotterPanel .rangesel .rs-tilde{color:var(--tx-dim)}
-#scr-auc .auc-detail{grid-column:1; grid-row:1; padding:12px; border:1px solid var(--auc-outline); border-radius:10px; background:var(--panel)}
+#scr-auc .auc-detail{padding:12px; border:1px solid var(--auc-outline); border-radius:10px; background:var(--panel)}
 #scr-auc .auc-detail-top{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:10px}
 #scr-auc .auc-detail-top h4{font-size:12px}
 #scr-auc .auc-detail-hero{display:flex; align-items:center; gap:7px; flex-wrap:wrap; margin-bottom:12px}
@@ -382,21 +385,15 @@ body.dark #scr-auc .at-bb{background:#49282e; border-color:#af6971; color:#ffc3c
 #scr-auc .cal .events{display:grid; gap:2px}
 #scr-auc .cal .ev{display:block; width:100%; min-width:0; padding:3px 2px; border:1px solid var(--accent); border-radius:3px; background:var(--ce-selected); color:var(--tx); text-align:left; font:9px/1.2 var(--sans); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer}
 #scr-auc .cal .ev.planned{border-color:var(--warn); background:color-mix(in srgb,var(--warn) 20%,var(--panel)); color:var(--tx)}
-#scr-auc .cal .ev.synthetic{border-color:var(--bd-2); background:var(--bg-2); color:var(--tx-mut)}
 #scr-auc .cal .ev.monthly{border-color:#a3a3a3; background:#f4f5f7; color:#40464c}
-#scr-auc .cal .ev.unlinked{border-color:#c8ced5; background:#fff; color:#5d6570}
 #scr-auc .cal .ev:hover,#scr-auc .cal .ev.selected{border-color:var(--accent); background:var(--ce-hover); color:var(--tx)}
 #scr-auc .cal-empty{grid-column:1 / -1; padding:8px 5px; color:var(--tx-mut); text-align:center; font-size:10px}
 #scr-auc .cal-legend{display:flex; flex-wrap:wrap; gap:5px 10px; color:var(--tx-mut); font-size:9px}
 #scr-auc .cal-legend span{display:inline-flex; align-items:center; gap:5px}
 #scr-auc .cal-legend i{width:7px; height:7px; border-radius:2px; background:var(--ce-selected)}
 #scr-auc .cal-legend i.planned{background:var(--warn)}
-#scr-auc .cal-legend i.synthetic{background:var(--bg-2); border:1px solid var(--bd-2)}
 #scr-auc .cal-legend i.monthly{background:#f4f5f7; border:1px solid #a3a3a3}
-#scr-auc .cal-legend i.unlinked{background:#fff; border:1px solid #c8ced5}
 #scr-auc .cal-message{min-height:15px; color:var(--tx-mut); font-size:9px; line-height:1.5}
-#scr-auc .cal-source{font-size:9px; line-height:1.4}
-#scr-auc .cal-source[hidden]{display:none}
 
 /* 가시성 개선: 입찰캘린더·블로터 탭 텍스트를 탭 범위로 격리해 확대(타 탭 크기 불변) */
 #scr-auc .p-head h3{font-size:13px}
@@ -405,6 +402,7 @@ body.dark #scr-auc .at-bb{background:#49282e; border-color:#af6971; color:#ffc3c
 #scr-auc .mnav select{font-size:11px; height:26px}
 #scr-auc .mnav .calendar-year{width:72px}
 #scr-auc .mnav .calendar-month{width:64px}
+#scr-auc .mnav .calendar-year,#scr-auc .mnav .calendar-month{appearance:none; -webkit-appearance:none; background-image:none; text-align:center; padding-right:3px}
 #scr-auc .mnav button{font-size:18px; width:28px; height:26px; padding:0}
 /* P2 기간 셀렉터(from/to) 가독성: 라벨·틸드·select 를 p-head 제목(13px) 수준으로 확대 (R1 .rangesel 과 동일 역할) */
 #scr-auc .rangesel .rs-lbl{font-size:11px}
@@ -486,7 +484,7 @@ body{padding:4px;min-width:0}
 .screen .grid3{grid-template-columns:repeat(auto-fit,minmax(min(100%,430px),1fr))!important;height:auto!important;min-height:0!important;align-items:start}
 #scr-auc .grid3{grid-template-columns:360px minmax(0,1fr)!important; height:auto!important; min-height:0!important}
 @media(min-width:1500px){#scr-auc .grid3{grid-template-columns:390px minmax(0,1fr)!important}}
-#scr-auc #aucCalendarPanel{height:auto;min-height:0;align-self:start}
+#scr-auc #aucCalendarPanel{height:auto;min-height:0;align-self:stretch}
 .panel{overflow:visible}
 .p-head{flex-wrap:wrap;padding:4px 6px}
 .p-head .p-sub{white-space:normal;overflow-wrap:anywhere}
@@ -507,7 +505,7 @@ table.blot .stick-2{max-width:none;overflow:visible;white-space:normal;min-width
 .wf{min-width:360px}
 @media(max-width:900px){
   .screen .grid3,#scr-auc .grid3{grid-template-columns:minmax(0,1fr)!important;height:auto!important;min-height:0!important}
-  #scr-auc .auc-detail,#scr-auc .auc-insights,#scr-auc #aucCalendarPanel,#scr-auc #aucBlotterPanel{grid-column:1;grid-row:auto}
+  #scr-auc .auc-left,#scr-auc .auc-right{grid-column:1}
   table.blot th.stick,table.blot td.stick{position:static}
   .ui-controls{margin-left:0}
 }
@@ -546,15 +544,17 @@ table.blot .stick-2{max-width:none;overflow:visible;white-space:normal;min-width
 
 <section class="screen on" id="scr-auc">
   <div class="grid3">
+    <div class="auc-column auc-left">
     <div class="auc-detail" aria-live="polite">
         <div class="auc-detail-top"><h4>선택 입찰 발행·입찰정보</h4><span class="at" id="aucDetailType">—</span></div>
         <div class="auc-detail-hero"><strong id="aucDetailMat" data-field="bond.maturity" data-source="MOEF_KTB" data-freq="발행공고 T-3일">—</strong><span class="issue-badge" id="aucDetailIssue">—</span></div>
         <div class="auc-detail-grid">
           <div><span class="label">종목명</span><strong id="aucDetailName" data-field="bond.name" data-source="MOEF_KTB" data-freq="발행공고 T-3일">—</strong></div>
+          <div><span class="label">발행예정금액</span><strong id="aucDetailPlan" data-field="auc.plan_amt" data-source="MOEF_KTB" data-freq="발행공고 T-3일">—</strong></div>
           <div><span class="label">입찰일</span><strong id="aucDetailDate" data-field="auc.bid_date" data-source="MOEF_KTB" data-freq="발행공고 T-3일">—</strong></div>
           <div><span class="label">입찰시간</span><strong id="aucDetailTime" data-field="auc.bid_time" data-source="MOEF_KTB" data-freq="입찰공고">—</strong></div>
-          <div><span class="label">발행예정금액</span><strong id="aucDetailPlan" data-field="auc.plan_amt" data-source="MOEF_KTB" data-freq="발행공고 T-3일">—</strong></div>
-          <div><span class="label">대금납입일</span><strong id="aucDetailPay" data-field="auc.pay_date" data-source="MOEF_KTB" data-freq="발행공고 T-3일">—</strong></div>
+          <div><span class="label">발행일</span><strong id="aucDetailIssueDate" data-field="bond.issue_date" data-source="MOEF_KTB" data-freq="발행공고 T-3일">—</strong></div>
+          <div><span class="label">만기일</span><strong id="aucDetailMaturityDate" data-field="bond.maturity_date" data-source="MOEF_KTB" data-freq="발행공고 T-3일">—</strong></div>
         </div>
     </div>
     <div class="panel" id="aucCalendarPanel">
@@ -565,12 +565,13 @@ table.blot .stick-2{max-width:none;overflow:visible;white-space:normal;min-width
         <div class="cal-meta"><p class="cal-summary" id="calSummary"></p><label class="cal-filter"><input type="checkbox" id="calCompOnly">경쟁만 조회</label></div>
         <div class="cal-head"><div class="cah">일</div><div class="cah">월</div><div class="cah">화</div><div class="cah">수</div><div class="cah">목</div><div class="cah">금</div><div class="cah">토</div></div>
         <div class="cal" id="calGrid" role="grid" aria-label="국고채 입찰 일정"></div>
-        <div class="cal-legend"><span><i></i>입찰 완료</span><span><i class="planned"></i>공고된 예정</span><span><i class="monthly"></i>월간 계획</span><span><i class="unlinked"></i>결과 미연결</span><span><i class="synthetic"></i>모형 결과</span></div>
-        <div class="cal-source" id="calSource" hidden>11월 일정: <a href="https://mofe.go.kr/nw/nes/detailNesDtaView.do?menuNo=4010100&amp;searchBbsId1=MOSFBBS_000000000028&amp;searchNttId1=MOSF_000000000079801" target="_blank" rel="noopener">재정경제부 발행계획</a> · <a href="https://ktb.mofe.go.kr/isuNdReprchsPblanc.do" target="_blank" rel="noopener">국채시장 입찰공고</a></div>
+        <div class="cal-legend"><span><i></i>입찰 완료</span><span><i class="planned"></i>공고된 예정</span><span><i class="monthly"></i>월간 계획</span></div>
         <p class="cal-message" id="calMessage" aria-live="polite">결과 입찰은 상단 지표에, 예정 일정은 아래 안내에 반영됩니다.</p>
       </div>
     </div>
+    </div>
 
+    <div class="auc-column auc-right">
     <div class="auc-insights" aria-label="선택 입찰 지표와 동일 만기 추이">
       <div class="spot-grid" aria-label="선택 입찰 Spot 지표">
         <div class="spot-card"><div class="spot-head"><div class="spot-label">응찰률</div><button type="button" class="spot-info" aria-label="응찰률 설명" aria-describedby="spotBtcHelp">!<span class="spot-tooltip" id="spotBtcHelp" role="tooltip">응찰액 ÷ 발행예정액 × 100. 직전 동일 만기의 유효한 6개 값 평균과 비교합니다.</span></button></div><div class="spot-value" id="spotBtc" data-field="auc.bid_to_cover" data-source="DERIVED">—</div><div class="spot-sub" id="spotBtcCompare">직전 6회 평균 —</div></div>
@@ -627,6 +628,7 @@ table.blot .stick-2{max-width:none;overflow:visible;white-space:normal;min-width
           <tbody id="blotBody"></tbody>
         </table>
       </div>
+    </div>
     </div>
   </div>
 </section>
@@ -1041,20 +1043,17 @@ function renderCal(){
   const ymPrefix = ymStr(viewYear,viewMonth) + "-";     /* "YYYY-MM-" */
   const evByDay = {};
   const compOnly = document.getElementById("calCompOnly").checked;
-  const monthEvents = RESULTS.concat(CAL_SCHEDULE).filter(r=>r.d.startsWith(ymPrefix) && (!compOnly || r.t==="comp"));
+  const monthEvents = RESULTS.concat(CAL_SCHEDULE).filter(r=>r.d.startsWith(ymPrefix) && !r.synthetic && r.notice!=="elapsed" && (!compOnly || r.t==="comp"));
   monthEvents.forEach(r=>{
     const dd = parseInt(r.d.slice(8,10),10); (evByDay[dd]=evByDay[dd]||[]).push(r);
   });
   const counts = [
     ["입찰 완료",r=>!r.notice&&!r.planned&&!r.synthetic],
     ["공고된 예정",r=>r.notice==="announced"||(!r.notice&&r.planned)],
-    ["월간 계획",r=>r.notice==="monthly"],
-    ["결과 미연결",r=>r.notice==="elapsed"],
-    ["모형 결과",r=>!r.notice&&!r.planned&&r.synthetic]
+    ["월간 계획",r=>r.notice==="monthly"]
   ];
   const summary = counts.map(([label,test])=>[label,monthEvents.filter(test).length]).filter(([,count])=>count).map(([label,count])=>`${label} ${count}건`);
-  document.getElementById("calSummary").textContent = `${viewYear}년 ${viewMonth+1}월${viewYear===2026&&viewMonth===10?" · 11.12 기준":""} · ${summary.join(" · ") || "일정 없음"}`;
-  document.getElementById("calSource").hidden = !(viewYear===2026 && viewMonth===10);
+  document.getElementById("calSummary").textContent = summary.join(" · ") || "일정 없음";
   g.setAttribute("aria-label",`${viewYear}년 ${viewMonth+1}월 국고채 입찰 일정`);
   let html = "";
   /* 동적 계산: 해당 월 1일의 요일, 총 일수 */
@@ -1070,8 +1069,8 @@ function renderCal(){
     evs.forEach(r=>{
       const a=AT[r.t];
       const label = CAL_LABEL[r.t](r);
-      const status = r.notice==="announced" ? "공고된 예정" : r.notice==="monthly" ? "월간 계획" : r.notice==="elapsed" ? "입찰일 경과 · 결과 미연결" : r.planned ? "공고된 예정" : r.synthetic ? "모형 결과" : "입찰 완료";
-      const stateClass = r.notice==="announced" ? "planned" : r.notice==="monthly" ? "monthly" : r.notice==="elapsed" ? "unlinked" : r.planned ? "planned" : r.synthetic ? "synthetic" : "";
+      const status = r.notice==="announced" ? "공고된 예정" : r.notice==="monthly" ? "월간 계획" : r.planned ? "공고된 예정" : "입찰 완료";
+      const stateClass = r.notice==="announced" ? "planned" : r.notice==="monthly" ? "monthly" : r.planned ? "planned" : "";
       /* data-ridx: RESULTS 전역 인덱스. 같은 code가 여러 차수/비경쟁II로 중복될 수 있어
          클릭한 칩이 가리키는 바로 그 레코드를 정확히 특정하기 위함(KPI 동기화용). */
       const ridx = RESULTS.indexOf(r);
@@ -1094,7 +1093,7 @@ function renderCal(){
       const schedule = CAL_SCHEDULE[+e.dataset.sidx];
       if(schedule){
         renderAucKPI(schedule);
-        document.getElementById("calMessage").textContent = `${schedule.d} · ${schedule.nm} · ${fmt(schedule.plan)}억원 · 결과 지표 미연결`;
+        document.getElementById("calMessage").textContent = `${schedule.d} · ${schedule.nm} · ${fmt(schedule.plan)}억원 · 입찰 예정`;
       }
     }
   }));
@@ -1234,7 +1233,8 @@ function renderAucKPI(r){
     aucDetailName:r?.nm || "—", aucDetailMat:detailMatLabel(r?.mat),
     aucDetailDate:r?.d || "—", aucDetailTime:r?.bidTime || "—",
     aucDetailPlan:r?.plan!=null ? `${fmt(r.plan)}억원` : "—",
-    aucDetailPay:r?.pay || "—"
+    aucDetailIssueDate:r?.issueDate || r?.issue_date || "—",
+    aucDetailMaturityDate:r?.maturityDate || r?.maturity_date || "—"
   };
   Object.entries(detail).forEach(([id,value])=>document.getElementById(id).textContent=value);
   const typeEl=document.getElementById("aucDetailType");
@@ -1272,7 +1272,7 @@ function renderAucKPI(r){
   const wavgDelta=wavg!=null && priorWavg!=null ? (wavg-priorWavg)*100 : null;
   const partialDelta=partial!=null && priorPartial!=null ? partial-priorPartial : null;
   const tailDelta=tail!=null && priorTail!=null ? tail-priorTail : null;
-  const rangeDelta=range!=null && rangeAvg!=null ? (range-rangeAvg)/100 : null;
+  const rangeDelta=range!=null && rangeAvg!=null ? range-rangeAvg : null;
   spot("spotBtc",btc,1,"%",btcDelta);
   spot("spotWavg",wavg,3,"%",wavgDelta);
   spot("spotPartial",partial,1,"%",partialDelta);
@@ -1282,7 +1282,7 @@ function renderAucKPI(r){
   comparison("spotWavgCompare",priorWavg==null ? "직전 동일 만기 —" : `직전 ${priorWavg.toFixed(3)}%`,wavgDelta,1,"bp");
   comparison("spotPartialCompare",priorPartial==null ? "직전 동일 만기 —" : `직전 ${priorPartial.toFixed(1)}%`,partialDelta,1,"%p");
   comparison("spotTailCompare",priorTail==null ? "직전 동일 만기 —" : `직전 ${priorTail.toFixed(1)}bp`,tailDelta,1,"bp");
-  comparison("spotBidRangeCompare",rangeAvg==null ? "직전 6회 평균 —" : `직전 6회 평균 ${rangeAvg.toFixed(1)}bp`,rangeDelta,3,"%p");
+  comparison("spotBidRangeCompare",rangeAvg==null ? "직전 6회 평균 —" : `직전 6회 평균 ${rangeAvg.toFixed(1)}bp`,rangeDelta,1,"bp");
   const recent=rows.slice(-12), labels=recent.map(x=>x.d.slice(2)), flags=recent.map(x=>x===r);
   const chartAverage=bidToCoverChartAverage(rows).slice(-12);
   const btcSixAvg=chartAverage.map(x=>x.value), btcEstimated=chartAverage.map(x=>x.estimated);
@@ -2452,6 +2452,10 @@ window.KTB_UI_TEXT.push(
   ["신규발행", "New issue"],
   ["통합발행", "Reopening"],
   ["물가연동국채", "Inflation-linked bond"],
+  ["발행일", "Issue date"],
+  ["만기일", "Maturity date"],
+  ["입찰 예정", "Auction scheduled"],
+  ["일정 없음", "No scheduled auctions"],
   ["초기 구간 추정", "Early values estimated"],
   ["과거 회차가 6개 미만인 구간은 첫 실제 응찰률로 부족한 회차를 보완", "For fewer than six prior auctions, missing values use the first observed bid-to-cover rate"]
 );
