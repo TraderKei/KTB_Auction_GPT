@@ -102,6 +102,10 @@ a{color:var(--accent); text-decoration:none}
 .kpi .k-spark{margin-top:3px; height:16px}
 /* P2 위: 선택 입찰 Spot 5개와 동일 만기 최근 12회 추이 3개. */
 #scr-auc .auc-insights{min-width:0; display:grid; gap:12px}
+#scr-auc .spot-section{min-width:0; padding:10px; border:1px solid var(--auc-outline); border-radius:12px; background:var(--panel)}
+#scr-auc .spot-section-head{display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:4px 12px; margin-bottom:10px}
+#scr-auc .spot-section-head strong{font-size:13px; font-weight:700; color:var(--tx)}
+#scr-auc .spot-result-context{min-width:0; color:var(--tx-dim); font-size:11px; text-align:right; overflow-wrap:anywhere}
 #scr-auc .spot-grid{display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:8px}
 #scr-auc .spot-card,#scr-auc .trend-card{min-width:0; border:1px solid var(--auc-outline); border-radius:10px; background:var(--panel); padding:8px 10px}
 #scr-auc .spot-card{min-height:96px; position:relative}
@@ -566,19 +570,22 @@ table.blot .stick-2{max-width:none;overflow:visible;white-space:normal;min-width
         <div class="cal-head"><div class="cah">일</div><div class="cah">월</div><div class="cah">화</div><div class="cah">수</div><div class="cah">목</div><div class="cah">금</div><div class="cah">토</div></div>
         <div class="cal" id="calGrid" role="grid" aria-label="국고채 입찰 일정"></div>
         <div class="cal-legend"><span><i></i>입찰 완료</span><span><i class="planned"></i>공고된 예정</span><span><i class="monthly"></i>월간 계획</span></div>
-        <p class="cal-message" id="calMessage" aria-live="polite">결과 입찰은 상단 지표에, 예정 일정은 아래 안내에 반영됩니다.</p>
+        <p class="cal-message" id="calMessage" aria-live="polite">입찰을 선택하면 해당 결과 또는 직전 동일 만기 결과가 상단에 표시됩니다.</p>
       </div>
     </div>
     </div>
 
     <div class="auc-column auc-right">
     <div class="auc-insights" aria-label="선택 입찰 지표와 동일 만기 추이">
+      <div class="spot-section">
+      <div class="spot-section-head"><strong>주요 입찰 결과</strong><span class="spot-result-context" id="spotResultContext" aria-live="polite">—</span></div>
       <div class="spot-grid" aria-label="선택 입찰 Spot 지표">
         <div class="spot-card"><div class="spot-head"><div class="spot-label">응찰률</div><button type="button" class="spot-info" aria-label="응찰률 설명" aria-describedby="spotBtcHelp">!<span class="spot-tooltip" id="spotBtcHelp" role="tooltip">응찰액 ÷ 발행예정액 × 100. 직전 동일 만기의 유효한 6개 값 평균과 비교합니다.</span></button></div><div class="spot-value" id="spotBtc" data-field="auc.bid_to_cover" data-source="DERIVED">—</div><div class="spot-sub" id="spotBtcCompare">직전 6회 평균 —</div></div>
         <div class="spot-card"><div class="spot-head"><div class="spot-label">가중평균낙찰금리</div><button type="button" class="spot-info" aria-label="가중평균낙찰금리 설명" aria-describedby="spotWavgHelp">!<span class="spot-tooltip" id="spotWavgHelp" role="tooltip">낙찰 금리의 가중평균입니다. 직전 동일 만기 경쟁입찰과의 차이를 bp로 표시합니다.</span></button></div><div class="spot-value" id="spotWavg" data-field="auc.wavg_rate" data-source="MOEF_KTB">—</div><div class="spot-sub" id="spotWavgCompare">직전 동일 만기 —</div></div>
         <div class="spot-card"><div class="spot-head"><div class="spot-label">부분낙찰률</div><button type="button" class="spot-info" aria-label="부분낙찰률 설명" aria-describedby="spotPartialHelp">!<span class="spot-tooltip" id="spotPartialHelp" role="tooltip">공시된 부분낙찰률입니다. 직전 동일 만기 경쟁입찰과의 차이를 %p로 표시합니다.</span></button></div><div class="spot-value" id="spotPartial" data-field="auc.partial_alloc_rate" data-source="MOEF_KTB">—</div><div class="spot-sub" id="spotPartialCompare">직전 동일 만기 —</div></div>
         <div class="spot-card"><div class="spot-head"><div class="spot-label">테일</div><button type="button" class="spot-info" aria-label="테일 설명" aria-describedby="spotTailHelp">!<span class="spot-tooltip" id="spotTailHelp" role="tooltip">최고낙찰금리 − 가중평균낙찰금리. 직전 동일 만기 경쟁입찰과의 차이를 bp로 표시합니다.</span></button></div><div class="spot-value" id="spotTail" data-field="auc.tail" data-source="DERIVED">—</div><div class="spot-sub" id="spotTailCompare">직전 동일 만기 —</div></div>
         <div class="spot-card"><div class="spot-head"><div class="spot-label">응찰금리범위</div><button type="button" class="spot-info" aria-label="응찰금리범위 설명" aria-describedby="spotBidRangeHelp">!<span class="spot-tooltip" id="spotBidRangeHelp" role="tooltip">응찰최고금리 − 응찰최저금리. 직전 동일 만기의 유효한 6개 값 평균과 비교합니다.</span></button></div><div class="spot-value" id="spotBidRange" data-field="auc.bid_rate_range" data-source="DERIVED">—</div><div class="spot-sub" id="spotBidRangeCompare">직전 6회 평균 —</div></div>
+      </div>
       </div>
       <div class="trend-grid" aria-label="동일 만기 최근 12회 추이">
         <div class="trend-card"><div class="trend-label">응찰률 추이</div><div class="trend-sub" id="trendBtcMeta">동일 만기 최근 12회</div><canvas id="spk2" width="288" height="184" aria-label="동일 만기 응찰률 및 직전 6회 평균 추이"></canvas><div class="trend-key" id="trendBtcLegend"><span><i></i>응찰률</span><span><i class="avg"></i>직전 6회 평균</span><small id="trendBtcEstimate" title="과거 회차가 6개 미만인 구간은 첫 실제 응찰률로 부족한 회차를 보완" hidden>초기 구간 추정</small></div></div>
@@ -1189,6 +1196,12 @@ function comparableAuctions(r){
       (x===r || isEarlierAuction(x,r)))
     .sort((a,b)=>a.d.localeCompare(b.d) || (a.bidTime||"").localeCompare(b.bidTime||"") || a.code.localeCompare(b.code));
 }
+function latestPriorResult(r){
+  if(!r || r.t!=="comp") return null;
+  return RESULTS.filter(x=>x.mat===r.mat && x.t==="comp" && !x.planned && !x.synthetic &&
+      x.plan>0 && x.bid!=null && x.hi!=null && x.wavg!=null && isEarlierAuction(x,r))
+    .sort((a,b)=>a.d.localeCompare(b.d) || (a.bidTime||"").localeCompare(b.bidTime||"") || a.code.localeCompare(b.code)).at(-1) || null;
+}
 function auctionMetric(r,metric){
   if(!r || r.demoFields?.includes(metric)) return null;
   if(metric==="btc") return r.plan>0 && r.bid!=null && !r.demoFields?.includes("bid") ? r.bid/r.plan*100 : null;
@@ -1243,10 +1256,14 @@ function renderAucKPI(r){
   const issueEl=document.getElementById("aucDetailIssue"), issue=issueKind(r?.nm);
   issueEl.textContent=issue==="new" ? "신규발행" : issue==="reopen" ? "통합발행" : "";
   issueEl.className=`issue-badge ${issue}`;
-  const rows=comparableAuctions(r);
-  const prior=rows.filter(x=>x!==r);
+  const scheduled=r?.t==="comp" && Boolean(r.planned || r.notice);
+  const result=scheduled ? latestPriorResult(r) : r?.t==="comp" && !r.planned && !r.synthetic ? r : null;
+  document.getElementById("spotResultContext").textContent=result ?
+    `${scheduled ? "직전 결과 · " : ""}${detailMatLabel(result.mat)} · ${result.nm} · ${result.d}` : "조회 가능한 동일 만기 결과 없음";
+  const rows=comparableAuctions(result);
+  const prior=rows.filter(x=>x!==result);
   const latestPrior=prior.at(-1);
-  const current=rows.includes(r) ? r : null;
+  const current=rows.includes(result) ? result : null;
   const btc=auctionMetric(current,"btc"), wavg=auctionMetric(current,"wavg");
   const partial=auctionMetric(current,"partial"), tail=auctionMetric(current,"tail");
   const range=auctionMetric(current,"range");
@@ -1283,7 +1300,7 @@ function renderAucKPI(r){
   comparison("spotPartialCompare",priorPartial==null ? "직전 동일 만기 —" : `직전 ${priorPartial.toFixed(1)}%`,partialDelta,1,"%p");
   comparison("spotTailCompare",priorTail==null ? "직전 동일 만기 —" : `직전 ${priorTail.toFixed(1)}bp`,tailDelta,1,"bp");
   comparison("spotBidRangeCompare",rangeAvg==null ? "직전 6회 평균 —" : `직전 6회 평균 ${rangeAvg.toFixed(1)}bp`,rangeDelta,1,"bp");
-  const recent=rows.slice(-12), labels=recent.map(x=>x.d.slice(2)), flags=recent.map(x=>x===r);
+  const recent=rows.slice(-12), labels=recent.map(x=>x.d.slice(2)), flags=recent.map(x=>x===result);
   const chartAverage=bidToCoverChartAverage(rows).slice(-12);
   const btcSixAvg=chartAverage.map(x=>x.value), btcEstimated=chartAverage.map(x=>x.estimated);
   document.getElementById("trendBtcEstimate").hidden=!btcEstimated.some(Boolean);
@@ -2451,6 +2468,10 @@ window.KTB_UI_TEXT.push(
   ["경쟁입찰 결과 없음", "No competitive auction result"],
   ["신규발행", "New issue"],
   ["통합발행", "Reopening"],
+  ["주요 입찰 결과", "Key auction results"],
+  ["직전 결과", "Previous result"],
+  ["조회 가능한 동일 만기 결과 없음", "No prior result for this tenor"],
+  ["입찰을 선택하면 해당 결과 또는 직전 동일 만기 결과가 상단에 표시됩니다.", "Select an auction to see its result or the previous result for the same tenor above."],
   ["물가연동국채", "Inflation-linked bond"],
   ["발행일", "Issue date"],
   ["만기일", "Maturity date"],
