@@ -79,7 +79,7 @@ a{color:var(--accent); text-decoration:none}
 
 /* ---- Tab bar ---- */
 .tabbar{display:flex; gap:0; background:var(--bg-1); border-bottom:1px solid var(--bd); height:38px}
-.terminal-title{display:flex; align-items:center; flex:0 0 auto; padding:0 12px; margin-right:8px; color:var(--tx); font-size:17px; font-weight:800; white-space:nowrap}
+.terminal-title{display:flex; align-items:center; flex:0 0 auto; padding:0 12px; margin-right:8px; color:var(--tx); font-size:18px; font-weight:800; white-space:nowrap}
 .tab{
   padding:0 20px; height:38px; display:flex; align-items:center; gap:6px;
   font-size:13px; color:var(--tx-mut); cursor:pointer; border-right:1px solid var(--bd);
@@ -1402,6 +1402,7 @@ let resEndIdx = RES_MONTHS.length-1;       /* 기간 종료월 인덱스 (기본
 let resActiveMats = new Set(MATS);         /* R1 만기 필터 상태(초기값: 전체 선택) · P2 activeMats 와 분리 */
 function renderRES(){
   const allComp = RESULTS.filter(x=>x.t==="comp"&&!x.planned&&x.hi!=null);
+  const demandScore = x=>x.spr==null ? null : 50-(x.spr*8)-((x.hi-x.wavg)*100*4)+(x.bid/x.plan-3)*15;
   /* 최종 표시 행 = [기간 필터(resStartIdx~resEndIdx)] ∩ [만기 필터(resActiveMats)].
      구간 월 집합은 RES_MONTHS 인덱스 범위로, 만기는 resActiveMats 멤버십으로 판정. */
   function filteredComp(){
@@ -1469,8 +1470,8 @@ function renderRES(){
     seq:  { num:false, val:x=>x.seq,           cell:x=>`<td data-field="auc.tranche" data-source="MOEF_KTB" data-freq="발행공고 T-3일">${x.seq}</td>` },
     btc:  { num:true,  val:x=>x.bid/x.plan,    cell:x=>`<td data-field="auc.bid_to_cover" data-source="DERIVED" data-freq="입찰일 T+0 16:00" class="${x.bid/x.plan>=3?'down':''}">${(x.bid/x.plan).toFixed(2)}</td>` },
     tail: { num:true,  val:x=>(x.hi-x.wavg)*100, cell:x=>`<td data-field="auc.tail" data-source="DERIVED" data-freq="입찰일 T+0 16:00">${((x.hi-x.wavg)*100).toFixed(1)}</td>` },
-    spr:  { num:true,  val:x=>x.spr,           cell:x=>`<td data-field="auc.spread_vs_mts" data-source="DEMO" data-freq="입찰일 T+0 16:00" class="${sprCls(x.spr)}">${(x.spr>0?"+":"")+x.spr.toFixed(1)}</td>` },
-    score:{ num:true,  val:x=>50-(x.spr*8)-((x.hi-x.wavg)*100*4)+(x.bid/x.plan-3)*15, cell:x=>`<td data-field="dmd.score" data-source="DEMO" data-freq="입찰일 T+0 16:00">${Math.round(50-(x.spr*8)-((x.hi-x.wavg)*100*4)+(x.bid/x.plan-3)*15)}</td>` }
+    spr:  { num:true,  val:x=>x.spr,           cell:x=>`<td data-field="auc.spread_vs_mts" data-source="DEMO" data-freq="입찰일 T+0 16:00" class="${sprCls(x.spr)}">${x.spr==null ? "—" : (x.spr>0?"+":"")+x.spr.toFixed(1)}</td>` },
+    score:{ num:true,  val:demandScore,        cell:x=>`<td data-field="dmd.score" data-source="DEMO" data-freq="입찰일 T+0 16:00">${demandScore(x)==null ? "—" : Math.round(demandScore(x))}</td>` }
   };
   let sortState = { key:null, dir:1 };          /* dir: 1=오름, -1=내림 */
   let selIdx = 0;                               /* 현재 선택 행 (compRows 인덱스) */
@@ -1479,6 +1480,7 @@ function renderRES(){
     const def = colDefs[sortState.key];
     return compRows.slice().sort((a,b)=>{
       const va=def.val(a), vb=def.val(b);
+      if(va==null || vb==null) return va==null ? (vb==null ? 0 : 1) : -1;
       const cmp = def.num ? (va-vb) : String(va).localeCompare(String(vb),"ko");
       return cmp*sortState.dir;
     });
@@ -1663,7 +1665,8 @@ function drawResSeries(r){
     return;
   }
   const ym = r.d.slice(0,7);                                  /* "YYYY-MM" */
-  const endIdx = Math.max(0, MAT_MONTH_LABELS.indexOf(ym.slice(2)));  /* "YY-MM" 라벨 인덱스 */
+  const selectedMonth = ym.slice(2);
+  const endIdx = Math.max(0, MAT_MONTH_LABELS.reduce((last, month, i)=>month<=selectedMonth ? i : last, -1));
   const startIdx = Math.max(0, endIdx-5);                     /* 최근 6개월 창 시작 */
   const labels = MAT_MONTH_LABELS.slice(startIdx, endIdx+1);
   const btcArr = S.btc.slice(startIdx, endIdx+1);
