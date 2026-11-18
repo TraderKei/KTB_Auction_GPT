@@ -123,9 +123,14 @@ body.dark #scr-auc .trend-label{color:#e6e6e6}
 #scr-auc .spot-sub .up{color:var(--up)}
 #scr-auc .spot-sub .down{color:var(--down)}
 #scr-auc .trend-grid{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px}
-#scr-auc .trend-card{height:244px; display:flex; flex-direction:column}
+#scr-auc .trend-card{min-height:264px; display:flex; flex-direction:column}
 #scr-auc .trend-sub{font-size:10px; color:var(--tx-mut); margin:2px 0 6px}
 #scr-auc .trend-card canvas{width:100%; height:184px; min-height:184px; flex:0 0 184px}
+#scr-auc .trend-key{display:flex; align-items:center; flex-wrap:wrap; gap:4px 10px; margin-top:6px; color:var(--tx-mut); font-size:10px}
+#scr-auc .trend-key i{display:inline-block; width:22px; height:0; margin-right:4px; border-top:2px solid #43a6c1; vertical-align:middle}
+#scr-auc .trend-key i.avg{border-top:2px dashed #ed6d1e}
+#scr-auc .trend-key small{font-size:9px; color:var(--tx-dim)}
+#scr-auc .trend-key[hidden],#scr-auc .trend-key small[hidden]{display:none}
 @media(max-width:1500px){#scr-auc .spot-grid{grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}}
 @media(max-width:1150px){#scr-auc .trend-grid{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}}
 
@@ -337,28 +342,28 @@ body.dark #scr-auc #aucBlotterPanel .blot-filters .chip.on{background:#1d3853; b
 #scr-auc .auc-detail-top h4{font-size:12px}
 #scr-auc .auc-detail-hero{display:flex; align-items:center; gap:7px; flex-wrap:wrap; margin-bottom:12px}
 #scr-auc .auc-detail-hero strong{font-size:25px; font-weight:800; line-height:1.2; letter-spacing:-.03em}
-#scr-auc .issue-badge{display:none; padding:2px 7px; border-radius:5px; border:1px solid transparent; font-size:10px; font-weight:700}
+#scr-auc .issue-badge{display:none; padding:2px 7px; border-radius:5px; border:1px solid transparent; font-size:10px; font-weight:400}
 #scr-auc .issue-badge.new{display:inline-block; background:#eaf3ff; border-color:#a8c8ed; color:#245b9a}
 #scr-auc .issue-badge.reopen{display:inline-block; background:#fff3e5; border-color:#e9c493; color:#925416}
 body.dark #scr-auc .issue-badge.new{background:#1d3853; border-color:#608fbd; color:#b8d8fa}
 body.dark #scr-auc .issue-badge.reopen{background:#4a321f; border-color:#ad7f4e; color:#ffcf98}
-#scr-auc .at{border-radius:5px; font-weight:600}
-#scr-auc .at-comp{background:#eaf3ff; border-color:#a8c8ed; color:#245b9a}
+#scr-auc .at{border-radius:5px; font-weight:400}
+#scr-auc .at-comp{background:#f2edfc; border-color:#c7afea; color:#694497}
 #scr-auc .at-nc1,#scr-auc .at-ex{background:#edf8f2; border-color:#abd6bc; color:#286a48}
 #scr-auc .at-nc2{background:#eaf7f7; border-color:#9fd0d0; color:#216b6d}
 #scr-auc .at-nc3{background:#fff3e5; border-color:#e9c493; color:#925416}
-#scr-auc .at-nc4{background:#f3efff; border-color:#c8b8e9; color:#65469a}
+#scr-auc .at-nc4{background:#edf2f8; border-color:#b9c9dc; color:#4a6482}
 #scr-auc .at-bb{background:#fff0f0; border-color:#e9b9bd; color:#a33e49}
-body.dark #scr-auc .at-comp{background:#1d3853; border-color:#608fbd; color:#b8d8fa}
+body.dark #scr-auc .at-comp{background:#362a4c; border-color:#866db2; color:#e0ccff}
 body.dark #scr-auc .at-nc1,body.dark #scr-auc .at-ex{background:#1d3e35; border-color:#568f75; color:#b2e6c9}
 body.dark #scr-auc .at-nc2{background:#1b4043; border-color:#5a9295; color:#a8e3e3}
 body.dark #scr-auc .at-nc3{background:#4a321f; border-color:#ad7f4e; color:#ffcf98}
-body.dark #scr-auc .at-nc4{background:#332b4b; border-color:#8874ba; color:#ddcaff}
+body.dark #scr-auc .at-nc4{background:#293a4e; border-color:#7189a8; color:#c5d9ef}
 body.dark #scr-auc .at-bb{background:#49282e; border-color:#af6971; color:#ffc3c8}
 #scr-auc .auc-detail-grid{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px 12px}
 #scr-auc .auc-detail-grid > div{min-width:0}
 #scr-auc .auc-detail-grid .label{display:block; color:var(--tx-dim); font-size:10px}
-#scr-auc .auc-detail-grid strong{display:block; overflow-wrap:anywhere; font-size:12px; font-weight:600; margin-top:2px}
+#scr-auc .auc-detail-grid strong{display:block; overflow-wrap:anywhere; font-size:12px; font-weight:400; margin-top:2px}
 #scr-auc .cal-body{display:grid; gap:10px; padding:10px 12px; overflow:visible; flex:none}
 #scr-auc .cal-meta{display:flex; align-items:flex-start; justify-content:space-between; gap:8px}
 #scr-auc .cal-summary{color:var(--tx-mut); font-size:10px; line-height:1.5}
@@ -575,7 +580,7 @@ table.blot .stick-2{max-width:none;overflow:visible;white-space:normal;min-width
         <div class="spot-card"><div class="spot-head"><div class="spot-label">응찰금리범위</div><button type="button" class="spot-info" aria-label="응찰금리범위 설명" aria-describedby="spotBidRangeHelp">!<span class="spot-tooltip" id="spotBidRangeHelp" role="tooltip">응찰최고금리 − 응찰최저금리. 직전 동일 만기의 유효한 6개 값 평균과 비교합니다.</span></button></div><div class="spot-value" id="spotBidRange" data-field="auc.bid_rate_range" data-source="DERIVED">—</div><div class="spot-sub" id="spotBidRangeCompare">직전 6회 평균 —</div></div>
       </div>
       <div class="trend-grid" aria-label="동일 만기 최근 12회 추이">
-        <div class="trend-card"><div class="trend-label">응찰률 추이</div><div class="trend-sub" id="trendBtcMeta">동일 만기 최근 12회</div><canvas id="spk2" width="288" height="184" aria-label="동일 만기 응찰률 및 직전 6회 평균 추이"></canvas></div>
+        <div class="trend-card"><div class="trend-label">응찰률 추이</div><div class="trend-sub" id="trendBtcMeta">동일 만기 최근 12회</div><canvas id="spk2" width="288" height="184" aria-label="동일 만기 응찰률 및 직전 6회 평균 추이"></canvas><div class="trend-key" id="trendBtcLegend"><span><i></i>응찰률</span><span><i class="avg"></i>직전 6회 평균</span><small id="trendBtcEstimate" title="과거 회차가 6개 미만인 구간은 첫 실제 응찰률로 부족한 회차를 보완" hidden>초기 구간 추정</small></div></div>
         <div class="trend-card"><div class="trend-label">테일 추이</div><div class="trend-sub" id="trendTailMeta">동일 만기 최근 12회</div><canvas id="spk3" width="288" height="184" aria-label="동일 만기 테일 추이"></canvas></div>
         <div class="trend-card"><div class="trend-label">부분낙찰률 추이</div><div class="trend-sub" id="trendPartialMeta">동일 만기 최근 12회</div><canvas id="spk4" width="288" height="184" aria-label="동일 만기 부분낙찰률 추이"></canvas></div>
       </div>
@@ -1201,6 +1206,16 @@ function priorSixAverage(prior,metric){
   const values=prior.map(x=>auctionMetric(x,metric)).filter(Number.isFinite).slice(-6);
   return values.length===6 ? values.reduce((sum,value)=>sum+value,0)/6 : null;
 }
+/* 차트의 초기 구간에만 부족한 과거 회차를 첫 실제 응찰률로 채워 추정한다. Spot 평균에는 사용하지 않는다. */
+function bidToCoverChartAverage(rows){
+  const anchor=rows.map(x=>auctionMetric(x,"btc")).find(Number.isFinite);
+  return rows.map((_,index)=>{
+    if(anchor==null) return {value:null,estimated:false};
+    const prior=rows.slice(0,index).map(x=>auctionMetric(x,"btc")).filter(Number.isFinite).slice(-6);
+    const missing=6-prior.length;
+    return {value:(prior.reduce((sum,value)=>sum+value,0)+missing*anchor)/6,estimated:missing>0};
+  });
+}
 const signedChange=(value,digits,unit)=>`${value>0?"+":""}${value.toFixed(digits)}${unit}`;
 
 /* P1/P2에서 공통으로 선택한 입찰. */
@@ -1269,7 +1284,9 @@ function renderAucKPI(r){
   comparison("spotTailCompare",priorTail==null ? "직전 동일 만기 —" : `직전 ${priorTail.toFixed(1)}bp`,tailDelta,1,"bp");
   comparison("spotBidRangeCompare",rangeAvg==null ? "직전 6회 평균 —" : `직전 6회 평균 ${rangeAvg.toFixed(1)}bp`,rangeDelta,3,"%p");
   const recent=rows.slice(-12), labels=recent.map(x=>x.d.slice(2)), flags=recent.map(x=>x===r);
-  const btcSixAvg=recent.map(x=>priorSixAverage(rows.slice(0,rows.indexOf(x)),"btc"));
+  const chartAverage=bidToCoverChartAverage(rows).slice(-12);
+  const btcSixAvg=chartAverage.map(x=>x.value), btcEstimated=chartAverage.map(x=>x.estimated);
+  document.getElementById("trendBtcEstimate").hidden=!btcEstimated.some(Boolean);
   for(const [id,metric,color,unit,meta] of [
     ["spk2","btc","#43a6c1","%","trendBtcMeta"],
     ["spk3","tail","#fd3c46","bp","trendTailMeta"],
@@ -1279,7 +1296,8 @@ function renderAucKPI(r){
     const count=values.filter(Number.isFinite).length;
     document.getElementById(meta).textContent=recent.length ?
       `동일 만기 최근 ${recent.length}회 · 값 ${count}회` : "경쟁입찰 결과 없음";
-    kpiTrendChart(id,count?values:[],color,unit,labels,flags,id==="spk2" ? btcSixAvg : null);
+    if(id==="spk2") document.getElementById("trendBtcLegend").hidden=!count;
+    kpiTrendChart(id,count?values:[],color,unit,labels,flags,id==="spk2" ? btcSixAvg : null,id==="spk2" ? btcEstimated : null);
   }
   requestAnimationFrame(fitTerminalCharts);
 }
@@ -1321,9 +1339,9 @@ function kpiSpark(id,arr,color){
    · curFlags[i]=true(선택 회차)면 해당 포인트 반경을 크게 강조한다.
    id: 캔버스 요소 id / arr: y값 배열 / color: 선·포인트 색 / unit: 축 단위 라벨
    labels: x축 라벨(MM-DD) 배열 / curFlags: 선택 회차 강조 플래그 배열
-   averageArr: 응찰률 차트의 각 시점 이전 6회 평균(데이터 부족 시 null) */
+   averageArr: 응찰률 차트의 각 시점 이전 6회 평균 / averageEstimated: 초기 추정 구간 */
 const kpiTrendRefs = {};                 /* 캔버스 id → Chart 인스턴스 (재렌더 시 destroy) */
-function kpiTrendChart(id, arr, color, unit, labels, curFlags, averageArr){
+function kpiTrendChart(id, arr, color, unit, labels, curFlags, averageArr, averageEstimated){
   if(typeof Chart==="undefined") return;
   const el = document.getElementById(id); if(!el) return;
   if(kpiTrendRefs[id]){ kpiTrendRefs[id].destroy(); kpiTrendRefs[id]=null; }
@@ -1334,10 +1352,10 @@ function kpiTrendChart(id, arr, color, unit, labels, curFlags, averageArr){
   const hasAverage=averageArr?.some(Number.isFinite) || false;
   const opt = {
     responsive:false, maintainAspectRatio:false,
-    plugins:{ legend:{display:hasAverage, labels:{color:uiColor("--tx-dim"),font:{size:9},boxWidth:15,boxHeight:2}}, tooltip:{enabled:true, callbacks:{ label:ctx=>`${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)}${unit}` }} },
+    plugins:{ legend:{display:false}, tooltip:{enabled:true, callbacks:{ label:ctx=>`${ctx.dataset.label}${ctx.datasetIndex===1 && averageEstimated?.[ctx.dataIndex] ? " (추정)" : ""}: ${ctx.parsed.y.toFixed(1)}${unit}` }} },
     scales:{
       x:{ ticks:{color:uiColor("--tx-dim"),font:{size:8},maxRotation:0,autoSkip:true,maxTicksLimit:6}, grid:{display:false} },
-      y:{ ticks:{color:uiColor("--tx-dim"),font:{size:8}}, grid:{color:uiColor("--bd")} }
+      y:{ ticks:{color:uiColor("--tx-dim"),font:{size:8},maxTicksLimit:5}, grid:{color:uiColor("--bd")} }
     }
   };
   kpiTrendRefs[id] = new Chart(el,{
@@ -1349,7 +1367,7 @@ function kpiTrendChart(id, arr, color, unit, labels, curFlags, averageArr){
       pointRadius:ptR, pointBackgroundColor:color, pointBorderColor:ptBorder, pointBorderWidth:1
     },...(hasAverage ? [{
       label:"직전 6회 평균", data:averageArr, borderColor:"#ed6d1e", backgroundColor:"#ed6d1e",
-      borderWidth:1.5, borderDash:[5,3], pointRadius:0, fill:false, tension:.2
+      borderWidth:1.5, borderDash:[5,4], pointRadius:0, fill:false, tension:0
     }] : [])]},
     options:opt
   });
@@ -2433,7 +2451,9 @@ window.KTB_UI_TEXT.push(
   ["경쟁입찰 결과 없음", "No competitive auction result"],
   ["신규발행", "New issue"],
   ["통합발행", "Reopening"],
-  ["물가연동국채", "Inflation-linked bond"]
+  ["물가연동국채", "Inflation-linked bond"],
+  ["초기 구간 추정", "Early values estimated"],
+  ["과거 회차가 6개 미만인 구간은 첫 실제 응찰률로 부족한 회차를 보완", "For fewer than six prior auctions, missing values use the first observed bid-to-cover rate"]
 );
 </script>
 <script src="mockup/ktb-terminal-v5-ui.js"></script>
